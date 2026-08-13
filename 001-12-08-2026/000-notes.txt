@@ -1,0 +1,8 @@
+Js
+
+Variables : 
+    - number
+    - string
+    - boolean
+    - date
+    ............
