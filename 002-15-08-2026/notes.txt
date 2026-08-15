@@ -1,0 +1,60 @@
+homework 01 :
+سعر تذكرة المتنزه
+15 ج
+للأطفال تحت سن 13 سنة
+25 ج
+من سن 13 حتى 60
+20 ج
+فوق سن 60 سنة
+
+-----------------------------------
+homework 02 :
+يقدم متجر خصم
+15%
+على مجموع المشتريات فوق 25000 ج
+20%
+على مجموع المشتريات فوق 50000 ج
+25%
+على مجموع المشتريات فوق 150000 ج
+
+
+
+
+
+if(condition) {
+    code if condition is TRUE
+}
+else {
+    code if condition is FALSE
+}
+
+
+--------
+CONDITION
+    logic operators
+    >     <=    <      >=      ==    ===   !=
+
+compound condition 
+    &&      and
+    ||      or
+    !       not
+
+
+    (con01 && con02 && con03 || con04)
+            true
+                    false
+                            true
+
+البونص للمهندس فى فرع طنطا والمحاسب فى فرع الزقازيق
+if((job == "eng" && branch == "tanta") || (job == "acc" && branch == "zaqaziq"))
+
+
+
+-----------------------------------------------
+
+functions
+
+function fn_name(attrs) {
+
+    return value;
+}
