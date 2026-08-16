@@ -1,0 +1,32 @@
+<script>
+    /* age = 60;
+    if(age < 13) {
+        console.log("price is 15 E.P.");
+    }
+    else if(age < 60) {
+        console.log("price is 25 E.P.");
+    }
+    else {
+        console.log("price is 20 E.P.");
+    } */
+
+
+   total = 150000;
+   if(total < 25000) {
+    discount = 0;
+   }
+   else if(total < 50000) {
+    discount = 0.15;
+   }
+   else if(total < 150000) {
+    discount = 0.2;
+   }
+   else {
+    discount = 0.25;
+   }
+
+   netPrice = total * (1 - discount);
+
+   console.log("the net price is :" + netPrice);
+   
+</script>

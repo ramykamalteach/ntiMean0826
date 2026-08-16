@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="title01">My first Content title</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus qui dignissimos inventore quaerat incidunt est nulla tempore, accusantium modi, ex eos at recusandae dolorum libero? Facilis possimus mollitia ducimus aliquid!</p>
+
+    <div class="details">d00000001 11</div>
+    <div class="details">d00002    22</div>
+    <div class="details">d03      0003</div>
+
+    <button onclick="fn01();">Change html</button>
+
+
+    <script>
+        function fn01() {
+            /* document.getElementById("title01").innerText = "New Text"; */
+            /* document.querySelector("#title01").innerText = "New Text"; */
+
+            /* details = document.getElementsByClassName("details"); */
+            details = document.querySelectorAll(".details");
+
+            for(i = 0; i < details.length; i++) {
+                details[i].innerText = "element 00" + (i + 1);
+            }
+        }
+    </script>
+</body>
+</html>
