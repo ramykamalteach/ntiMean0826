@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="item"></div>
+
+    <button onclick="itemAdd();">Add new Item</button>
+    <hr>
+
+    <div id="container">
+        <h1 id="title01">
+            Hello Guest
+        </h1>
+
+        <button onclick="removeTitle();">remove title</button>
+    </div>
+
+    <script>
+        /* document.querySelector("#title01").innerHTML = "hi <hr>"; */
+        function removeTitle() {
+            /* document.querySelector("#title01").remove(); */
+            document.querySelector("#container").innerHTML = "";
+        }
+
+        function itemAdd() {
+            itemImg = document.createElement("img");
+            itemImg.setAttribute("src", "img/dinner-05.jpg");
+            itemImg.setAttribute("width", "350");
+
+            document.querySelector("body").appendChild(itemImg);
+        }
+    </script>
+</body>
+
+</html>

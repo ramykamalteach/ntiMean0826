@@ -1,0 +1,19 @@
+<script>
+    /* cardNumber = "1234-5678-6541-5544";
+    maskedNumber = cardNumber.replace(/\d\d\d\d-/g, "****-");
+    console.log(maskedNumber); */
+
+    /* phoneNumber = "01091234678";
+    maskedPhoneNumber = phoneNumber.replace(/(\d{3})\d{5}(\d{3})/, "$1*****$2");
+    console.log(maskedPhoneNumber); */
+
+    phoneNumber = "010912345544678";
+    phoneNumber = phoneNumber.split("");
+    for(i = 0; i < phoneNumber.length; i++) {        
+        if(i >=3 && i < phoneNumber.length - 3) {            
+            phoneNumber[i] = "*";
+        }
+    }
+    phoneNumber = phoneNumber.join("");
+    console.log(phoneNumber);
+</script>
