@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #meals {
+            width: 75%;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 64px;
+        }
+
+        #meals > div {
+            width: 48%;
+            display: flex;
+            gap: 36px;
+        }
+        img {
+            border-radius: 16px;
+        }
+        h1 {
+            text-align: center;
+            margin: 48px;
+            font-size: 48px;
+        }
+    </style>
 </head>
 <body>
     <h1>Launch</h1>
@@ -22,8 +45,44 @@
         ];
 
         for(i = 0; i < meals.length; i++) {
+            let oneMeal = document.createElement("div");
+            let mealImg = document.createElement("img");
+                mealImg.setAttribute("src", "img/" + meals[i][3]);
+                mealImg.setAttribute("width", "200");
+            oneMeal.appendChild(mealImg);
+            
+            let mealDetails = document.createElement("div");
+            let mealName = document.createElement("h3");
+                mealName.innerText = meals[i][0];
+            let mealDescription = document.createElement("p");
+                mealDescription.innerText = meals[i][1];
+            let mealPrice = document.createElement("h4");
+                mealPrice.innerText = meals[i][2];
+            
+            mealDetails.appendChild(mealName);
+            mealDetails.appendChild(mealDescription);
+            mealDetails.appendChild(mealPrice);
 
+            oneMeal.appendChild(mealDetails);
+
+            document.querySelector("#meals").appendChild(oneMeal);
         }
+
+
+        /* for(i = 0; i < meals.length; i++) {
+            oneMeal = `
+                <div>
+                    <img src='img/${meals[i][3]}' width='200'>
+                    <div>
+                        <h3>${meals[i][0]}</h3>
+                        <p>${meals[i][1]}</p>
+                        <h4>${meals[i][2]}</h4>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector("#meals").innerHTML += oneMeal;
+        } */
     </script>
 </body>
 </html>
