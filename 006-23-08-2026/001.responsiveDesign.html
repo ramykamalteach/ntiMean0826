@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="001.responsiveDesign.css">
+</head>
+<body>
+    <nav>
+        navbar list
+    </nav>
+    
+    <div id="sideMenu">
+        <div>
+            &nbsp;
+        </div>
+        <div id="siteLogo">
+            SiteName
+        </div>
+        <div id="sideMenuIcon" onclick="displaySideMenuCol();">
+            <img src="Menu--Streamline-Sharp-Streamline-Material.png" width="36" alt="">
+        </div>
+
+        <div id="sideMenuCol">
+            <a href="#">home</a>
+            <a href="#">about</a>
+            <a href="#">reservation</a>
+            <a href="#">gallery</a>
+            <a href="#">menu</a>
+        </div>
+    </div>
+
+
+    <script>
+        sideMenuColDisplay = false;
+        function displaySideMenuCol() {
+            if(sideMenuColDisplay) {
+                document.querySelector("#sideMenuCol").style.right = "-100vw";
+                sideMenuColDisplay = false;
+            }
+            else {
+                document.querySelector("#sideMenuCol").style.right = "0px";
+                sideMenuColDisplay = true;
+            }
+        }
+    </script>
+</body>
+</html>

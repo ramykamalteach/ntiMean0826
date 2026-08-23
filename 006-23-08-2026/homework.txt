@@ -1,0 +1,6 @@
+1- complete the last gallery example
+2- side bar of social icons
+3- flip cards
+4- complete side menu with :
+    - animation
+    - black screen
