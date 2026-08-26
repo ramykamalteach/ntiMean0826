@@ -1,0 +1,5 @@
+i have 4 coloumns
+
+lg : 4 in one row
+md : 2 in each row
+sm : 1 in each row
