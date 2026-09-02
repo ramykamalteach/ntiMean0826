@@ -1,0 +1,34 @@
+DELETE
+    DELETE FROM `categories` WHERE `categories`.`categoryID` = 9
+
+
+UPDATE
+    UPDATE `categories` SET `Description` = 'Cheeses and milk' WHERE `categories`.`CategoryID` = 4;
+
+    UPDATE `categories` SET `CategoryName` = 'Dairy', `Description` = 'Cheeses, milk, Yogurt' WHERE `categories`.`CategoryID` = 4;
+
+SELECT
+
+SELECT * FROM `categories` WHERE `categories`.`CategoryID` = 4
+
+
+=   <>      >   >=  <   <=
+
+LIKE     %
+between AND
+OR      AND
+
+SELECT * FROM `categories` WHERE `categories`.`CategoryID` <> 4 AND `categories`.`CategoryID` <> 5
+
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE 'a%'
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE '%y';
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE '%an%';
+
+SELECT `orders`.`OrderID`, `orders`.`OrderDate` FROM `orders` WHERE `orders`.`OrderDate` BETWEEN '1996-03-01' AND '1996-03-31'
+
+SELECT `products`.`ProductName`, `products`.`UnitsInStock` FROM `products` WHERE `products`.`UnitsInStock` BETWEEN 60 AND 80
+
+
