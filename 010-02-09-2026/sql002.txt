@@ -83,3 +83,67 @@ AND
 AND
 `orders`.`ShipCountry` = 'GERMANY';
 
+-------------------------------------------------------------
+
+ORDER bY
+
+SELECT * FROM `categories` ORDER BY `categories`.`CategoryName` ASC
+
+SELECT * FROM `categories` ORDER BY `categories`.`CategoryName` DESC
+
+
+
+LIMIT
+
+SELECT * FROM `categories` WHERE 1 LIMIT 3
+
+SELECT * FROM `categories` WHERE 1 LIMIT 0,3
+SELECT * FROM `categories` WHERE 1 LIMIT 3,3
+SELECT * FROM `categories` WHERE 1 LIMIT 6,3
+
+
+---------------------------------------------------------
+
+AGGREGATIONS
+
+SELECT `order details`.`OrderID`, COUNT(`order details`.`OrderID`) AS `ProductsCount`
+FROM `order details`
+WHERE 1
+GROUP BY `order details`.`OrderID`;
+
+
+
+
+SELECT `order details`.`OrderID`, (`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`) AS `productTotal`
+
+FROM `order details`
+
+WHERE `order details`.`OrderID` = 10250
+
+
+
+SELECT `order details`.`OrderID`, round((`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`), 4) AS `productTotal`
+
+FROM `order details`
+
+WHERE `order details`.`OrderID` = 10250
+
+
+
+
+SELECT `order details`.`OrderID`, round(SUM((`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`)),4) AS `OrderTotal`
+
+FROM `order details`
+
+WHERE 1
+
+GROUP BY `order details`.`OrderID`
+
+
+---------------------------
+
+home work :
+Get the total of orders for every customer
+arrange result from great to small
+مجموع كل فواتير كل عميل
+مرتبين من أكبر عميل دفع للشركة
