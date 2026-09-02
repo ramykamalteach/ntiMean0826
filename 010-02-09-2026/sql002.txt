@@ -16,6 +16,7 @@ SELECT * FROM `categories` WHERE `categories`.`CategoryID` = 4
 
 LIKE     %
 between AND
+IN ( , , , )
 OR      AND
 
 SELECT * FROM `categories` WHERE `categories`.`CategoryID` <> 4 AND `categories`.`CategoryID` <> 5
@@ -31,4 +32,54 @@ SELECT `orders`.`OrderID`, `orders`.`OrderDate` FROM `orders` WHERE `orders`.`Or
 
 SELECT `products`.`ProductName`, `products`.`UnitsInStock` FROM `products` WHERE `products`.`UnitsInStock` BETWEEN 60 AND 80
 
+
+SELECT `customers`.`CompanyName`, `customers`.`ContactTitle`, `customers`.`Country` FROM `customers` WHERE (`customers`.`Country` = 'USA' OR `customers`.`Country` = 'UK' OR `customers`.`Country` = 'GERMANY') AND `customers`.`ContactTitle` LIKE '%sales%';
+
+
+SELECT `customers`.`CompanyName`, `customers`.`ContactTitle`, `customers`.`Country` FROM `customers` WHERE `customers`.`Country` IN ('USA', 'UK', 'GERMANY') AND `customers`.`ContactTitle` LIKE '%sales%';
+
+
+------------------------------
+
+SELECT `categories`.`CategoryName`, `products`.`ProductName` FROM `categories`, `products`
+WHERE
+`categories`.`CategoryID` = `products`.`CategoryID`
+AND
+`categories`.`CategoryID` = 4;
+
+
+
+CUSTOMER NAME
+ORDER DATE
+producT NAMES
+
+
+SELECT `customers`.`CompanyName`, `orders`.`OrderDate`, `products`.`ProductName`
+FROM `customers`, `orders`, `products`, `order details`
+WHERE
+`orders`.`CustomerID` = `customers`.`CustomerID`
+AND
+`orders`.`OrderID` = `order details`.`OrderID`
+AND
+`order details`.`ProductID` = `products`.`ProductID`
+AND
+`orders`.`OrderID` = '11077'
+
+
+
+SHIP COMPANY NAME = 3
+ORDER DATE
+CUSTOMER COMPANY NAME
+WHERE SHIPCOUNTRY IS GERMANY
+
+SELECT `shippers`.`CompanyName`, `customers`.`CompanyName`, `orders`.`OrderDate`, `orders`.`ShipCountry`
+FROM `shippers`, `customers`, `orders`
+WHERE
+`orders`.`ShipVia` = `shippers`.`ShipperID`
+AND
+`orders`.`CustomerID` = `customers`.`CustomerID`
+AND
+`orders`.`ShipVia` = 3
+AND
+`orders`.`ShipCountry` = 'GERMANY';
 
