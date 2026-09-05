@@ -10,3 +10,34 @@
 
 ** مدير النظام يسجل الموظفين والأطباء أو يوقفهم
 ** الموظف يسجل المريض ، يحجز كشف للمريض ، يكتب تقرير الكشف
+
+
+
+
+Users table :
+    - id
+    - full Name
+    - login name
+    - password
+    - email
+    - employeeRole (admin - employee - doctor)
+    - notes
+    - isActive
+    - createdBy id
+
+Patients table :
+    - id
+    - national id
+    - full name
+    - creation date
+    - empCreatedID
+
+visits :
+    - id
+    - visit dateTime
+    - patient id
+    - emp id
+    - doctor id
+    - createdAt
+    - status (pending - complete - cancel)
+    - report text
