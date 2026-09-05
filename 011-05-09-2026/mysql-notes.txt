@@ -1,0 +1,82 @@
+SELECT 
+    `customers`.`CustomerID`, 
+    `customers`.`CompanyName`, 
+    ROUND(SUM((`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`)), 4) AS `TotalCustomerSpent`
+FROM `customers`, `orders`, `order details`
+WHERE `customers`.`CustomerID` = `orders`.`CustomerID`
+  AND `orders`.`OrderID` = `order details`.`OrderID`
+GROUP BY 
+    `customers`.`CustomerID`, 
+    `customers`.`CompanyName`
+ORDER BY `customers`.`CompanyName` ASC
+
+-----------------------------------------------------------
+
+SELECT `suppliers`.`Country`, COUNT(`suppliers`.`Country`) AS `CompanyCount`
+FROM `suppliers`
+
+GROUP BY `suppliers`.`Country`
+
+ORDER BY `CompanyCount` DESC;
+
+
+
+SELECT `suppliers`.`Country`, COUNT(`suppliers`.`Country`) AS `CompanyCount`
+FROM `suppliers`
+
+WHERE `suppliers`.`Country` IN('usa', 'canada', 'uk')
+
+GROUP BY `suppliers`.`Country`
+
+ORDER BY `CompanyCount` DESC;
+
+
+
+SELECT `suppliers`.`Country`, COUNT(`suppliers`.`Country`) AS `CompanyCount`
+FROM `suppliers`
+
+WHERE `suppliers`.`Country` NOT IN('usa', 'canada', 'uk')
+
+GROUP BY `suppliers`.`Country`
+
+ORDER BY `CompanyCount` DESC;
+
+
+--------------------
+
+SELECT CONCAT(`employees`.`Title`, ' - ', `employees`.`FirstName`, ' ', `employees`.`LastName`) AS `FULLNAME`
+FROM `employees`
+
+ORDER BY `employees`.`Title`;
+
+
+-----------------------
+
+SELECT `ProductName`, `UnitPrice`
+FROM `products`
+WHERE `UnitPrice` = (SELECT MAX(`UnitPrice`) FROM `products`);
+
+
+SELECT `ProductName`, `UnitPrice`
+FROM `products`
+WHERE `UnitPrice` = (SELECT MIN(`UnitPrice`) FROM `products`);
+
+
+SELECT `ProductName`, `UnitPrice`
+FROM `products`
+WHERE `UnitPrice` <= (SELECT AVG(`UnitPrice`) FROM `products`)
+
+ORDER BY `products`.`UnitPrice` DESC;
+
+
+-------------------------------------------------------
+
+SELECT `suppliers`.`Country`, COUNT(`suppliers`.`Country`) AS `countryTotal`
+FROM `suppliers`
+
+WHERE 1
+
+GROUP BY `suppliers`.`Country`
+HAVING `countryTotal` >= 3
+
+ORDER BY `countryTotal` DESC;
