@@ -175,6 +175,14 @@ Homework :
    
 
         - jobs outside "cairo" and "Giza"
+    >>>>
+    {
+            $and:[
+                {Country:{$not: {"$regex": "cairo", "$options": "i"}}},
+                {Country:{$not: {"$regex": "giza", "$options": "i"}}},
+                {Country:{$not: {"$regex": "egypt", "$options": "i"}}},
+            ]
+            }
 
         - order first 33 company that had required more jobs
         [
