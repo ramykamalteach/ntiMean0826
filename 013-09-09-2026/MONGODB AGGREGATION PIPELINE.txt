@@ -1,0 +1,224 @@
+================================================================================
+          MONGODB AGGREGATION PIPELINE STAGES - REFERENCE GUIDE
+================================================================================
+
+MongoDB aggregation processes documents sequentially through a pipeline. 
+Each stage transforms the documents as they pass through.
+
+Below is a breakdown of the core pipeline stages with simple definitions 
+and practical syntax examples.
+
+--------------------------------------------------------------------------------
+1. $match
+--------------------------------------------------------------------------------
+Definition:
+  Filters the documents to pass only those that match specified conditions 
+  into the next pipeline stage. Works like a standard query filter (WHERE clause).
+
+Example:
+  {
+    $match: {
+      status: "active",
+      age: { $gte: 21 }
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+2. $project
+--------------------------------------------------------------------------------
+Definition:
+  Reshapes each document in the stream by including, excluding, renaming, 
+  or calculating new fields.
+
+Example:
+  {
+    $project: {
+      _id: 0,
+      fullName: { $concat: ["$firstName", " ", "$lastName"] },
+      userEmail: "$email",
+      isActive: 1
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+3. $group
+--------------------------------------------------------------------------------
+Definition:
+  Separates documents into groups according to a specified group key (_id) 
+  and applies accumulator expressions to calculate summaries (totals, counts, averages).
+
+Example:
+  {
+    $group: {
+      _id: "$department",
+      totalSalary: { $sum: "$salary" },
+      averageAge: { $avg: "$age" },
+      headcount: { $sum: 1 }
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+4. $unwind
+--------------------------------------------------------------------------------
+Definition:
+  Deconstructs an array field from the input documents to output a separate 
+  document for every element in that array.
+
+Example:
+  {
+    $unwind: {
+      path: "$skills",
+      preserveNullAndEmptyArrays: true
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+5. $sort
+--------------------------------------------------------------------------------
+Definition:
+  Reorders all input documents according to the specified sort key (1 for 
+  ascending, -1 for descending).
+
+Example:
+  {
+    $sort: {
+      totalRevenue: -1
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+6. $skip
+--------------------------------------------------------------------------------
+Definition:
+  Skips over a specified number of documents and passes the remaining documents 
+  to the next stage (commonly used for pagination).
+
+Example:
+  {
+    $skip: 10
+  }
+
+
+--------------------------------------------------------------------------------
+7. $limit
+--------------------------------------------------------------------------------
+Definition:
+  Restricts the number of documents passed to the next stage in the pipeline.
+
+Example:
+  {
+    $limit: 10
+  }
+
+
+--------------------------------------------------------------------------------
+8. $lookup
+--------------------------------------------------------------------------------
+Definition:
+  Performs a left outer join to a collection in the same database to filter in 
+  documents from the "joined" collection for processing.
+
+Example:
+  {
+    $lookup: {
+      from: "departments",
+      localField: "deptId",
+      foreignField: "_id",
+      as: "deptDetails"
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+9. $addFields / $set
+--------------------------------------------------------------------------------
+Definition:
+  Adds new fields or overwrites existing fields in documents while retaining 
+  all other existing fields without needing to re-specify them.
+
+Example:
+  {
+    $addFields: {
+      grossPay: { $add: ["$baseSalary", "$bonus"] },
+      isSenior: { $gte: ["$yearsOfService", 5] }
+    }
+  }
+
+
+--------------------------------------------------------------------------------
+10. $count
+--------------------------------------------------------------------------------
+Definition:
+  Passes a document to the next stage containing only the count of the number 
+  of documents that entered this stage.
+
+Example:
+  {
+    $count: "totalActiveUsers"
+  }
+
+
+--------------------------------------------------------------------------------
+11. $facet
+--------------------------------------------------------------------------------
+Definition:
+  Processes multiple aggregation pipelines within a single stage on the same 
+  set of input documents (useful for multi-category facets and simultaneous counts).
+
+Example:
+  {
+    $facet: {
+      "priceCategories": [
+        { $bucketAuto: { groupBy: "$price", buckets: 4 } }
+      ],
+      "topRated": [
+        { $sort: { rating: -1 } },
+        { $limit: 3 }
+      ],
+      "totalCount": [
+        { $count: "count" }
+      ]
+    }
+  }
+
+================================================================================
+                  COMPLETE REAL-WORLD PIPELINE COMBINATION
+================================================================================
+
+db.orders.aggregate([
+  // 1. Only process delivered orders
+  { $match: { status: "delivered" } },
+
+  // 2. Flatten line items array
+  { $unwind: "$items" },
+
+  // 3. Group by product category and calculate metrics
+  {
+    $group: {
+      _id: "$items.category",
+      totalRevenue: { $sum: { $multiply: ["$items.qty", "$items.price"] } },
+      unitsSold: { $sum: "$items.qty" },
+      uniqueBuyers: { $addToSet: "$customerId" }
+    }
+  },
+
+  // 4. Calculate buyer count and reshape
+  {
+    $project: {
+      _id: 0,
+      category: "$_id",
+      totalRevenue: 1,
+      unitsSold: 1,
+      totalCustomers: { $size: "$uniqueBuyers" }
+    }
+  },
+
+  // 5. Rank by highest revenue first
+  { $sort: { totalRevenue: -1 } }
+]);
+================================================================================

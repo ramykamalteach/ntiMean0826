@@ -1,0 +1,171 @@
+Relationship Types in MongoDB
+
+MongoDB has two ways to model relationships between data: embedding (direct) and referencing (indirect).
+
+1. Embedding (Direct Relationship / Denormalized)
+    The related data is stored inside the same document. No separate lookup needed.
+
+        // one-to-one
+        {
+            "_id": 1,
+            "name": "Ahmed",
+            "address": {
+                "city": "Mansoura",
+                "street": "El Gomhoria St"
+            }
+        }
+
+        //one-to-many
+        {
+            "_id": "post_101",
+            "title": "Document Databases",
+            "comments": [
+                { "user": "Omar", "text": "Very concise." },
+                { "user": "Nadia", "text": "Helpful breakdown." }
+            ]
+        }
+
+    Use when:
+        - Data is accessed together most of the time.
+        - The related data is small and doesn't grow unbounded.
+        - The relationship is "one-to-few" (e.g., a few addresses, a few comments).
+
+
+2. Referencing (Indirect Relationship)
+    The related data is stored in a separate collection, and you link them using an ID (like a foreign key).
+
+        // users collection
+        { "_id": 1, "name": "Ahmed" }
+
+        // orders collection
+        { "_id": 101, "user_id": 1, "item": "Laptop" }
+        { "_id": 102, "user_id": 1, "item": "Mouse" }
+
+    Here, orders reference the user by user_id. You need a second query (or $lookup) to join them.
+
+    Use when:
+        - Data is large or grows a lot (e.g., thousands of orders per user).
+        - Data changes independently.
+        - The relationship is "one-to-many" or "many-to-many".
+
+
+Quick Comparison
+        Aspect	        Embedding (Direct)	        Referencing (Indirect)
+        Storage	        Same document	            Separate documents
+        Read speed	    Faster (one query)	        Slower (needs join/lookup)
+        Data size	    Should stay small	        Can grow freely
+        Best for	    One-to-one, one-to-few	    One-to-many, many-to-many
+
+
+-----------------------------------------------
+
+Dealing with Many-to-Many Relationship :
+    1. Reference with an Array of IDs (Most Common)
+        Store an array of related IDs on one or both sides.
+
+        // students collection
+        { "_id": 1, "name": "Ahmed", "course_ids": [101, 102] }
+        { "_id": 2, "name": "Sara", "course_ids": [101] }
+
+        // courses collection
+        { "_id": 101, "title": "Math" }
+        { "_id": 102, "title": "Physics" }
+
+        To get Ahmed's courses, use $lookup :
+
+        db.students.aggregate([
+            { $match: { _id: 1 } },
+            {
+                $lookup: {
+                from: "courses",
+                localField: "course_ids",
+                foreignField: "_id",
+                as: "courses"
+                }
+            }
+        ])
+        
+        to get this result:
+            {
+                "_id": 1,
+                "name": "Ahmed",
+                "courses": [
+                    { "_id": 101, "title": "Math" },
+                    { "_id": 102, "title": "Physics" }
+                ]
+            }
+
+
+    2. Junction Collection (Like a Join Table in SQL)
+        Create a third collection that just holds the pairs.
+
+        // students collection
+        { "_id": 1, "name": "Ahmed" }
+        { "_id": 2, "name": "Sara" }
+
+        // courses collection
+        { "_id": 101, "title": "Math" }
+        { "_id": 102, "title": "Physics" }
+
+        // enrollments collection (junction)
+        { "student_id": 1, "course_id": 101 }
+        { "student_id": 1, "course_id": 102 }
+        { "student_id": 2, "course_id": 101 }
+
+        Query with two $lookup steps:
+        db.enrollments.aggregate([
+            { $match: { student_id: 1 } },
+            {
+                $lookup: {
+                from: "courses",
+                localField: "course_id",
+                foreignField: "_id",
+                as: "course"
+                }
+            }
+        ])
+
+
+--------------------------------------------------------------------------
+
+Challenges :
+
+    1- Scenario: Each user has one profile (bio, avatar) :
+        Design the schema so fetching a user always includes their profile in a single query. Then write a query to find all users whose profile city is "Cairo".
+
+
+
+    2- Scenario: A blog collection and a comments collection. Each blog has many comments:
+        Design the schema using references.
+        Write a $lookup aggregation to return a blog post with all its comments attached.
+        Then modify it to only include comments where approved: true.
+
+
+        
+    3- Scenario: students and courses, using arrays of IDs (from earlier):
+        Start by finding the Math course `_id`, then `$match` students whose `course_ids` array contains it, then `$lookup` again to expand all their courses.
+
+
+
+    4- Scenario: Same students/courses, but now using an enrollments junction collection that also stores grade and enrollment_date:
+        Write an aggregation that returns, for each course, the average grade of enrolled students, sorted from highest to lowest average.
+        You'll need `$lookup` from `enrollments` to `courses` (or vice versa), then `$group` by `course_id` with `$avg`, then `$sort`.
+
+
+
+    5- Scenario: authors → books → reviews. An author has many books, and each book has many reviews (with a rating field):
+        Write a single aggregation pipeline that returns each author with:
+            - Their list of books
+            - For each book, its average rating
+            - A top-level field showing the author's overall average rating across all their books
+
+        Hint: This needs nested `$lookup`s (books → reviews inside a pipeline), `$addFields` with `$avg` per book, then a second-level `$group` or `$avg` across the book averages back at the author level. This is the closest MongoDB gets to a 3-table JOIN with aggregation math on top.
+
+
+
+    6- Scenario: Each car sends a new GPS location every few seconds (lat, lng, timestamp). Over a day, one car can generate thousands of location points. You have many cars, each with a huge, ever-growing location history:
+        - Design the schema. Decide: should locations be embedded inside the car document, or stored in a separate locations collection? Justify your choice.
+        - Write a query to get a car's last known location (most recent point) — should be fast, no scanning thousands of documents.
+        - Write an aggregation to get a car's path over the last 1 hour (all points between two timestamps), sorted oldest to newest.
+        - Bonus: Write a query to find the top 5 cars with the most location updates today.
+
