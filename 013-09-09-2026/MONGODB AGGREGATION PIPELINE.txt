@@ -134,6 +134,29 @@ Example:
   }
 
 
+[
+  {
+    $lookup: {
+      from: "stores",
+      localField: "storeId", // Field in current collection
+      foreignField: "_id",    // Field in stores collection
+      as: "storeOrderOwner"
+    }
+  }
+]
+
+
+[
+  {
+    $lookup: {
+      from: "orders",
+      localField: "_id", // Field in current collection
+      foreignField: "storeId",    // Field in stores collection
+      as: "ordersFromThisStore"
+    }
+  }
+]
+
 --------------------------------------------------------------------------------
 9. $addFields / $set
 --------------------------------------------------------------------------------

@@ -95,6 +95,117 @@ Dealing with Many-to-Many Relationship :
                 ]
             }
 
+---------------------------------------------------------------------------
+study case :
+
+[
+  { "name": "Ahmed", "course_ids": [101, 104] },
+  { "name": "Sara", "course_ids": [102, 107] },
+  { "name": "Mohamed", "course_ids": [101, 103, 104] },
+  { "name": "Fatima", "course_ids": [105, 109] },
+  { "name": "Omar", "course_ids": [102, 108] },
+  { "name": "Nour", "course_ids": [104, 106, 110] },
+  { "name": "Youssef", "course_ids": [101, 102] },
+  { "name": "Maryam", "course_ids": [103, 107] },
+  { "name": "Khaled", "course_ids": [104, 108] },
+  { "name": "Layla", "course_ids": [105, 109, 110] },
+  { "name": "Tarek", "course_ids": [101, 106] },
+  { "name": "Mona", "course_ids": [102, 103] },
+  { "name": "Ali", "course_ids": [104, 105] },
+  { "name": "Salma", "course_ids": [107, 108] },
+  { "name": "Hassan", "course_ids": [101, 109] },
+  { "name": "Huda", "course_ids": [106, 110] },
+  { "name": "Ibrahim", "course_ids": [102, 104, 108] },
+  { "name": "Rania", "course_ids": [103, 105] },
+  { "name": "Mostafa", "course_ids": [101, 107] },
+  { "name": "Dina", "course_ids": [108, 109] },
+  { "name": "Karim", "course_ids": [104, 106] },
+  { "name": "Aya", "course_ids": [102, 110] },
+  { "name": "Mahmoud", "course_ids": [101, 103] },
+  { "name": "Yasmin", "course_ids": [105, 107] },
+  { "name": "Amr", "course_ids": [104, 108, 109] },
+  { "name": "Reem", "course_ids": [106, 110] },
+  { "name": "Ziad", "course_ids": [101, 102] },
+  { "name": "Nada", "course_ids": [103, 104] },
+  { "name": "Sherif", "course_ids": [105, 108] },
+  { "name": "Hana", "course_ids": [107, 109] },
+  { "name": "Bassam", "course_ids": [102, 106] },
+  { "name": "Farida", "course_ids": [101, 110] },
+  { "name": "Walid", "course_ids": [103, 108] },
+  { "name": "Malak", "course_ids": [104, 105] },
+  { "name": "Hamza", "course_ids": [102, 107] },
+  { "name": "Habiba", "course_ids": [106, 109] },
+  { "name": "Essam", "course_ids": [101, 104, 108] },
+  { "name": "Menna", "course_ids": [103, 110] },
+  { "name": "Hazem", "course_ids": [105, 107] },
+  { "name": "Shahd", "course_ids": [102, 109] },
+  { "name": "Ezz", "course_ids": [101, 106] },
+  { "name": "Zeina", "course_ids": [104, 107] },
+  { "name": "Samy", "course_ids": [103, 105] },
+  { "name": "Arwa", "course_ids": [108, 110] },
+  { "name": "Marwan", "course_ids": [101, 102, 104] },
+  { "name": "Jumana", "course_ids": [106, 109] },
+  { "name": "Fady", "course_ids": [103, 107] },
+  { "name": "Kenzy", "course_ids": [105, 108] },
+  { "name": "Adel", "course_ids": [102, 104] },
+  { "name": "Radwa", "course_ids": [101, 110] }
+]
+
+
+[
+  { "_id": 101, "title": "Mathematics" },
+  { "_id": 102, "title": "Physics" },
+  { "_id": 103, "title": "Chemistry" },
+  { "_id": 104, "title": "Computer Science" },
+  { "_id": 105, "title": "English Literature" },
+  { "_id": 106, "title": "World History" },
+  { "_id": 107, "title": "Biology" },
+  { "_id": 108, "title": "Economics" },
+  { "_id": 109, "title": "Psychology" },
+  { "_id": 110, "title": "Art & Design" }
+]
+
+
+[
+  {
+    $match: {
+            _id:ObjectId('6aa181cf0b172ab0f280cb67')
+        }
+    },
+    {
+      $lookup: {
+        from: "courses",
+        localField: "course_ids",
+        foreignField: "_id",
+        as: "courses"
+      }
+  	},
+  {
+    $project: {
+      course_ids: 0
+    }
+  }  
+]
+
+
+{
+  "_id": {
+    "$oid": "6aa181cf0b172ab0f280cb67"
+  },
+  "name": "Youssef",
+  "courses": [
+    {
+      "_id": 101,
+      "title": "Mathematics"
+    },
+    {
+      "_id": 102,
+      "title": "Physics"
+    }
+  ]
+}
+
+---------------------------------------------------------------------------
 
     2. Junction Collection (Like a Join Table in SQL)
         Create a third collection that just holds the pairs.
