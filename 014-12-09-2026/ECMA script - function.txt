@@ -1,0 +1,350 @@
+ECMAScript Functions — Quick Guide
+====================================
+
+Short examples for the most important function concepts in JavaScript
+(ECMAScript).
+
+1. Function Declarations
+------------------------
+
+A traditional way to define a function.
+
+function greet(name) {
+  return "Hello " + name;
+}
+
+console.log(greet("Ramy"));
+
+
+2. Function Expressions
+-----------------------
+
+A function is assigned to a variable.
+
+const greet = function(name) {
+  return "Hello " + name;
+};
+
+console.log(greet("Ramy"));
+
+
+3. Arrow Functions
+------------------
+
+A shorter syntax for writing functions.
+
+const greet = (name) => {
+  return "Hello " + name;
+};
+
+console.log(greet("Ramy"));
+
+Even shorter:
+
+const greet = name => "Hello " + name;
+
+
+4. Parameters & Arguments
+-------------------------
+
+Parameters are the variables defined by the function.
+
+Arguments are the actual values passed to the function.
+
+function add(a, b) {       // a and b = parameters
+  return a + b;
+}
+
+add(10, 20);               // 10 and 20 = arguments
+
+
+5. Default Parameters
+---------------------
+
+A parameter can have a default value.
+
+function greet(name = "Guest") {
+  return "Hello " + name;
+}
+
+console.log(greet());        // Hello Guest
+console.log(greet("Ramy"));  // Hello Ramy
+
+
+6. Rest Parameters
+------------------
+
+... collects multiple arguments into an array.
+
+function sum(...numbers) {
+  return numbers.reduce((total, n) => total + n, 0);
+}
+
+console.log(sum(10, 20, 30)); // 60
+
+Here:
+
+numbers = [10, 20, 30]
+
+
+7. Return Values
+----------------
+
+return sends a value back from the function.
+
+function multiply(a, b) {
+  return a * b;
+}
+
+const result = multiply(5, 4);
+
+console.log(result); // 20
+
+Think:
+
+function -> does something -> return -> gives a result back
+
+
+8. Callback Functions
+---------------------
+
+A callback is a function passed to another function.
+
+function processUser(name, callback) {
+  callback(name);
+}
+
+processUser("Ramy", function(name) {
+  console.log("Hello " + name);
+});
+
+The function:
+
+function(name) {
+  console.log("Hello " + name);
+}
+
+is the callback.
+
+Another common example:
+
+setTimeout(() => {
+  console.log("Done!");
+}, 2000);
+
+The arrow function is a callback.
+
+
+9. Higher-Order Functions
+-------------------------
+
+A function that receives another function or returns another function.
+
+function calculate(a, b, operation) {
+  return operation(a, b);
+}
+
+const result = calculate(10, 5, (x, y) => x + y);
+
+console.log(result); // 15
+
+calculate() is a higher-order function because it receives
+a function as an argument.
+
+Common array methods that use callbacks include:
+
+map()
+filter()
+find()
+forEach()
+
+
+10. Anonymous Functions
+-----------------------
+
+A function without a name.
+
+const greet = function(name) {
+  console.log("Hello " + name);
+};
+
+The function itself has no name.
+
+Another common example:
+
+setTimeout(function() {
+  console.log("Hello");
+}, 1000);
+
+
+11. IIFE
+--------
+
+IIFE = Immediately Invoked Function Expression.
+
+The function runs immediately after it is created.
+
+(function() {
+  console.log("Hello!");
+})();
+
+Output:
+
+Hello!
+
+Another example:
+
+(function(name) {
+  console.log("Hello " + name);
+})("Ramy");
+
+Output:
+
+Hello Ramy
+
+Important idea:
+
+Create function -> immediately execute it
+
+
+12. this and Functions
+----------------------
+
+In this example, this refers to the object that is calling the function.
+
+const user = {
+  name: "Ramy",
+
+  greet: function() {
+    console.log("Hello " + this.name);
+  }
+};
+
+user.greet();
+
+Output:
+
+Hello Ramy
+
+Here:
+
+this.name
+
+means:
+
+user.name
+
+IMPORTANT:
+Arrow functions handle this differently.
+Arrow functions do not create their own this.
+
+
+13. Closures
+------------
+
+A function can remember variables from its outer function even
+after the outer function has finished.
+
+function counter() {
+  let count = 0;
+
+  return function() {
+    count++;
+    return count;
+  };
+}
+
+const increment = counter();
+
+console.log(increment()); // 1
+console.log(increment()); // 2
+console.log(increment()); // 3
+
+The inner function remembers the variable:
+
+count
+
+Think:
+
+Closure = function + remembered outer variables
+
+
+14. Nested Functions
+--------------------
+
+A function defined inside another function.
+
+function outer() {
+
+  function inner() {
+    console.log("Hello from inner");
+  }
+
+  inner();
+}
+
+outer();
+
+Structure:
+
+outer()
+  |
+  +-- inner()
+
+The inner() function is nested inside outer().
+
+Nested functions are also commonly involved in closures.
+
+
+QUICK MEMORY GUIDE
+==================
+
+Concept             Meaning
+------------------------------------------------------------
+Declaration         function greet() {}
+Expression          const greet = function() {}
+Arrow               const greet = () => {}
+Parameters          Variables in the function definition
+Arguments           Values passed to the function
+Default             name = "Guest"
+Rest                ...args
+Return              Send a value back
+Callback            Function passed to another function
+Higher-order        Function that receives/returns a function
+Anonymous           Function without a name
+IIFE                Function that runs immediately
+this                Current calling context
+Closure             Function remembers outer variables
+Nested              Function inside another function
+
+
+IMPORTANT RELATIONSHIPS
+=======================
+
+Callback
+--------
+A function passed to another function.
+
+Higher-order function
+---------------------
+A function that receives or returns another function.
+
+Closure
+-------
+A function that remembers variables from its outer scope.
+
+
+SIMPLE VISUAL SUMMARY
+=====================
+
+Callback
+   |
+   +--> Function passed to another function
+
+Higher-order function
+   |
+   +--> Function that receives or returns a function
+
+Closure
+   |
+   +--> Function that remembers variables from its outer scope
