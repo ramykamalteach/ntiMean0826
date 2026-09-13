@@ -1,0 +1,696 @@
+OOP BASICS IN ECMASCRIPT (JAVASCRIPT)
+Practical Notes for Node.js Backend Development
+================================================
+
+OOP = Object-Oriented Programming.
+
+For Node.js backend development, you mainly need the practical parts of
+JavaScript OOP rather than every advanced OOP feature.
+
+Main concepts:
+1. Objects
+2. Classes
+3. Constructors
+4. Properties & Methods
+5. Encapsulation
+6. Inheritance
+7. Polymorphism
+8. Abstraction
+9. Static Members
+10. Getters & Setters
+
+
+1. OBJECTS
+----------
+
+An object groups related data and behavior together.
+
+Example:
+
+    const user = {
+        name: "Ahmed",
+        age: 25,
+
+        sayHello() {
+            console.log(`Hello, I'm ${this.name}`);
+        }
+    };
+
+    console.log(user.name);
+    user.sayHello();
+
+Short notes:
+- name and age -> properties
+- sayHello() -> method
+- this -> refers to the current object
+
+Objects are everywhere in Node.js.
+
+Example:
+
+    const request = {
+        method: "GET",
+        url: "/users"
+    };
+
+
+2. CLASSES
+----------
+
+A class is a blueprint for creating objects.
+
+Example:
+
+    class User {
+        sayHello() {
+            console.log("Hello!");
+        }
+    }
+
+    const user1 = new User();
+    const user2 = new User();
+
+    user1.sayHello();
+    user2.sayHello();
+
+Short note:
+
+    Class  -> blueprint
+    Object -> instance created from the blueprint
+
+Example:
+
+    class User {}
+
+    const user = new User();
+
+
+3. CONSTRUCTOR
+--------------
+
+The constructor() method runs automatically when you create an object
+with the new keyword.
+
+Example:
+
+    class User {
+        constructor(name, age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        sayHello() {
+            console.log(`Hello ${this.name}`);
+        }
+    }
+
+    const user = new User("Ahmed", 25);
+
+    console.log(user.name);
+    console.log(user.age);
+
+    user.sayHello();
+
+Output:
+
+    Ahmed
+    25
+    Hello Ahmed
+
+Node.js example:
+
+    class User {
+        constructor(id, name, email) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+        }
+    }
+
+    const user = new User(
+        1,
+        "Ahmed",
+        "ahmed@example.com"
+    );
+
+
+4. PROPERTIES AND METHODS
+-------------------------
+
+A class can contain properties and methods.
+
+Properties:
+Data belonging to the object.
+
+    class User {
+        constructor(name) {
+            this.name = name;
+        }
+    }
+
+Methods:
+Functions belonging to the object.
+
+    class User {
+        constructor(name) {
+            this.name = name;
+        }
+
+        login() {
+            console.log(`${this.name} logged in`);
+        }
+
+        logout() {
+            console.log(`${this.name} logged out`);
+        }
+    }
+
+Usage:
+
+    const user = new User("Ahmed");
+
+    user.login();
+    user.logout();
+
+
+5. ENCAPSULATION
+----------------
+
+Encapsulation means keeping an object's internal data controlled rather
+than allowing everything to be changed directly.
+
+Modern JavaScript supports private fields using #.
+
+Example:
+
+    class BankAccount {
+        #balance = 0;
+
+        deposit(amount) {
+            if (amount <= 0) {
+                throw new Error("Invalid amount");
+            }
+
+            this.#balance += amount;
+        }
+
+        getBalance() {
+            return this.#balance;
+        }
+    }
+
+    const account = new BankAccount();
+
+    account.deposit(1000);
+
+    console.log(account.getBalance());
+
+This will NOT work:
+
+    account.#balance = 5000;
+
+because #balance is private.
+
+Why useful in Node.js?
+
+You may want a service to control how a value is modified.
+
+Example:
+
+    class UserService {
+        #users = [];
+
+        addUser(user) {
+            this.#users.push(user);
+        }
+
+        getUsers() {
+            return [...this.#users];
+        }
+    }
+
+Instead of allowing other code to directly modify the internal array.
+
+
+6. INHERITANCE
+-------------
+
+Inheritance allows one class to reuse functionality from another class.
+
+Use the extends keyword.
+
+Example:
+
+    class User {
+        constructor(name) {
+            this.name = name;
+        }
+
+        login() {
+            console.log(`${this.name} logged in`);
+        }
+    }
+
+    class Admin extends User {
+        deleteUser() {
+            console.log("User deleted");
+        }
+    }
+
+Admin inherits login() from User.
+
+    const admin = new Admin("Ahmed");
+
+    admin.login();
+    admin.deleteUser();
+
+Output:
+
+    Ahmed logged in
+    User deleted
+
+Node.js example:
+
+You might have:
+
+    User
+     ├── Admin
+     └── Customer
+
+Example:
+
+    class User {
+        login() {
+            console.log("User login");
+        }
+    }
+
+    class Admin extends User {
+        manageUsers() {
+            console.log("Managing users");
+        }
+    }
+
+
+7. SUPER
+--------
+
+super is used to access the parent class.
+
+Example:
+
+    class User {
+        constructor(name) {
+            this.name = name;
+        }
+
+        login() {
+            console.log(`${this.name} logged in`);
+        }
+    }
+
+    class Admin extends User {
+        constructor(name, permissions) {
+            super(name);
+
+            this.permissions = permissions;
+        }
+    }
+
+Here:
+
+    super(name);
+
+calls the constructor of User.
+
+
+8. METHOD OVERRIDING / POLYMORPHISM
+-----------------------------------
+
+A child class can provide its own implementation of a method.
+
+Example:
+
+    class User {
+        getRole() {
+            return "User";
+        }
+    }
+
+    class Admin extends User {
+        getRole() {
+            return "Admin";
+        }
+    }
+
+    class Customer extends User {
+        getRole() {
+            return "Customer";
+        }
+    }
+
+Usage:
+
+    const users = [
+        new Admin(),
+        new Customer()
+    ];
+
+    for (const user of users) {
+        console.log(user.getRole());
+    }
+
+Output:
+
+    Admin
+    Customer
+
+Short note:
+
+Polymorphism basically means:
+
+    Different objects can respond differently to the same method call.
+
+This is useful in backend applications.
+
+For example:
+
+    payment.process();
+
+could behave differently depending on whether the payment is:
+
+    CreditCardPayment
+    PayPalPayment
+    BankTransferPayment
+
+
+9. ABSTRACTION
+-------------
+
+Abstraction means hiding unnecessary implementation details and exposing
+a simple interface.
+
+JavaScript does not have traditional abstract classes in the same way
+as some languages, but you can implement the idea using classes and
+methods.
+
+Example:
+
+    class PaymentService {
+        process(amount) {
+            throw new Error("process() must be implemented");
+        }
+    }
+
+    class CreditCardPayment extends PaymentService {
+        process(amount) {
+            console.log(`Processing credit card payment: ${amount}`);
+        }
+    }
+
+    class PayPalPayment extends PaymentService {
+        process(amount) {
+            console.log(`Processing PayPal payment: ${amount}`);
+        }
+    }
+
+The caller only needs:
+
+    payment.process(100);
+
+It does not need to know the internal payment implementation.
+
+
+10. STATIC MEMBERS
+------------------
+
+A static property or method belongs to the class itself, not to
+individual objects.
+
+Example:
+
+    class User {
+        static role = "USER";
+
+        static createGuest() {
+            return new User("Guest");
+        }
+
+        constructor(name) {
+            this.name = name;
+        }
+    }
+
+Use it like:
+
+    console.log(User.role);
+
+    const guest = User.createGuest();
+
+    console.log(guest.name);
+
+You do NOT do:
+
+    const user = new User("Ahmed");
+
+    user.createGuest(); // ERROR
+
+because createGuest() belongs to the class.
+
+Node.js example:
+
+Static methods can be useful for factory/helper functionality.
+
+    class User {
+        constructor(name) {
+            this.name = name;
+        }
+
+        static fromJSON(data) {
+            return new User(data.name);
+        }
+    }
+
+    const user = User.fromJSON({
+        name: "Ahmed"
+    });
+
+
+11. GETTERS AND SETTERS
+-----------------------
+
+Getters and setters allow you to control how properties are read
+and changed.
+
+Example:
+
+    class User {
+        constructor(name) {
+            this._name = name;
+        }
+
+        get name() {
+            return this._name;
+        }
+
+        set name(value) {
+            if (!value) {
+                throw new Error("Name is required");
+            }
+
+            this._name = value;
+        }
+    }
+
+Usage:
+
+    const user = new User("Ahmed");
+
+    console.log(user.name);
+
+    user.name = "Mohamed";
+
+    console.log(user.name);
+
+Notice:
+
+    user.name
+
+calls the getter.
+
+And:
+
+    user.name = "Mohamed";
+
+calls the setter.
+
+
+12. PRACTICAL NODE.JS EXAMPLE
+-----------------------------
+
+Here is a small example combining several OOP concepts.
+
+    class User {
+        #password;
+
+        constructor(name, email, password) {
+            this.name = name;
+            this.email = email;
+            this.#password = password;
+        }
+
+        login(password) {
+            if (password === this.#password) {
+                console.log(`${this.email} logged in`);
+                return true;
+            }
+
+            console.log("Invalid password");
+            return false;
+        }
+
+        getInfo() {
+            return {
+                name: this.name,
+                email: this.email
+            };
+        }
+    }
+
+    const user = new User(
+        "Ahmed",
+        "ahmed@example.com",
+        "123456"
+    );
+
+    user.login("123456");
+
+    console.log(user.getInfo());
+
+Concepts used:
+
+    class              -> User
+    constructor        -> initializes the user
+    properties         -> name, email
+    private property   -> #password
+    method             -> login()
+    method             -> getInfo()
+    encapsulation      -> password is private
+    object/instance    -> user
+
+
+13. OOP CONCEPTS YOU SHOULD KNOW FOR NODE.JS
+--------------------------------------------
+
++---------------------+----------------------------------------------+
+| Concept             | What to understand                           |
++---------------------+----------------------------------------------+
+| Object              | Data + behavior                              |
+| Class               | Blueprint for objects                        |
+| Constructor         | Initializes objects                          |
+| this                | Current object                               |
+| Methods             | Object behavior                              |
+| Encapsulation       | Protect internal state                       |
+| #private            | Private class fields                         |
+| extends             | Inheritance                                  |
+| super               | Access parent class                          |
+| Polymorphism        | Same method, different behavior              |
+| static              | Belongs to the class                         |
+| Getter/Setter       | Controlled property access                   |
++---------------------+----------------------------------------------+
+
+
+14. WHAT IS MOST IMPORTANT FOR NODE.JS?
+---------------------------------------
+
+You will commonly encounter OOP when working with:
+
+    Services
+    Controllers
+    Repositories
+    Models
+    Database clients
+    API clients
+    Error classes
+    Authentication
+    Business logic
+
+A typical backend architecture might look like:
+
+    UserController
+           |
+           v
+      UserService
+           |
+           v
+     UserRepository
+           |
+           v
+        Database
+
+Each layer can be represented by a class.
+
+Example:
+
+    class UserService {
+        constructor(userRepository) {
+            this.userRepository = userRepository;
+        }
+
+        async getUser(id) {
+            return this.userRepository.findById(id);
+        }
+    }
+
+This pattern combines:
+
+    Classes
+    Dependency Injection
+    Encapsulation
+    Separation of responsibilities
+
+These ideas are more important for Node.js backend work than simply
+memorizing OOP terminology.
+
+
+QUICK SUMMARY
+-------------
+
+The most important JavaScript OOP syntax to remember:
+
+    class User {
+        #password;
+
+        constructor(name, password) {
+            this.name = name;
+            this.#password = password;
+        }
+
+        login() {
+            console.log(`${this.name} logged in`);
+        }
+    }
+
+    class Admin extends User {
+        deleteUser() {
+            console.log("User deleted");
+        }
+    }
+
+    const admin = new Admin("Ahmed", "123456");
+
+    admin.login();
+    admin.deleteUser();
+
+Remember:
+
+    class       -> blueprint
+    new         -> creates an object
+    constructor -> initializes an object
+    this        -> current object
+    method      -> behavior
+    #field      -> private field
+    extends     -> inheritance
+    super       -> parent class
+    static      -> belongs to class
+    get/set     -> controlled property access

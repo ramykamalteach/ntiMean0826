@@ -1,0 +1,339 @@
+JAVASCRIPT OPTIONAL CHAINING
+============================
+
+Optional chaining (`?.`, `?.[]`, `?.()`) lets you safely access a property,
+array element, or function without getting an error when something before it
+is `null` or `undefined`.
+
+Think of it as:
+
+    "Try to access this. If the value is null or undefined, return undefined
+     instead of throwing an error."
+
+
+1. `?.` — OPTIONAL PROPERTY ACCESS
+----------------------------------
+
+Without optional chaining:
+
+    const user = {};
+
+    console.log(user.address.city);
+
+This throws an error because `user.address` is `undefined`.
+
+With optional chaining:
+
+    const user = {};
+
+    console.log(user.address?.city);
+
+Result:
+
+    undefined
+
+You can also chain multiple optional accesses:
+
+    const user = {};
+
+    console.log(user?.address?.city);
+
+Each `?.` safely checks the value before continuing.
+
+
+Example:
+
+    const user = {
+        name: "Ramy",
+        address: {
+            city: "Mansoura"
+        }
+    };
+
+    console.log(user?.address?.city);
+
+Output:
+
+    Mansoura
+
+If the nested property does not exist:
+
+    const user = {
+        name: "Ramy"
+    };
+
+    console.log(user?.address?.city);
+
+Output:
+
+    undefined
+
+
+2. `?.[]` — OPTIONAL BRACKET ACCESS
+-----------------------------------
+
+Use `?.[]` when the property name is dynamic or when accessing an array index.
+
+Dynamic property example:
+
+    const user = {
+        name: "Ramy"
+    };
+
+    const property = "name";
+
+    console.log(user?.[property]);
+
+Output:
+
+    Ramy
+
+If the object is null or undefined:
+
+    const user = null;
+    const property = "name";
+
+    console.log(user?.[property]);
+
+Output:
+
+    undefined
+
+
+Array example:
+
+    const users = ["Ali", "Ramy"];
+
+    console.log(users?.[0]);
+
+Output:
+
+    Ali
+
+If the array does not exist:
+
+    const users = null;
+
+    console.log(users?.[0]);
+
+Output:
+
+    undefined
+
+
+3. `?.()` — OPTIONAL FUNCTION CALL
+----------------------------------
+
+Use `?.()` when a function or method might not exist.
+
+Without optional chaining:
+
+    const user = {};
+
+    user.sayHello();
+
+This throws an error because `sayHello` does not exist.
+
+With optional chaining:
+
+    const user = {};
+
+    user.sayHello?.();
+
+Nothing happens, and no error is thrown.
+
+If the function exists:
+
+    const user = {
+        sayHello() {
+            console.log("Hello!");
+        }
+    };
+
+    user.sayHello?.();
+
+Output:
+
+    Hello!
+
+
+A COMMON REAL-WORLD EXAMPLE
+---------------------------
+
+Suppose an API returns:
+
+    const response = {
+        user: {
+            profile: {
+                name: "Ramy"
+            }
+        }
+    };
+
+You could write:
+
+    const name = response.user.profile.name;
+
+But if the API sometimes does not send `profile`, this can crash.
+
+For example:
+
+    const response = {
+        user: {}
+    };
+
+    const name = response.user.profile.name;
+
+Using optional chaining is safer:
+
+    const name = response.user?.profile?.name;
+
+Now the result is simply:
+
+    undefined
+
+
+OPTIONAL CHAINING + `??`
+------------------------
+
+Optional chaining gives you `undefined` when something is missing.
+You can combine it with the nullish coalescing operator (`??`) to provide
+a default value.
+
+Example:
+
+    const user = {};
+
+    const city = user.address?.city ?? "Unknown";
+
+    console.log(city);
+
+Output:
+
+    Unknown
+
+Another example:
+
+    const username = response.user?.profile?.name ?? "Guest";
+
+The logic is:
+
+    Try to get name
+          |
+          v
+    Does it exist?
+          |
+          v
+       undefined
+          |
+          v
+      ?? "Guest"
+          |
+          v
+        "Guest"
+
+
+OPTIONAL CHAINING VS. `&&`
+--------------------------
+
+Before optional chaining existed, developers often wrote:
+
+    const city = user && user.address && user.address.city;
+
+Today, the cleaner version is:
+
+    const city = user?.address?.city;
+
+Optional chaining is shorter and easier to read.
+
+
+IMPORTANT DETAIL
+----------------
+
+Optional chaining protects against `null` and `undefined`.
+
+It does NOT mean that JavaScript will verify that a value is the correct type.
+
+For example:
+
+    const user = {
+        address: 123
+    };
+
+    console.log(user.address?.city);
+
+This produces:
+
+    undefined
+
+because `123?.city` is allowed.
+
+Also, optional chaining does not prevent every possible error.
+
+For example:
+
+    const user = {
+        sayHello: "hello"
+    };
+
+    user.sayHello?.();
+
+This still throws an error because `sayHello` exists, but it is not a function.
+
+
+QUICK REFERENCE
+---------------
+
+    Syntax              Meaning
+    ----------------------------------------------------------
+    obj?.property       Safely access a property
+    obj?.[key]          Safely access a dynamic property/key
+    obj?.method?.()     Safely call a method if it exists
+
+
+EASY WAY TO REMEMBER IT
+-----------------------
+
+Think of `?.` as:
+
+    "Continue only if the value exists."
+
+For example:
+
+    user?.profile?.name
+
+is approximately like:
+
+    user == null
+        ? undefined
+        : user.profile == null
+            ? undefined
+            : user.profile.name
+
+
+WHEN OPTIONAL CHAINING IS USEFUL
+--------------------------------
+
+Optional chaining is especially useful when working with:
+
+    - API responses
+    - Nested objects
+    - DOM elements
+    - Optional configuration values
+    - Optional functions or callbacks
+    - Arrays and dynamically named properties
+
+
+SUMMARY
+-------
+
+`?.`   -> Safely access a property
+`?.[]` -> Safely access a dynamic property or array element
+`?.()` -> Safely call a function or method
+
+Combined with `??`, you can also provide a default value:
+
+    const city = user?.address?.city ?? "Unknown";
+
+This combination is one of the most useful patterns when working with
+nested or optional JavaScript data.
