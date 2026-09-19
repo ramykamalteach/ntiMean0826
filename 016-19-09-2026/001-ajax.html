@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <img src="" width="333" id="countryFlag" alt="">
+    <h1 id="countryName"></h1>
+    <h3 id="population"></h3>
+    <h3 id="currency"></h3>
+
+    <script>
+
+        /* fetch(
+            'https://countries.dev/cities?country=eg&limit=10')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { 
+                city = document.createElement("h1");
+                city.innerHTML = data[3].name;
+                document.querySelector("body").appendChild(city);
+
+                for(i = 0; i < data.length; i++) {
+                    city = document.createElement("li");
+                    city.innerHTML = data[i].name;
+                    document.querySelector("body").appendChild(city);
+                }
+             }); */
+
+
+
+        /* fetch(
+            'https://countries.dev/alpha/eg')
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                var flag = document.createElement("img");
+                flag.setAttribute("src", data.flags.png);
+                document.querySelector("body").appendChild(flag);
+
+                //document.querySelector("#countryFlag").setAttribute("src", data.flags.png ); 
+             }); */
+
+        fetch(
+            'https://countries.dev/alpha/eg')
+            .then(function (response) { return response.json(); })
+            .then(
+                function (data) {
+                    console.log(data);
+                    document.querySelector("#countryFlag").setAttribute("src", data.flags.svg);
+                    document.querySelector("#countryName").innerHTML = data.name;
+                    document.querySelector("#population").innerHTML = "Population: " + data.population;
+                    document.querySelector("#currency").innerHTML = "Currency: " + data.currencies[0].name;
+                });
+
+
+    </script>
+</body>
+
+</html>

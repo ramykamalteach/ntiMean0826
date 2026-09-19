@@ -1,0 +1,1069 @@
+ASYNCHRONOUS JAVASCRIPT, PROMISES & EVENT LOOP
+================================================
+
+A practical introduction for Node.js backend applications
+
+
+1. WHAT IS ASYNCHRONOUS JAVASCRIPT?
+-----------------------------------
+
+JavaScript normally executes code synchronously, meaning one statement runs
+after another:
+
+    console.log("1");
+    console.log("2");
+    console.log("3");
+
+Output:
+
+    1
+    2
+    3
+
+But backend applications frequently perform operations that take time:
+
+- Reading files
+- Querying a database
+- Calling another API
+- Waiting for network requests
+- Reading from Redis
+- Waiting for timers
+
+If Node.js waited synchronously for every operation, your server would become
+slow.
+
+Instead, Node.js uses asynchronous operations.
+
+Example:
+
+    console.log("Start");
+
+    setTimeout(() => {
+        console.log("Finished after 2 seconds");
+    }, 2000);
+
+    console.log("End");
+
+Output:
+
+    Start
+    End
+    Finished after 2 seconds
+
+Notice that "End" appears before "Finished after 2 seconds".
+
+That's asynchronous JavaScript.
+
+
+2. WHY IS ASYNCHRONOUS JAVASCRIPT IMPORTANT IN NODE.JS?
+------------------------------------------------------
+
+Imagine your Node.js server receives a request:
+
+    GET /users/123
+
+The server needs to query a database.
+
+The database might take 50ms to respond.
+
+Instead of doing:
+
+    Request
+       |
+       v
+    Wait 50ms
+       |
+       v
+    Response
+
+Node.js can effectively handle multiple operations while waiting:
+
+    Request A -> Database
+    Request B -> Database
+    Request C -> Database
+    Request D -> Database
+
+While waiting for database/network operations to complete, Node.js can work
+on other requests.
+
+This is one of the reasons Node.js works particularly well for I/O-heavy
+backend applications.
+
+
+3. SYNCHRONOUS VS ASYNCHRONOUS
+-----------------------------
+
+Synchronous:
+
+    const result = doSomething();
+    function doSomething(){
+        console.log("hi");
+        return "now";
+    }
+    console.log(result);
+
+    console.log("Next");
+
+The next line waits for doSomething() to finish.
+
+Asynchronous:
+
+    function doSomethingAsync(callback) {
+
+        setTimeout(() => {
+            callback("Operation finished");
+        }, 2000);
+
+    }
+
+    doSomethingAsync((result) => {
+        console.log(result);
+    });
+
+console.log("Next");
+
+Node.js can continue executing "Next" while the asynchronous operation is
+running.
+
+
+4. CALLBACKS
+------------
+
+One of the oldest ways to handle asynchronous operations in JavaScript is a
+callback.
+
+A callback is simply a function that is executed later.
+
+    setTimeout(() => {
+        console.log("Operation finished");
+    }, 1000);
+
+The function:
+
+    () => {
+        console.log("Operation finished");
+    }
+
+is the callback.
+
+Node.js APIs have historically used callbacks.
+
+Example:
+
+    const fs = require("fs");
+
+    fs.readFile("users.json", "utf8", (error, data) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        console.log(data);
+    });
+
+    console.log("Reading file...");
+
+fs.readFile() doesn't block the rest of your JavaScript code while the file
+is being read.
+
+
+5. THE CALLBACK PROBLEM
+-----------------------
+
+When you have many asynchronous operations, callbacks can become difficult
+to maintain.
+
+Example:
+
+    getUser(userId, (err, user) => {
+        if (err) return handleError(err);
+
+        getOrders(user.id, (err, orders) => {
+            if (err) return handleError(err);
+
+            getPayments(orders, (err, payments) => {
+                if (err) return handleError(err);
+
+                console.log(payments);
+            });
+        });
+    });
+
+This can become deeply nested.
+
+This is sometimes called:
+
+    Callback Hell
+
+Promises were introduced to make this easier to manage.
+
+
+6. WHAT IS A PROMISE?
+--------------------
+
+A Promise represents the eventual result of an asynchronous operation.
+
+Think of it as:
+
+    "I don't have the result right now, but I promise I'll give you
+     the result later."
+
+A Promise has three states:
+
+    Pending
+       |
+       +----------------+
+       |                |
+       v                v
+    Fulfilled        Rejected
+
+Pending:
+    The operation hasn't finished.
+
+Fulfilled:
+    The operation succeeded.
+
+Rejected:
+    The operation failed.
+
+
+7. CREATING A PROMISE
+---------------------
+
+    const promise = new Promise((resolve, reject) => {
+
+        setTimeout(() => {
+            resolve("Data loaded");
+        }, 1000);
+
+    });
+
+After one second:
+
+    resolve("Data loaded");
+
+changes the Promise from Pending to Fulfilled.
+
+
+8. .then()
+----------
+
+We can get the result using .then():
+
+    const promise = new Promise((resolve, reject) => {
+
+        setTimeout(() => {
+            resolve("Data loaded");
+        }, 1000);
+
+    });
+
+    promise.then((result) => {
+        console.log(result);
+    });
+
+Output after one second:
+
+    Data loaded
+
+
+9. .catch()
+-----------
+
+If something goes wrong, we can reject the Promise.
+
+    const promise = new Promise((resolve, reject) => {
+
+        setTimeout(() => {
+            reject(new Error("Something went wrong"));
+        }, 1000);
+
+    });
+
+    promise
+        .then((result) => {
+            console.log(result);
+        })
+        .catch((error) => {
+            console.error(error.message);
+        });
+
+Output:
+
+    Something went wrong
+
+
+10. PROMISE CHAINING
+--------------------
+
+One of the biggest advantages of Promises is chaining.
+
+Instead of:
+
+    getUser(userId, (err, user) => {
+        getOrders(user.id, (err, orders) => {
+            getPayments(orders, (err, payments) => {
+                // ...
+            });
+        });
+    });
+
+You can write:
+
+    getUser(userId)
+        .then(user => getOrders(user.id))
+        .then(orders => getPayments(orders))
+        .then(payments => {
+            console.log(payments);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+This is much easier to read.
+
+
+11. ASYNC / AWAIT
+----------------
+
+Modern Node.js applications usually use:
+
+    async
+
+and:
+
+    await
+
+instead of manually chaining .then().
+
+Example:
+
+    async function getUserData() {
+
+        const user = await getUser(userId);
+
+        const orders = await getOrders(user.id);
+
+        const payments = await getPayments(orders);
+
+        return payments;
+    }
+
+This looks almost like synchronous code, but the operations are still
+asynchronous.
+
+
+12. IMPORTANT: AWAIT DOES NOT BLOCK THE NODE.JS SERVER
+------------------------------------------------------
+
+This is a very important concept.
+
+Consider:
+
+    async function getUser() {
+
+        const user = await db.users.findById(123);
+
+        return user;
+    }
+
+await pauses THIS ASYNC FUNCTION, but it does not freeze the entire
+Node.js process.
+
+While the database is processing the query, Node.js can work on other
+requests.
+
+Conceptually:
+
+    Request A
+       |
+       v
+    await database query
+       |
+       +-----------------------> Request B
+       |
+       +-----------------------> Request C
+       |
+       v
+    Database result
+       |
+       v
+    Continue Request A
+
+This distinction is extremely important for Node.js backend development.
+
+
+13. ERROR HANDLING WITH ASYNC/AWAIT
+-----------------------------------
+
+Use try/catch:
+
+    async function getUserData() {
+
+        try {
+
+            const user = await getUser(userId);
+
+            return user;
+
+        } catch (error) {
+
+            console.error(error);
+
+            throw error;
+        }
+    }
+
+Express example:
+
+    app.get("/users/:id", async (req, res) => {
+
+        try {
+
+            const user = await User.findById(req.params.id);
+
+            res.json(user);
+
+        } catch (error) {
+
+            res.status(500).json({
+                message: "Something went wrong"
+            });
+
+        }
+
+    });
+
+
+14. SEQUENTIAL VS PARALLEL ASYNC OPERATIONS
+-------------------------------------------
+
+This is a very important backend optimization.
+
+Suppose you need two independent pieces of data:
+
+    const user = await getUser();
+    const products = await getProducts();
+
+This executes them sequentially:
+
+    getUser
+       |
+       v
+    wait
+       |
+       v
+    getProducts
+       |
+       v
+    wait
+
+If they don't depend on each other, you can run them concurrently:
+
+    const [user, products] = await Promise.all([
+        getUser(),
+        getProducts()
+    ]);
+
+Now:
+
+    getUser      ----------------+
+                                  |
+                                  +--> Both complete
+                                  |
+    getProducts  ----------------+
+
+This can significantly reduce response time.
+
+
+15. PROMISE.ALL()
+-----------------
+
+Example:
+
+    const [user, orders, notifications] = await Promise.all([
+        getUser(),
+        getOrders(),
+        getNotifications()
+    ]);
+
+All three operations start without waiting for one another.
+
+However, Promise.all() rejects if ANY Promise rejects.
+
+Example:
+
+    try {
+
+        const results = await Promise.all([
+            operation1(),
+            operation2(),
+            operation3()
+        ]);
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+
+16. WHAT IS THE EVENT LOOP?
+---------------------------
+
+The Event Loop is the mechanism that allows Node.js to perform asynchronous
+operations while using JavaScript on a single main thread.
+
+A simplified view:
+
+                 +----------------------+
+                 |    JavaScript       |
+                 |     Call Stack      |
+                 +----------+-----------+
+                            |
+                            v
+                     +-------------+
+                     |  Event Loop |
+                     +------+------+
+                            |
+                +-----------+-----------+
+                |                       |
+                v                       v
+        Async operations          Callbacks/
+        (I/O, timers, etc.)       continuations
+                                        |
+                                        v
+                                  Call Stack
+
+Node.js also relies on its runtime facilities and libuv to handle many
+asynchronous I/O operations.
+
+
+17. CALL STACK
+--------------
+
+The Call Stack keeps track of what JavaScript is currently executing.
+
+Example:
+
+    function first() {
+        second();
+    }
+
+    function second() {
+        console.log("Hello");
+    }
+
+    first();
+
+Conceptually:
+
+    first()
+      |
+      v
+    second()
+      |
+      v
+    console.log()
+
+The stack keeps track of these function calls.
+
+When a function finishes, it is removed from the stack.
+
+
+18. EVENT LOOP EXAMPLE
+----------------------
+
+Consider:
+
+    console.log("A");
+
+    setTimeout(() => {
+        console.log("B");
+    }, 0);
+
+    console.log("C");
+
+You might expect:
+
+    A
+    B
+    C
+
+But the output is:
+
+    A
+    C
+    B
+
+Why?
+
+Because setTimeout() doesn't mean:
+
+    "Execute this immediately."
+
+It means approximately:
+
+    "Make this callback eligible to run after at least this delay,
+     when the event loop gets to it."
+
+The flow is roughly:
+
+    console.log("A")
+           |
+           v
+    setTimeout(...)
+           |
+           v
+    console.log("C")
+           |
+           v
+    Call stack becomes empty
+           |
+           v
+    Event loop processes timer callback
+           |
+           v
+    console.log("B")
+
+
+19. A MORE INTERESTING EXAMPLE
+------------------------------
+
+    console.log("1");
+
+    setTimeout(() => {
+        console.log("2");
+    }, 0);
+
+    Promise.resolve().then(() => {
+        console.log("3");
+    });
+
+    console.log("4");
+
+Output:
+
+    1
+    4
+    3
+    2
+
+Why?
+
+The synchronous code runs first:
+
+    1
+    4
+
+Then the Promise callback runs as a microtask:
+
+    3
+
+Then the timer callback runs:
+
+    2
+
+So, simplified:
+
+    Synchronous code
+           |
+           v
+       Microtasks
+           |
+           v
+    Timer / other event-loop work
+
+
+20. MICROTASKS
+-------------
+
+Promise callbacks such as:
+
+    Promise.resolve().then(...)
+
+are handled as microtasks.
+
+async/await also interacts with Promise microtasks.
+
+Example:
+
+    console.log("A");
+
+    Promise.resolve().then(() => {
+        console.log("B");
+    });
+
+    console.log("C");
+
+Output:
+
+    A
+    C
+    B
+
+The Promise callback waits until the current synchronous JavaScript finishes.
+
+
+21. NODE.JS BACKEND EXAMPLE
+---------------------------
+
+Imagine an Express endpoint:
+
+    app.get("/dashboard", async (req, res) => {
+
+        const [user, orders, notifications] = await Promise.all([
+            User.findById(req.user.id),
+            Order.find({ userId: req.user.id }),
+            Notification.find({ userId: req.user.id })
+        ]);
+
+        res.json({
+            user,
+            orders,
+            notifications
+        });
+
+    });
+
+The important things happening are:
+
+1. HTTP request arrives.
+2. Node.js executes the route handler.
+3. Three database operations are started.
+4. await Promise.all() waits for their results.
+5. While the database operations are pending, Node.js can work on other
+   requests.
+6. Once all operations complete, the route continues.
+7. The response is sent.
+
+
+22. DON'T ACCIDENTALLY MAKE THINGS SEQUENTIAL
+---------------------------------------------
+
+Suppose you write:
+
+    const user = await getUser();
+
+    const orders = await getOrders();
+
+    const notifications = await getNotifications();
+
+If these operations are independent, you're unnecessarily waiting.
+
+Better:
+
+    const [user, orders, notifications] = await Promise.all([
+        getUser(),
+        getOrders(),
+        getNotifications()
+    ]);
+
+But don't use Promise.all() when there is a dependency.
+
+For example:
+
+    const user = await getUser();
+
+    const orders = await getOrders(user.id);
+
+Here, getOrders() needs user.id, so sequential execution is necessary.
+
+
+23. A COMMON NODE.JS MISTAKE: FOREACH + ASYNC
+---------------------------------------------
+
+Consider:
+
+    app.get("/users", async (req, res) => {
+
+        const users = await User.find();
+
+        users.forEach(async user => {
+            await sendEmail(user.email);
+        });
+
+        res.json({
+            message: "Emails sent"
+        });
+
+    });
+
+This is problematic.
+
+forEach() does not wait for the async callback.
+
+So the response may be sent before the emails finish.
+
+A better approach:
+
+    app.get("/users", async (req, res) => {
+
+        const users = await User.find();
+
+        await Promise.all(
+            users.map(user => sendEmail(user.email))
+        );
+
+        res.json({
+            message: "Emails sent"
+        });
+
+    });
+
+Now the handler waits for all email operations.
+
+
+24. ANOTHER COMMON MISTAKE
+--------------------------
+
+Avoid unnecessary await like this:
+
+    async function getUser() {
+        return await User.findById(123);
+    }
+
+Usually this is enough:
+
+    async function getUser() {
+        return User.findById(123);
+    }
+
+However, await can be useful when you need local error handling:
+
+    async function getUser() {
+
+        try {
+            return await User.findById(123);
+        } catch (error) {
+            console.error("Failed to get user:", error);
+            throw error;
+        }
+
+    }
+
+
+25. ASYNC JAVASCRIPT MENTAL MODEL
+---------------------------------
+
+For Node.js, remember this simplified model:
+
+    JavaScript code
+          |
+          v
+      Call Stack
+          |
+          v
+    Execute synchronous work
+          |
+          v
+    Start asynchronous operation
+          |
+          v
+    Node.js/libuv handles the async work
+          |
+          v
+    Operation completes
+          |
+          v
+    Callback / Promise continuation becomes eligible
+          |
+          v
+      Event Loop
+          |
+          v
+      Call Stack
+          |
+          v
+    Continue JavaScript execution
+
+
+26. THE MOST IMPORTANT THINGS TO REMEMBER
+-----------------------------------------
+
+1. JavaScript is synchronous by default.
+
+       console.log("A");
+       console.log("B");
+
+   Output:
+
+       A
+       B
+
+
+2. Node.js provides asynchronous APIs.
+
+       setTimeout(...)
+       fs.readFile(...)
+       database.query(...)
+       fetch(...)
+
+
+3. Promises represent future results.
+
+       const result = someAsyncOperation();
+
+
+4. async/await makes Promise-based code easier to read.
+
+       const user = await getUser();
+
+
+5. await pauses the current async function, not the entire Node.js server.
+
+
+6. Promise.all() is useful for independent operations.
+
+       const [a, b] = await Promise.all([
+           operationA(),
+           operationB()
+       ]);
+
+
+7. The Event Loop coordinates asynchronous JavaScript execution.
+
+
+8. Promise callbacks are microtasks.
+
+       Promise.resolve().then(...)
+
+
+9. Don't assume setTimeout(fn, 0) runs immediately.
+
+   It means the callback becomes eligible after the timer threshold and when
+   the event loop can process it.
+
+
+10. Avoid blocking the event loop.
+
+    This is especially important for Node.js.
+
+    Bad:
+
+        while (true) {
+            // CPU-intensive/blocking work
+        }
+
+    If the JavaScript thread is busy doing CPU-heavy work, other requests
+    may have to wait.
+
+
+27. PRACTICAL NODE.JS EXAMPLE
+-----------------------------
+
+Putting everything together:
+
+    const express = require("express");
+
+    const app = express();
+
+    async function getUser(id) {
+        // Imagine this is a database call
+        return {
+            id,
+            name: "Ramy"
+        };
+    }
+
+    async function getOrders(userId) {
+        // Imagine this is another database call
+        return [
+            { id: 1, total: 100 },
+            { id: 2, total: 200 }
+        ];
+    }
+
+    app.get("/users/:id/dashboard", async (req, res) => {
+
+        try {
+
+            // This must happen first because orders need the user ID.
+            const user = await getUser(req.params.id);
+
+            // These operations are independent of each other.
+            const [orders, notifications] = await Promise.all([
+                getOrders(user.id),
+                getNotifications(user.id)
+            ]);
+
+            res.json({
+                user,
+                orders,
+                notifications
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
+    });
+
+    app.listen(3000, () => {
+        console.log("Server running on port 3000");
+    });
+
+
+28. A PATTERN TO REMEMBER
+-------------------------
+
+A very useful Node.js backend pattern is:
+
+    async function handler() {
+        try {
+            const first = await operation();
+
+            const [second, third] = await Promise.all([
+                operation2(),
+                operation3()
+            ]);
+
+            return {
+                first,
+                second,
+                third
+            };
+
+        } catch (error) {
+            // handle error
+        }
+    }
+
+This pattern appears constantly in real-world Node.js + Express +
+database/API applications.
+
+
+QUICK SUMMARY
+-------------
+
+ASYNC JAVASCRIPT
+    Lets Node.js start slow I/O operations without blocking the entire
+    JavaScript execution flow.
+
+PROMISE
+    Represents the eventual success or failure of an asynchronous operation.
+
+ASYNC/AWAIT
+    A cleaner way to work with Promises.
+
+PROMISE.ALL()
+    Runs independent asynchronous operations concurrently and waits for all
+    of them.
+
+EVENT LOOP
+    Coordinates when asynchronous callbacks and Promise continuations can
+    continue executing.
+
+CALL STACK
+    Tracks the JavaScript functions currently being executed.
+
+MICROTASK
+    A high-priority queue category used by Promise continuations.
+
+MOST IMPORTANT NODE.JS IDEA
+    Do not block the event loop, and use concurrency appropriately for
+    independent I/O operations.
