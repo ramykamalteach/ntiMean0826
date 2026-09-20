@@ -1,0 +1,169 @@
+Node.js: Blocking, Non-Blocking, and Promises
+====================================================
+
+1. Blocking and Non-Blocking in Node.js
+----------------------------------------
+
+In Node.js, "blocking" and "non-blocking" describe whether an
+operation stops JavaScript execution from continuing while it waits.
+
+A. Blocking
+-----------
+
+A blocking operation makes Node.js wait until the operation finishes.
+
+Example:
+
+const fs = require("fs");
+
+const data = fs.readFileSync("file.txt", "utf8");
+
+console.log(data);
+console.log("Next");
+
+Execution:
+
+Read file → WAIT → finish → print data → print "Next"
+
+If the file takes 5 seconds, Node.js cannot continue executing
+this code during those 5 seconds.
+
+B. Non-Blocking
+---------------
+
+A non-blocking operation starts the task and allows Node.js to
+continue while waiting for the result.
+
+Example:
+
+const fs = require("fs");
+
+fs.readFile("file.txt", "utf8", (err, data) => {
+    console.log(data);
+});
+
+console.log("Next");
+
+Possible output:
+
+Next
+file contents
+
+Execution:
+
+Start reading file
+       ↓
+Continue → print "Next"
+       ↓
+File finishes → callback runs → print data
+
+Why is this important?
+
+Node.js is designed around non-blocking I/O, which allows it to
+handle many requests efficiently.
+
+For example:
+
+Request 1 → waiting for database
+Request 2 → process immediately
+Request 3 → waiting for file
+Request 4 → process immediately
+
+Instead of:
+
+Request 1 → WAIT → finish
+Request 2 → WAIT → finish
+Request 3 → WAIT → finish
+
+Simple rule:
+
+Blocking     = wait before continuing.
+Non-blocking = start the operation and continue.
+
+
+2. Making Non-Blocking Operations with Promises
+------------------------------------------------
+
+In Node.js, you can use a Promise to handle an asynchronous
+operation without blocking the rest of your code.
+
+Example with fs.promises:
+
+const fs = require("fs").promises;
+
+fs.readFile("file.txt", "utf8")
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+console.log("Next");
+
+Possible output:
+
+Next
+file contents
+
+What happens?
+
+fs.readFile(...) starts the file-reading operation and returns
+a Promise.
+
+Node.js can continue executing:
+
+console.log("Next");
+
+When the file is ready, the .then() callback runs.
+
+Using async/await
+-----------------
+
+You can also write the same idea using async/await:
+
+const fs = require("fs").promises;
+
+async function readFile() {
+    const data = await fs.readFile("file.txt", "utf8");
+    console.log(data);
+}
+
+readFile();
+
+console.log("Next");
+
+Possible output:
+
+Next
+file contents
+
+Although await looks like it is "waiting", it does not block
+Node.js's event loop. It pauses only the execution of that
+particular async function while other work can continue.
+
+Important distinction
+---------------------
+
+readFileSync()        → Blocking
+fs.promises.readFile  → Non-blocking
+
+So, in Node.js, Promises combined with asynchronous APIs are
+a common way to perform non-blocking I/O.
+
+
+Quick Summary
+-------------
+
+Blocking:
+    Operation finishes first → code continues.
+
+Non-blocking:
+    Operation starts → code continues → result is handled later.
+
+Promise:
+    Represents the future result of an asynchronous operation.
+
+async/await:
+    A cleaner way to work with Promises without blocking the
+    Node.js event loop.
