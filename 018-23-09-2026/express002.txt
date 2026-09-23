@@ -237,3 +237,23 @@ else{ %>
 
 <hr>
 
+--------------------------------------------------------
+
+
+
+Task & homework:
+    task :
+        1- use DASHMIN template to create staff CRUD system (named : Staff) views with EJS and Node.js :
+            * home page :
+                - show all staff members with their photo, name, job, and address
+                - each staff member should have a link to view details, edit, and delete
+            - add staff page :
+                - form to add a new staff member with fields for name, job, address, and photo upload
+            - edit staff page :
+                - form to edit an existing staff member's details with pre-filled values
+            - delete staff page :
+                - confirmation page to delete a staff member with their details displayed
+
+        2- dashboard page (named : Dashboard) :
+            - show total number of staff members
+            - show a list of recent staff members added
