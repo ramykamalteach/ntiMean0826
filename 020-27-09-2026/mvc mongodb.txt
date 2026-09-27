@@ -1,0 +1,302 @@
+
+
+CRUD with Mongo
+----------------
+in node-express project we can use : mongodb or mongoose to connect to Mongo database.
+
+The core difference between the mongodb package and mongoose comes down to abstraction level: mongodb is the official low-level native driver, while mongoose is a higher-level Object Data Modeling (ODM) library built directly on top of that driver.
+
+Core Comparison
+
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+
+| Feature               | mongodb (Native Driver)                            | mongoose (ODM)                                                |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+
+| Layer                  | Low-level direct interface                         | High-level abstraction built on mongodb                       |
+| Schema & Structure     | Schema-less (stores arbitrary JSON/BSON)           | Strict schema enforcement defined in application code         |
+| Validation             | Manual, or handled via MongoDB server-side rules   | Built-in application-level validation (types, required, etc.) |
+| Middleware & Hooks     | Not supported natively                             | Pre- and post-hooks (e.g., hash passwords pre('save'))        |
+| Relationships          | Manual lookups ($lookup in aggregation pipelines)  | Virtual fields and .populate() for referencing collections    |
+| Performance            | Faster, minimal memory footprint                   | Slight overhead due to document casting, hooks, and schemas   |
+| Query Returns          | Plain JavaScript objects                           | Mongoose Document instances (or raw objects via .lean())      |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+
+
+
+Which One Should You Choose?
+Choose mongoose if you are building typical CRUD APIs, enterprise backends, or applications where data needs strict consistency, business rules, lifecycle hooks, and type validation before reaching the database.
+
+Choose mongodb if you need maximum throughput, are writing high-frequency data pipelines (like logging or IoT ingest), prefer a purely dynamic data structure, or want to avoid the extra memory overhead of hydrated Mongoose documents.
+
+
+1- use mogodb   : raw performance, flexibility, or quick one-off scripts
+2- use mongoose : structure, validation, and cleaner code
+
+----------------------------------------------------------
+
+1- CRUD with mongodb
+-----------------
+
+install mongodb
+    > npm i mongodb
+
+-------------------------
+in .env add
+    MONGODB_CONNECTION='mongodb://localhost:27017/factory'
+
+-------------------------
+connection to mongodb in mongodbConnection.js
+    const { MongoClient, ObjectId } = require('mongodb');
+
+    const mongoConnection = process.env.MONGODB_CONNECTION;
+
+    module.exports = {
+    MongoClient,
+    ObjectId,
+    mongoConnection,
+    };
+
+------------------------------
+productModel.js code :
+---------------------
+
+const { MongoClient, ObjectId, mongoConnection } = require('./mongodbConnection');
+
+async function index() {
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+    const products = await db.collection("products").find().toArray();
+    client.close();
+    return products;
+}
+
+async function show(id) {
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+    const products = await db.collection("products").find({ _id: new ObjectId(String(id))}).toArray();
+    client.close();
+    return products;
+}
+
+async function store(createFormData) {
+    let doc = {};
+    doc.productName = createFormData.productName;
+    doc.weight = createFormData.weight;
+    doc.photo = createFormData.photo;
+
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+
+    await db.collection("products").insertOne(doc, function(err, res){
+        if(err) throw err;
+        client.close();
+        return {"operation": "success"};
+    });
+}
+
+async function updateForm(id) {
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+    const products = await db.collection("products").find({ _id: new ObjectId(String(id))}).toArray();
+    client.close();
+    return products;
+}
+
+async function update(updateFormData) {
+    const id = updateFormData.id;
+    const productName = updateFormData.productName;
+    const weight = updateFormData.weight;
+    const photo = updateFormData.photo;
+
+    if(photo != "") {
+        var updateSQL = { "productName": productName, "weight": weight, "photo": photo };
+    }
+    else {
+        var updateSQL = { "productName": productName, "weight": weight };
+    }
+
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+
+    await db.collection("products").updateOne(
+        { _id: new ObjectId(String(id)) },
+        { $set : updateSQL },
+        function(err, res){
+            if(err) throw err;
+            client.close();
+            return {"operation": "success"};
+        }
+    );
+}
+
+async function destroy(id) {
+    const client = await MongoClient.connect(mongoConnection);
+    const db = client.db();
+
+    await db.collection("products").deleteOne(
+        { _id: new ObjectId(String(id)) },
+        function(err, res){
+            if(err) throw err;
+            client.close();
+            return {"operation": "success"};
+        }
+    );
+}
+
+module.exports = {
+    index,
+    show,
+    store,
+    updateForm,
+    update,
+    destroy
+}
+
+
+
+
+----------------------------------------
+in index.ejs, show.ejs, updateForm.ejs
+    change id field name to _id
+
+
+
+---------------------------------------------------------------------------
+
+2- CRUD with mongoose
+-----------------
+
+install mongoose
+    > npm i mongoose
+
+in .env add
+    MONGODB_CONNECTION='mongodb://localhost:27017/factory'
+
+
+------------------
+connection to mongoose in mongooseConnection.js
+
+    const mongoose = require("mongoose");
+    const Schema = mongoose.Schema;
+
+    const mongoConnection = process.env.MONGODB_CONNECTION;
+
+    module.exports = {
+    mongoose,
+    Schema,
+    mongoConnection,
+    };
+
+
+------------------------------
+productModel.js code :
+---------------------
+
+const { mongoose, Schema, mongoConnection } = require('./mongooseConnection');
+
+const productSchema = new Schema({
+    productName: String,
+    weight: Number,
+    photo: String,
+});
+
+const Product = mongoose.model("product", productSchema);
+
+mongoose.connect(mongoConnection)
+        .then(() => {
+            // seccess connecting
+        })
+        .catch((err) => {
+            // failed connecting
+        });
+
+async function index() {
+    const products = await Product.find();
+    return products;
+}
+
+async function show(id) {
+    let products = await Product.findById(id);
+    products = [products];
+    return products;
+}
+
+async function store(createFormData) {    
+    Product.create(createFormData)
+        .then(() => {
+            return;
+        })
+        .catch(
+            // error
+        );
+}
+
+async function updateForm(id) {
+    let products = await Product.findById(id);
+    products = [products];
+    return products;
+}
+
+async function update(updateFormData) {    
+    const photo = updateFormData.photo;
+
+    if(photo != "") {
+        //
+    }
+    else {
+        let oldDoc = await Product.findById(updateFormData.id);
+        updateFormData.photo = oldDoc.photo;
+    }
+
+    Product.updateOne(
+        { _id: updateFormData.id },
+        updateFormData
+    )
+    .then(() => {
+        return;
+    })
+    .catch((err) => {
+        //
+    });
+}
+
+async function destroy(id) {
+    Product.deleteOne({ _id: id })
+        .then(() => {
+            return;
+        })
+        .catch(
+            // error
+        );
+}
+
+module.exports = {
+    index,
+    show,
+    store,
+    updateForm,
+    update,
+    destroy
+}
+
+
+----------------------------------------
+in index.ejs, show.ejs, updateForm.ejs
+    change id field name to _id
+
+
+
+------------------------------------------------------------
+------------------------------------------------------------
+
+Lab-work :
+    working on movies db :
+        - build a website that :
+            - display in home page recent 20 movies order by year field
+            - in home page add search form by a part of movie title, or a name part of one in cast 
+
+home-work :
+   add to working on movies db :
+        - add to home page the buttons of : action, drama, comdey recent 20 movies
+        - add CRUD for movie (title, year, genres, cast, thumbnail)
+
+
+*** note movie db is on mongo

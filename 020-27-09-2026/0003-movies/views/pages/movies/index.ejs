@@ -1,0 +1,31 @@
+<%- include('../../partials/siteHeader', {pageTitle: "Movies Page"}) %>
+
+<section class="searchBar">
+    <form action="/moviesSearch" method="GET">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search movies..." name="partOfMovieTitle">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+    </form>
+</section>
+
+
+<section class="container">
+    <h1>Movies</h1>
+    <div class="row">
+        <% movies.forEach(function(movie) { %>
+            <div class="col-md-3">
+                <div class="card mb-3 shadow-sm">
+                    <img src="<%= movie.thumbnail %>" class="card-img-top" alt="<%= movie.title %>">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= movie.title %></h5>
+                        <h3 class="card-text"><%= movie.year %></h3>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</section>
+
+
+<%- include('../../partials/siteFooter') %>
