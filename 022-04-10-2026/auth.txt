@@ -1,0 +1,18 @@
+Authorization / Authentication
+
+Authentication : how to log into the system
+
+Authorization : Permissions of an user in the system
+
+----------------------------------------------------------------
+
+Homework :
+-----------
+
+Extend our system to get :
+- user can login if he is Active=true
+- admin can create users
+- admin can Activate/Deactivate users
+- Editor can : create/update/delete product, but Admin MUST accept these
+
+- add home page for the site " / " to display products that Admin accept them
