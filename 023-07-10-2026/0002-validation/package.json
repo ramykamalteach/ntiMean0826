@@ -1,0 +1,25 @@
+{
+  "name": "nti-express-zod-validation",
+  "version": "1.0.0",
+  "description": "Comprehensive teaching project demonstrating Node.js + Express backend data validation with Zod",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [
+    "express",
+    "zod",
+    "validation",
+    "ejs",
+    "teaching",
+    "backend"
+  ],
+  "author": "NTI Mean Stack Course",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^7.0.1",
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
+  }
+}

@@ -1,0 +1,205 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <header class="page-header">
+    <div class="category">Lesson 01 &bull; Core Fundamentals</div>
+    <h1 class="page-title">Basic User Registration</h1>
+    <p class="page-subtitle">
+      Demonstrating string length, email parsing, integer coercion, inline error rendering, and preserving old form values.
+    </p>
+  </header>
+
+  <div class="lesson-grid">
+    <!-- Main Form Section -->
+    <div class="glass-card">
+      <div class="form-toolbar">
+        <div class="toolbar-title">
+          <span>📝</span>
+          <span>HTML Form Submission</span>
+        </div>
+        <div class="demo-buttons">
+          <button type="button" class="btn-demo valid" onclick="fillBasicForm(true)">
+            <span>✔</span> Fill Valid Demo
+          </button>
+          <button type="button" class="btn-demo invalid" onclick="fillBasicForm(false)">
+            <span>✖</span> Fill Invalid Demo
+          </button>
+        </div>
+      </div>
+
+      <% if (Object.keys(errors).length > 0) { %>
+        <div class="callout callout-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Validation Error (HTTP 422):</strong>
+            <span>Zod found <%= Object.keys(errors).length %> invalid field(s). Please correct them below.</span>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/register" method="POST" novalidate>
+        <!-- Name Field -->
+        <div class="form-group <%= errors.name ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Full Name</span>
+            <span class="tag">z.string().min(3)</span>
+          </label>
+          <div class="input-container">
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              placeholder="e.g. John Doe"
+              value="<%= oldData.name || '' %>"
+            >
+          </div>
+          <% if (errors.name) { %>
+            <div class="form-error">
+              <span>✖</span>
+              <span><%= errors.name %></span>
+            </div>
+          <% } else { %>
+            <div class="form-hint">Minimum 3 characters required.</div>
+          <% } %>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group <%= errors.email ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Email Address</span>
+            <span class="tag">z.string().email()</span>
+          </label>
+          <div class="input-container">
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              placeholder="e.g. john@example.com"
+              value="<%= oldData.email || '' %>"
+            >
+          </div>
+          <% if (errors.email) { %>
+            <div class="form-error">
+              <span>✖</span>
+              <span><%= errors.email %></span>
+            </div>
+          <% } else { %>
+            <div class="form-hint">Must be a valid email format.</div>
+          <% } %>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group <%= errors.password ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Password</span>
+            <span class="tag">z.string().min(8)</span>
+          </label>
+          <div class="input-container">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder="At least 8 characters"
+            >
+          </div>
+          <% if (errors.password) { %>
+            <div class="form-error">
+              <span>✖</span>
+              <span><%= errors.password %></span>
+            </div>
+          <% } else { %>
+            <div class="form-hint">For security reasons, password is not preserved in oldData.</div>
+          <% } %>
+        </div>
+
+        <!-- Age Field -->
+        <div class="form-group <%= errors.age ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Age</span>
+            <span class="tag">z.coerce.number().int().min(18)</span>
+          </label>
+          <div class="input-container">
+            <input
+              type="number"
+              name="age"
+              class="form-control"
+              placeholder="e.g. 25"
+              value="<%= oldData.age || '' %>"
+            >
+          </div>
+          <% if (errors.age) { %>
+            <div class="form-error">
+              <span>✖</span>
+              <span><%= errors.age %></span>
+            </div>
+          <% } else { %>
+            <div class="form-hint">Must be 18 or older. Converted from string via <code>z.coerce</code>.</div>
+          <% } %>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <span>Create Account</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Teaching Sidebar / Knowledge Panel -->
+    <div class="teaching-sidebar">
+      <!-- Concept 1: safeParse() -->
+      <div class="concept-box">
+        <h3><span>💡</span> Why safeParse()?</h3>
+        <p>
+          Unlike <code>schema.parse()</code> which throws an exception and halts Express execution,
+          <code>schema.safeParse()</code> returns an object:
+        </p>
+        <pre class="code-snippet">const result = userSchema.safeParse(req.body);
+
+if (!result.success) {
+  // result.error.issues contains failure details
+} else {
+  // result.data contains cleaned, coerced values
+}</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          This allows us to handle failures smoothly without wrapping our route in messy <code>try/catch</code> blocks.
+        </p>
+      </div>
+
+      <!-- Concept 2: Type Coercion -->
+      <div class="concept-box">
+        <h3><span>🔄</span> The Form Coercion Trap</h3>
+        <p>
+          HTML forms <strong>always</strong> send inputs as strings:
+        </p>
+        <pre class="code-snippet">&lt;input type="number" name="age"&gt;
+// Arrives in Express as:
+req.body.age === "25" // string!</pre>
+        <p>
+          If you used <code>z.number()</code>, validation would fail immediately.
+          Using <code>z.coerce.number()</code> instructs Zod to run <code>Number("25")</code> before validation!
+        </p>
+      </div>
+
+      <!-- Concept 3: Preserving oldData & HTTP 422 -->
+      <div class="concept-box">
+        <h3><span>🎯</span> User Experience & HTTP 422</h3>
+        <p>
+          When validation fails, we respond with:
+        </p>
+        <pre class="code-snippet">res.status(422).render("register", {
+  errors,
+  oldData: req.body
+});</pre>
+        <div class="callout callout-info" style="margin: 0;">
+          <span>ℹ️</span>
+          <div>
+            <strong>HTTP 422 (Unprocessable Entity)</strong> indicates that the server understands the syntax of the request entity, but the contained instructions are invalid.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

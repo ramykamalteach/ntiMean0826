@@ -1,0 +1,195 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <header class="page-header">
+    <div class="category">Reference &bull; Full Syllabus</div>
+    <h1 class="page-title">Zod Validation Cheat Sheet</h1>
+    <p class="page-subtitle">
+      A comprehensive, quick-reference guide covering all Zod types, modifiers, error formats,
+      and Express.js integration patterns for developers.
+    </p>
+  </header>
+
+  <div class="cheatsheet-grid">
+    <!-- 1. Strings -->
+    <div class="cheat-card">
+      <h3><span>🔤</span> 1. Strings (z.string())</h3>
+      <p>Validates text data and enforces length, formatting, and patterns.</p>
+      <pre class="code-snippet">z.string()
+z.string().min(3, "At least 3 characters")
+z.string().max(50, "Max 50 characters")
+z.string().length(10)
+z.string().email("Invalid email")
+z.string().url("Invalid URL")
+z.string().uuid()
+z.string().regex(/^[A-Z]+$/, "Uppercase only")
+z.string().trim()
+z.string().toLowerCase()
+z.string().toUpperCase()</pre>
+    </div>
+
+    <!-- 2. Numbers -->
+    <div class="cheat-card">
+      <h3><span>🔢</span> 2. Numbers (z.number())</h3>
+      <p>Numeric constraints, boundaries, and integer enforcement.</p>
+      <pre class="code-snippet">z.number().min(18)
+z.number().max(100)
+z.number().gt(0)     // greater than 0
+z.number().gte(18)   // greater than or equal
+z.number().lt(100)   // less than
+z.number().lte(100)  // less than or equal
+z.number().int("Must be whole number")
+z.number().positive()
+z.number().nonnegative()
+z.number().finite()</pre>
+    </div>
+
+    <!-- 3. HTML Form Coercion -->
+    <div class="cheat-card" style="border-color: rgba(99, 102, 241, 0.4);">
+      <h3><span>🔄</span> 3. HTML Form Numbers</h3>
+      <p>HTML forms send numbers as strings: <code>req.body.age === "25"</code>. Use coercion!</p>
+      <pre class="code-snippet">// Coerces string "25" -> number 25 before checks:
+age: z.coerce
+  .number()
+  .int("Must be whole number")
+  .min(18, "Must be at least 18")
+
+// Boolean coercion for checkboxes:
+isActive: z.coerce.boolean()</pre>
+    </div>
+
+    <!-- 4. Dates -->
+    <div class="cheat-card">
+      <h3><span>📅</span> 4. Dates (z.date() & Coercion)</h3>
+      <p>Validates Date objects and converts date input strings.</p>
+      <pre class="code-snippet">// Direct date object:
+z.date().min(new Date("2026-01-01"))
+
+// Form input coercion ("2000-05-12" -> Date):
+birthDate: z.coerce
+  .date()
+  .refine(d => d < new Date(), "Must be in past")</pre>
+    </div>
+
+    <!-- 5. Optional & Nullable -->
+    <div class="cheat-card">
+      <h3><span>❓</span> 5. Optional / Nullable</h3>
+      <p>Allowing missing or explicitly null fields.</p>
+      <pre class="code-snippet">// Allows undefined:
+z.string().optional()
+
+// Allows null:
+z.string().nullable()
+
+// Allows both undefined and null:
+z.string().nullish()
+
+// Optional URL handling blank form input:
+z.string().url().optional().or(z.literal(""))</pre>
+    </div>
+
+    <!-- 6. Enums -->
+    <div class="cheat-card">
+      <h3><span>📋</span> 6. Enums (z.enum())</h3>
+      <p>Restricts input to an explicit list of allowed string values.</p>
+      <pre class="code-snippet">role: z.enum([
+  "admin",
+  "editor",
+  "user"
+], {
+  errorMap: () => ({ message: "Invalid role selected" })
+})</pre>
+    </div>
+
+    <!-- 7. Arrays -->
+    <div class="cheat-card">
+      <h3><span>📚</span> 7. Arrays (z.array())</h3>
+      <p>Validates lists of elements with min and max item counts.</p>
+      <pre class="code-snippet">tags: z.array(z.string())
+scores: z.array(z.number())
+
+// Constrained length:
+skills: z.array(z.string())
+  .min(1, "Select at least 1 skill")
+  .max(5, "Maximum 5 skills allowed")</pre>
+    </div>
+
+    <!-- 8. Objects & Nested Objects -->
+    <div class="cheat-card">
+      <h3><span>🏗️</span> 8. Objects & Nested Objects</h3>
+      <p>Composing complex data structures cleanly.</p>
+      <pre class="code-snippet">const userSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  address: z.object({
+    city: z.string().min(2),
+    country: z.string()
+  })
+});</pre>
+    </div>
+
+    <!-- 9. Cross-Field Refine -->
+    <div class="cheat-card" style="border-color: rgba(16, 185, 129, 0.4);">
+      <h3><span>🔗</span> 9. Cross-Field Validation</h3>
+      <p>Compare two fields using <code>.refine()</code> on the parent object.</p>
+      <pre class="code-snippet">const registerSchema = z.object({
+  password: z.string().min(8),
+  confirmPassword: z.string()
+}).refine(
+  data => data.password === data.confirmPassword,
+  {
+    message: "Passwords do not match",
+    path: ["confirmPassword"] // error attaches here!
+  }
+);</pre>
+    </div>
+
+    <!-- 10. Transforms -->
+    <div class="cheat-card">
+      <h3><span>✨</span> 10. Transforms (.transform)</h3>
+      <p>Modify or normalize data during the validation process.</p>
+      <pre class="code-snippet">username: z.string()
+  .trim()
+  .toLowerCase()
+
+age: z.string()
+  .transform(val => Number(val))</pre>
+    </div>
+
+    <!-- 11. safeParse() -->
+    <div class="cheat-card" style="border-color: rgba(245, 158, 11, 0.4);">
+      <h3><span>🛡️</span> 11. safeParse() Execution</h3>
+      <p>Non-throwing validation method returning a success flag.</p>
+      <pre class="code-snippet">const result = schema.safeParse(req.body);
+
+if (!result.success) {
+  // result.error.issues contains failure details
+  return res.status(422).render("form", {
+    errors: result.error.issues,
+    oldData: req.body
+  });
+}
+
+// result.data contains cleaned, validated values!
+const cleanData = result.data;</pre>
+    </div>
+
+    <!-- 12. Topic Priority Checklist -->
+    <div class="cheat-card" style="border-color: rgba(236, 72, 153, 0.4);">
+      <h3><span>🎯</span> 12. 3-Hour Course Priority</h3>
+      <p>Core syllabus topics every student must master:</p>
+      <ul style="list-style: none; padding-left: 0; font-size: 0.85rem; line-height: 1.8;">
+        <li>✔ <code>z.object(), z.string(), z.number()</code></li>
+        <li>✔ <code>z.coerce.number()</code> for HTML forms</li>
+        <li>✔ <code>.min(), .max(), .email(), .int()</code></li>
+        <li>✔ <code>z.enum(), z.array(), z.coerce.date()</code></li>
+        <li>✔ <code>.optional(), .nullable()</code></li>
+        <li>✔ <code>.refine()</code> cross-field passwords</li>
+        <li>✔ <code>safeParse()</code> &amp; HTTP 422</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

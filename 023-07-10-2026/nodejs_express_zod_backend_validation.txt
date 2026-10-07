@@ -1,0 +1,621 @@
+NODE.JS + EXPRESS
+Backend Data Validation with Zod
+================================
+
+A practical example using JavaScript, Express, Zod, and EJS.
+
+The example demonstrates how to:
+
+- Validate backend form data with Zod
+- Use Zod with Express
+- Return validation error messages to an EJS view
+- Preserve the user's submitted data
+- Display field-specific validation errors
+- Understand the complete backend validation flow
+
+
+1. INSTALL PACKAGES
+===================
+
+Run:
+
+npm install express zod ejs
+
+
+2. PROJECT STRUCTURE
+====================
+
+project/
+├── app.js
+├── schemas/
+│   └── userSchema.js
+├── views/
+│   └── register.ejs
+└── package.json
+
+
+3. CREATE THE ZOD SCHEMA
+========================
+
+File:
+
+schemas/userSchema.js
+
+Code:
+
+const { z } = require("zod");
+
+const userSchema = z.object({
+    name: z
+        .string()
+        .min(3, "Name must be at least 3 characters"),
+
+    email: z
+        .string()
+        .email("Please enter a valid email address"),
+
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters"),
+
+    age: z
+        .coerce
+        .number()
+        .int("Age must be a whole number")
+        .min(18, "You must be at least 18 years old")
+});
+
+module.exports = userSchema;
+
+
+IMPORTANT:
+----------
+
+HTML form values arrive at Express as strings.
+
+For example:
+
+<input type="number" name="age">
+
+will normally arrive as:
+
+req.body.age = "25"
+
+Therefore, using:
+
+z.coerce.number()
+
+allows Zod to convert the string "25" into the number 25 before
+performing numeric validation.
+
+
+4. CREATE THE EXPRESS APPLICATION
+==================================
+
+File:
+
+app.js
+
+Code:
+
+const express = require("express");
+const userSchema = require("./schemas/userSchema");
+
+const app = express();
+
+app.set("view engine", "ejs");
+
+app.use(express.urlencoded({ extended: true }));
+
+
+// Display registration form
+app.get("/register", (req, res) => {
+    res.render("register", {
+        errors: {},
+        oldData: {}
+    });
+});
+
+
+// Process registration
+app.post("/register", (req, res) => {
+
+    const result = userSchema.safeParse(req.body);
+
+    if (!result.success) {
+
+        const errors = {};
+
+        result.error.issues.forEach((issue) => {
+            const field = issue.path[0];
+
+            errors[field] = issue.message;
+        });
+
+        return res.status(422).render("register", {
+            errors,
+            oldData: req.body
+        });
+    }
+
+    // Data is valid
+    const user = result.data;
+
+    console.log("Valid user:", user);
+
+    res.send("Registration successful!");
+});
+
+
+app.listen(3000, () => {
+    console.log("Server running on http://localhost:3000");
+});
+
+
+5. UNDERSTANDING safeParse()
+============================
+
+The important line is:
+
+const result = userSchema.safeParse(req.body);
+
+safeParse() does not throw an exception when validation fails.
+
+Instead, it returns an object.
+
+When the data is valid:
+
+{
+    success: true,
+    data: ...
+}
+
+When the data is invalid:
+
+{
+    success: false,
+    error: ...
+}
+
+This makes safeParse() very convenient when we want to return
+validation errors to a web page.
+
+
+6. EXTRACTING ZOD VALIDATION ERRORS
+===================================
+
+When validation fails:
+
+if (!result.success) {
+
+    const errors = {};
+
+    result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+
+        errors[field] = issue.message;
+    });
+
+    ...
+}
+
+For example, if the user submits:
+
+Name: Ab
+Email: hello
+Password: 123
+Age: 15
+
+The errors object can become:
+
+{
+    name: "Name must be at least 3 characters",
+    email: "Please enter a valid email address",
+    password: "Password must be at least 8 characters",
+    age: "You must be at least 18 years old"
+}
+
+
+7. RENDERING THE EJS VIEW WITH ERRORS
+=====================================
+
+When validation fails:
+
+return res.status(422).render("register", {
+    errors,
+    oldData: req.body
+});
+
+Two objects are sent to the view:
+
+errors
+------
+Contains the validation error messages.
+
+oldData
+-------
+Contains the values submitted by the user.
+
+This allows the form to display the validation messages while
+also preserving the user's previously entered values.
+
+
+8. CREATE THE REGISTRATION VIEW
+===============================
+
+File:
+
+views/register.ejs
+
+Code:
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Create Account</h1>
+
+    <form action="/register" method="POST">
+
+        <div class="form-group">
+            <label>Name</label>
+
+            <input
+                type="text"
+                name="name"
+                value="<%= oldData.name || '' %>"
+            >
+
+            <% if (errors.name) { %>
+                <div class="error">
+                    <%= errors.name %>
+                </div>
+            <% } %>
+        </div>
+
+
+        <div class="form-group">
+            <label>Email</label>
+
+            <input
+                type="text"
+                name="email"
+                value="<%= oldData.email || '' %>"
+            >
+
+            <% if (errors.email) { %>
+                <div class="error">
+                    <%= errors.email %>
+                </div>
+            <% } %>
+        </div>
+
+
+        <div class="form-group">
+            <label>Password</label>
+
+            <input
+                type="password"
+                name="password"
+            >
+
+            <% if (errors.password) { %>
+                <div class="error">
+                    <%= errors.password %>
+                </div>
+            <% } %>
+        </div>
+
+
+        <div class="form-group">
+            <label>Age</label>
+
+            <input
+                type="number"
+                name="age"
+                value="<%= oldData.age || '' %>"
+            >
+
+            <% if (errors.age) { %>
+                <div class="error">
+                    <%= errors.age %>
+                </div>
+            <% } %>
+        </div>
+
+
+        <button type="submit">
+            Register
+        </button>
+
+    </form>
+
+</body>
+
+</html>
+
+
+9. EXAMPLE OF INVALID DATA
+===========================
+
+Suppose the user submits:
+
+Name:
+Ab
+
+Email:
+hello
+
+Password:
+123
+
+Age:
+15
+
+
+Zod validates the submitted data and produces errors such as:
+
+Name must be at least 3 characters
+
+Please enter a valid email address
+
+Password must be at least 8 characters
+
+You must be at least 18 years old
+
+
+The Express application converts these errors into:
+
+{
+    name: "Name must be at least 3 characters",
+    email: "Please enter a valid email address",
+    password: "Password must be at least 8 characters",
+    age: "You must be at least 18 years old"
+}
+
+
+Then Express sends them back to the EJS view:
+
+res.status(422).render("register", {
+    errors,
+    oldData: req.body
+});
+
+
+10. COMPLETE VALIDATION FLOW
+============================
+
+HTML Form
+    |
+    v
+POST /register
+    |
+    v
+req.body
+    |
+    v
+Zod Schema
+    |
+    v
+safeParse()
+    |
+    v
++----------------+
+| Data valid?    |
++-------+--------+
+        |
+     +--+--+
+     |     |
+    YES    NO
+     |     |
+     v     v
+ Process  Extract
+ Data     Zod Errors
+     |     |
+     v     v
+ Save     Render EJS
+ to DB    with errors
+     |     |
+     v     v
+ Success  Display errors
+
+
+11. HTTP STATUS CODE
+====================
+
+For validation errors, this example uses:
+
+422 Unprocessable Entity
+
+Example:
+
+return res.status(422).render("register", {
+    errors,
+    oldData: req.body
+});
+
+This indicates that the server understood the request, but the
+submitted data failed validation.
+
+
+12. WHY BACKEND VALIDATION IS IMPORTANT
+=======================================
+
+Frontend validation is useful for user experience, but it should
+never be considered sufficient.
+
+A user can:
+
+- Disable JavaScript
+- Modify the HTML
+- Send requests directly using Postman
+- Send requests using curl
+- Create a custom HTTP request
+
+Therefore:
+
+Frontend validation
+    +
+Backend validation
+    =
+Better security and data integrity
+
+
+13. IMPORTANT TEACHING POINT
+============================
+
+The server must validate data before:
+
+- Saving it to the database
+- Creating an account
+- Processing a payment
+- Updating records
+- Calling another service
+- Performing sensitive operations
+
+
+14. KEY ZOD METHODS USED
+========================
+
+z.object()
+-----------
+
+Creates an object schema.
+
+Example:
+
+const userSchema = z.object({
+    name: z.string(),
+    email: z.string()
+});
+
+
+z.string()
+----------
+
+Validates that the value is a string.
+
+
+.min()
+------
+
+Checks minimum length or minimum numeric value.
+
+Example:
+
+z.string().min(3)
+
+z.number().min(18)
+
+
+.email()
+--------
+
+Validates an email address.
+
+Example:
+
+z.string().email()
+
+
+.coerce.number()
+----------------
+
+Converts compatible input values to numbers.
+
+Example:
+
+"25" -> 25
+
+
+.int()
+------
+
+Requires an integer.
+
+Example:
+
+25       -> valid
+25.5     -> invalid
+
+
+.safeParse()
+------------
+
+Validates the data without throwing an exception.
+
+It returns either:
+
+{
+    success: true,
+    data: ...
+}
+
+or:
+
+{
+    success: false,
+    error: ...
+}
+
+
+15. COURSE TAKEAWAY
+===================
+
+The main concept students should remember is:
+
+    Request
+       |
+       v
+    Validate
+       |
+       +---- Invalid ----> Return errors to View
+       |
+       +---- Valid ------> Continue processing
+                              |
+                              v
+                         Database / Service
+
+
+Backend validation is not just about displaying error messages.
+
+It is an important layer that protects the application from
+invalid and unexpected data.

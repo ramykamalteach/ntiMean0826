@@ -1,0 +1,133 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <header class="page-header">
+    <div class="category">Lesson 04 &bull; REST API & Middlewares</div>
+    <h1 class="page-title">Interactive API Validation Console</h1>
+    <p class="page-subtitle">
+      Test JSON payloads in real time. Observe how reusable Express middleware validates payloads,
+      returns HTTP 422 Unprocessable Entity, and structures JSON error responses for Angular / React clients.
+    </p>
+  </header>
+
+  <!-- Interactive Playground Grid -->
+  <div class="api-tester-grid">
+    <!-- Request Payload Builder -->
+    <div class="glass-card">
+      <div class="form-toolbar">
+        <div class="toolbar-title">
+          <span>📤</span>
+          <span>Request JSON Payload</span>
+        </div>
+        <div class="demo-buttons">
+          <button type="button" class="btn-demo valid" onclick="loadApiPreset(document.getElementById('apiSchemaSelect').value, true)">
+            <span>✔</span> Valid Preset
+          </button>
+          <button type="button" class="btn-demo invalid" onclick="loadApiPreset(document.getElementById('apiSchemaSelect').value, false)">
+            <span>✖</span> Invalid Preset
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <span>Target Zod Schema</span>
+          <span class="tag">req.body validator</span>
+        </label>
+        <select id="apiSchemaSelect" class="form-control" onchange="loadApiPreset(this.value, true)">
+          <option value="basic">Basic User Schema (userSchema)</option>
+          <option value="advanced">Advanced User Schema (advancedUserSchema)</option>
+          <option value="product">Product & Warehouse Schema (productSchema)</option>
+        </select>
+      </div>
+
+      <div class="editor-header">
+        <span>Request Body (application/json)</span>
+        <span>POST /api/inspect</span>
+      </div>
+      <textarea id="apiJsonInput" class="json-textarea" spellcheck="false">{
+  "name": "Mohamed Tarek",
+  "email": "mohamed.tarek@nti.sci.eg",
+  "password": "StrongPassword2026",
+  "age": 26
+}</textarea>
+
+      <button type="button" class="btn-primary" onclick="runApiTest()" style="margin-top: 1rem;">
+        <span>🚀 Test Validation on Server</span>
+      </button>
+    </div>
+
+    <!-- Response Inspector -->
+    <div class="glass-card">
+      <div class="form-toolbar">
+        <div class="toolbar-title">
+          <span>📥</span>
+          <span>Server Response</span>
+        </div>
+        <div id="apiStatusBadge">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Ready to test</span>
+        </div>
+      </div>
+
+      <div class="editor-header">
+        <span>Response Body (JSON)</span>
+        <span>Content-Type: application/json</span>
+      </div>
+      <div id="apiResponseOutput" class="response-box">// Click "Test Validation on Server" to execute...
+// The server will invoke Zod safeParse() and return the exact HTTP status code and response payload.</div>
+
+      <div style="margin-top: 1.25rem;">
+        <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; color: #cbd5e1;">Equivalent cURL Command for Postman / Terminal:</h4>
+        <pre class="code-snippet" style="font-size: 0.75rem; white-space: pre-wrap;" id="curlSnippet">curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ali","email":"bad-email","password":"123","age":15}'</pre>
+        <button class="btn-demo" onclick="copySnippet(document.getElementById('curlSnippet').innerText, this)">
+          📋 Copy cURL Command
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational Explanations for REST APIs -->
+  <div style="margin-top: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+    <div class="concept-box">
+      <h3><span>⚙️</span> Reusable Express Middleware Pattern</h3>
+      <p>
+        In production REST APIs, controllers should never handle raw validation logic. Instead, create a generic middleware:
+      </p>
+      <pre class="code-snippet">function validateBody(schema) {
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(422).json({
+        success: false,
+        errors: result.error.issues
+      });
+    }
+    // Sanitize and replace with coerced data
+    req.body = result.data;
+    next();
+  };
+}</pre>
+    </div>
+
+    <div class="concept-box">
+      <h3><span>📱</span> API Client Integration (Angular / React)</h3>
+      <p>
+        When an Angular or React frontend sends invalid JSON, receiving HTTP 422 with a structured array of errors allows the frontend to map errors automatically onto form control states:
+      </p>
+      <pre class="code-snippet">{
+  "success": false,
+  "errors": [
+    { "field": "email", "message": "Invalid email" }
+  ]
+}</pre>
+      <p style="font-size: 0.8rem; color: #94a3b8;">
+        This creates a seamless, predictable API contract between backend and frontend.
+      </p>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

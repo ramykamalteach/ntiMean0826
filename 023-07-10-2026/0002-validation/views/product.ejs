@@ -1,0 +1,265 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <header class="page-header">
+    <div class="category">Lesson 03 &bull; Deep Structures</div>
+    <h1 class="page-title">Nested Objects & Custom Formats</h1>
+    <p class="page-subtitle">
+      Learn how Zod effortlessly validates complex nested object structures, regex SKU formatting,
+      and transformed array inputs in Express applications.
+    </p>
+  </header>
+
+  <div class="lesson-grid">
+    <!-- Product Form -->
+    <div class="glass-card">
+      <div class="form-toolbar">
+        <div class="toolbar-title">
+          <span>📦</span>
+          <span>Product & Inventory Form</span>
+        </div>
+        <div class="demo-buttons">
+          <button type="button" class="btn-demo valid" onclick="fillProductForm(true)">
+            <span>✔</span> Fill Valid
+          </button>
+          <button type="button" class="btn-demo invalid" onclick="fillProductForm(false)">
+            <span>✖</span> Fill Invalid
+          </button>
+        </div>
+      </div>
+
+      <% if (Object.keys(errors).length > 0) { %>
+        <div class="callout callout-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Validation Error (HTTP 422):</strong>
+            <span><%= Object.keys(errors).length %> field error(s) found in this product entry.</span>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/product" method="POST" novalidate>
+        <!-- Title -->
+        <div class="form-group <%= errors.title ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Product Title</span>
+            <span class="tag">z.string().min(3).max(100)</span>
+          </label>
+          <input
+            type="text"
+            name="title"
+            class="form-control"
+            placeholder="e.g. Wireless Gaming Mouse"
+            value="<%= oldData.title || '' %>"
+          >
+          <% if (errors.title) { %>
+            <div class="form-error"><span>✖</span> <%= errors.title %></div>
+          <% } %>
+        </div>
+
+        <!-- SKU (Regex) -->
+        <div class="form-group <%= errors.sku ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Product SKU</span>
+            <span class="tag">.regex(/^[A-Z]{3}-[0-9]{4}$/)</span>
+          </label>
+          <input
+            type="text"
+            name="sku"
+            class="form-control"
+            placeholder="e.g. WRL-1024"
+            value="<%= oldData.sku || '' %>"
+          >
+          <% if (errors.sku) { %>
+            <div class="form-error"><span>✖</span> <%= errors.sku %></div>
+          <% } else { %>
+            <div class="form-hint">Format must be 3 uppercase letters, a hyphen, and 4 digits (e.g. ABC-1234).</div>
+          <% } %>
+        </div>
+
+        <!-- Category (Enum) & Price in a 2-col row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group <%= errors.category ? 'has-error' : '' %>">
+            <label class="form-label">
+              <span>Category</span>
+              <span class="tag">z.enum()</span>
+            </label>
+            <select name="category" class="form-control">
+              <option value="electronics" <%= oldData.category === 'electronics' ? 'selected' : '' %>>Electronics</option>
+              <option value="clothing" <%= oldData.category === 'clothing' ? 'selected' : '' %>>Clothing</option>
+              <option value="books" <%= oldData.category === 'books' ? 'selected' : '' %>>Books</option>
+              <option value="groceries" <%= oldData.category === 'groceries' ? 'selected' : '' %>>Groceries</option>
+            </select>
+            <% if (errors.category) { %>
+              <div class="form-error"><span>✖</span> <%= errors.category %></div>
+            <% } %>
+          </div>
+
+          <div class="form-group <%= errors.price ? 'has-error' : '' %>">
+            <label class="form-label">
+              <span>Price ($)</span>
+              <span class="tag">.positive()</span>
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              class="form-control"
+              placeholder="e.g. 79.99"
+              value="<%= oldData.price || '' %>"
+            >
+            <% if (errors.price) { %>
+              <div class="form-error"><span>✖</span> <%= errors.price %></div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Discount & Tags in a 2-col row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group <%= errors.discountPercentage ? 'has-error' : '' %>">
+            <label class="form-label">
+              <span>Discount (%)</span>
+              <span class="tag">.min(0).max(90)</span>
+            </label>
+            <input
+              type="number"
+              name="discountPercentage"
+              class="form-control"
+              placeholder="0"
+              value="<%= oldData.discountPercentage || '0' %>"
+            >
+            <% if (errors.discountPercentage) { %>
+              <div class="form-error"><span>✖</span> <%= errors.discountPercentage %></div>
+            <% } %>
+          </div>
+
+          <div class="form-group <%= errors.tags ? 'has-error' : '' %>">
+            <label class="form-label">
+              <span>Tags</span>
+              <span class="tag">z.array(z.string())</span>
+            </label>
+            <input
+              type="text"
+              name="tags"
+              class="form-control"
+              placeholder="tech, wireless, gaming"
+              value="<%= Array.isArray(oldData.tags) ? oldData.tags.join(', ') : (oldData.tags || '') %>"
+            >
+            <% if (errors.tags) { %>
+              <div class="form-error"><span>✖</span> <%= errors.tags %></div>
+            <% } else { %>
+              <div class="form-hint">Comma-separated list (1 to 5 tags).</div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Nested Object Section: Warehouse Details -->
+        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: #a5b4fc; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🏢</span>
+            <span>Nested Object: Warehouse Location (warehouse: z.object)</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1rem;">
+            <!-- Nested City -->
+            <div class="form-group <%= errors['warehouse.city'] ? 'has-error' : '' %>" style="margin-bottom: 0;">
+              <label class="form-label">
+                <span>Warehouse City</span>
+                <span class="tag">warehouse[city]</span>
+              </label>
+              <input
+                type="text"
+                name="warehouse[city]"
+                class="form-control"
+                placeholder="e.g. Cairo Central Facility"
+                value="<%= oldData.warehouse?.city || '' %>"
+              >
+              <% if (errors['warehouse.city']) { %>
+                <div class="form-error"><span>✖</span> <%= errors['warehouse.city'] %></div>
+              <% } %>
+            </div>
+
+            <!-- Nested Aisle -->
+            <div class="form-group <%= errors['warehouse.aisle'] ? 'has-error' : '' %>" style="margin-bottom: 0;">
+              <label class="form-label">
+                <span>Aisle #</span>
+                <span class="tag">warehouse[aisle]</span>
+              </label>
+              <input
+                type="number"
+                name="warehouse[aisle]"
+                class="form-control"
+                placeholder="e.g. 5"
+                value="<%= oldData.warehouse?.aisle || '' %>"
+              >
+              <% if (errors['warehouse.aisle']) { %>
+                <div class="form-error"><span>✖</span> <%= errors['warehouse.aisle'] %></div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <span>Save Product with Nested Data</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Teaching Sidebar -->
+    <div class="teaching-sidebar">
+      <!-- Concept: Nested Schemas -->
+      <div class="concept-box">
+        <h3><span>🏗️</span> Nested Schemas in Zod</h3>
+        <p>
+          Real-world applications frequently require nested properties. Zod makes this intuitive:
+        </p>
+        <pre class="code-snippet">const productSchema = z.object({
+  title: z.string(),
+  warehouse: z.object({
+    city: z.string().min(2),
+    aisle: z.coerce.number().positive()
+  })
+});</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          Express with <code>express.urlencoded({ extended: true })</code> parses input names like
+          <code>warehouse[city]</code> directly into <code>req.body.warehouse.city</code>!
+        </p>
+      </div>
+
+      <!-- Concept: Regex Matching -->
+      <div class="concept-box">
+        <h3><span>🔍</span> Regex Format Validation</h3>
+        <p>
+          Enforce strict patterns such as phone numbers, postal codes, or inventory SKUs:
+        </p>
+        <pre class="code-snippet">sku: z.string().regex(
+  /^[A-Z]{3}-[0-9]{4}$/,
+  "Must follow ABC-1234"
+)</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          Regex ensures total pattern adherence before any record enters your database.
+        </p>
+      </div>
+
+      <!-- Concept: Nested Issue Paths -->
+      <div class="concept-box">
+        <h3><span>🗺️</span> Error Issue Paths</h3>
+        <p>
+          When a nested field fails validation, Zod returns the path as an array:
+        </p>
+        <pre class="code-snippet">{
+  path: ["warehouse", "city"],
+  message: "Warehouse city is required"
+}</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          Our <code>formatZodErrorsForForm()</code> helper joins these with a dot: <code>warehouse.city</code>, making template checks simple:
+          <code>&lt;% if (errors['warehouse.city']) %&gt;</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
