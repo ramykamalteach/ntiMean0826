@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time E-Commerce Notification System | Node.js, Express & Socket.IO</title>
+  <meta name="description" content="Demonstration of real-time order notifications to admin dashboard using Node.js, Express REST API, and Socket.IO without frontend frameworks.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="app-header">
+    <a href="/" class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div style="display: flex; align-items: center;">
+          <span class="brand-name">Nexus Orders</span>
+          <span class="brand-tag">Socket.IO Live</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- View Switcher -->
+    <nav class="nav-switcher">
+      <a href="/" class="nav-btn active" id="nav-split">🔀 Split Screen Demo</a>
+      <a href="/store" class="nav-btn" id="nav-store">🛍️ Customer Store</a>
+      <a href="/admin" class="nav-btn" id="nav-admin">📊 Admin Dashboard</a>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <!-- Live Socket Status Pill -->
+      <div class="status-pill" id="connection-status">
+        <span class="live-dot"></span>
+        <span>Connecting...</span>
+      </div>
+
+      <!-- Notification Sound Toggle -->
+      <button class="icon-btn active" id="btn-toggle-sound" title="Notification Sound: ON">
+        🔔
+      </button>
+
+      <!-- Notification Bell with Counter -->
+      <div style="position: relative;">
+        <button class="bell-btn" id="btn-bell" title="Order Notifications">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span class="badge-count" id="notif-badge" style="display: none;">0</span>
+        </button>
+
+        <!-- Notification Dropdown Drawer -->
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-header">
+            <h4>Live Order Alerts</h4>
+            <button class="clear-btn" id="btn-clear-notifs">Clear All</button>
+          </div>
+          <div class="notif-list" id="notif-items-list">
+            <div class="notif-empty">No new orders yet. Place an order on the left!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container: Interactive Split Screen -->
+  <main class="app-container">
+    
+    <!-- Flow Explanation Banner -->
+    <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 1.4rem;">💡</div>
+        <div style="font-size: 0.84rem; color: #c7d2fe;">
+          <strong>Live Demonstration Architecture:</strong> Place an order on the left (Step 1 & 2: REST API <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">POST /api/orders</code>). Express processes it (Step 3) and Socket.IO instantly broadcasts it (Step 4 & 5) to the Admin Dashboard on the right with sound and live toast alerts!
+        </div>
+      </div>
+      <div>
+        <button class="btn-secondary" id="btn-simulate-order" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.15); color: #fff;">
+          ⚡ Simulate Remote Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Split-View Grid -->
+    <div class="split-view-container">
+
+      <!-- LEFT COLUMN: Customer Storefront & Checkout -->
+      <section class="panel" id="customer-store-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>🛍️</span>
+              <h2>Customer Checkout</h2>
+            </div>
+            <div class="panel-subtitle">Step 1 & 2: Submits order via Express REST API</div>
+          </div>
+          <button class="btn-secondary" id="btn-autofill" title="Quickly fill realistic customer details">
+            🪄 Autofill Customer
+          </button>
+        </div>
+
+        <!-- Catalog Products -->
+        <h4 style="font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 12px;">
+          Select Products
+        </h4>
+        <div class="product-grid" id="products-grid">
+          <!-- Dynamically populated by store.js -->
+        </div>
+
+        <!-- Selected Cart Summary -->
+        <div class="cart-box">
+          <h4>
+            <span>Cart Summary</span>
+            <span class="brand-tag" id="cart-count">1</span>
+          </h4>
+          <div class="cart-items-list" id="cart-items-list">
+            <!-- Dynamically populated by store.js -->
+          </div>
+          <div class="cart-total-row">
+            <span>Total Payable:</span>
+            <span id="cart-total-amount" style="color: #a5b4fc; font-size: 1.1rem;">$999</span>
+          </div>
+        </div>
+
+        <!-- Customer Checkout Form -->
+        <form id="order-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="cust-name">Full Name *</label>
+              <input type="text" id="cust-name" class="form-control" value="Sophia Chen" required placeholder="e.g. John Doe">
+            </div>
+            <div class="form-group">
+              <label for="cust-email">Email Address *</label>
+              <input type="email" id="cust-email" class="form-control" value="sophia.c@nexus.ai" required placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+              <label for="cust-phone">Phone Number</label>
+              <input type="text" id="cust-phone" class="form-control" value="+1 (555) 234-5678" placeholder="+1 (555) 000-0000">
+            </div>
+            <div class="form-group">
+              <label for="cust-city">City / Region</label>
+              <input type="text" id="cust-city" class="form-control" value="San Francisco, CA" placeholder="City, State">
+            </div>
+            <div class="form-group full">
+              <label for="cust-payment">Payment Method</label>
+              <select id="cust-payment" class="form-control">
+                <option value="Credit Card">💳 Credit / Debit Card</option>
+                <option value="Apple Pay" selected>🍎 Apple Pay</option>
+                <option value="PayPal">🅿️ PayPal</option>
+                <option value="Cash on Delivery">💵 Cash on Delivery</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="btn-submit-order">
+            <span>Place Order (POST /api/orders)</span>
+            <span>➔</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: Admin Real-Time Operations Dashboard -->
+      <section class="panel" id="admin-dashboard-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>📊</span>
+              <h2>Admin Operations Hub</h2>
+            </div>
+            <div class="panel-subtitle">Step 4 & 5: Real-time Socket.IO feed (No page refresh)</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="nav-btn filter-btn active" data-status="ALL" style="padding: 4px 10px; font-size: 0.74rem;">All</button>
+            <button class="nav-btn filter-btn" data-status="PENDING" style="padding: 4px 10px; font-size: 0.74rem;">Pending</button>
+            <button class="nav-btn filter-btn" data-status="PROCESSING" style="padding: 4px 10px; font-size: 0.74rem;">Processing</button>
+          </div>
+        </div>
+
+        <!-- Live KPI Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Total Orders</div>
+            <div class="metric-value" id="stat-total-orders">3</div>
+            <div class="metric-sub">
+              <span style="color: var(--success);">●</span> Live updated
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Total Revenue</div>
+            <div class="metric-value" id="stat-total-revenue">$1,886</div>
+            <div class="metric-sub">
+              <span style="color: #a5b4fc;">$</span> Real-time sum
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Pending Orders</div>
+            <div class="metric-value" id="stat-pending-orders" style="color: #fbbf24;">1</div>
+            <div class="metric-sub">
+              <span>⏳</span> Requires action
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Socket Clients</div>
+            <div class="metric-value" id="stat-active-clients" style="color: #22d3ee;">1</div>
+            <div class="metric-sub">
+              <span class="live-dot" style="display: inline-block;"></span> Active channel
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Orders Feed -->
+        <h4 style="font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <span>Live Order Stream</span>
+          <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: none; font-weight: 400;">Newest orders appear instantly</span>
+        </h4>
+
+        <div class="orders-table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <!-- Dynamically rendered and prepended via Socket.IO events -->
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Real-Time Floating Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Customer Order Success Confirmation Modal -->
+  <div class="modal-overlay" id="order-success-modal">
+    <div class="modal-card">
+      <div class="modal-success-icon">✓</div>
+      <h3>Order Placed Successfully!</h3>
+      <p>Your order was received by the Express REST API and broadcasted to the admin dashboard via Socket.IO.</p>
+      
+      <div class="modal-details">
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Order Reference:</span>
+          <strong id="receipt-order-id" style="color: #a5b4fc; font-family: monospace;">-</strong>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Customer:</span>
+          <span id="receipt-customer">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Payment Method:</span>
+          <span id="receipt-payment">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Initial Status:</span>
+          <span id="receipt-status" style="color: #fbbf24; font-weight: 600;">Pending</span>
+        </div>
+        <div class="modal-detail-row">
+          <span>Amount Paid:</span>
+          <span id="receipt-total" style="color: var(--success); font-size: 1.1rem;">$0</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-close-modal">
+        Done & Continue Shopping
+      </button>
+    </div>
+  </div>
+
+  <!-- Socket.IO Client Library (Provided directly by Socket.IO server) -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Web Audio Synthesizer -->
+  <script src="/js/sound.js"></script>
+
+  <!-- Storefront Logic -->
+  <script src="/js/store.js"></script>
+
+  <!-- Admin Real-Time Logic -->
+  <script src="/js/admin.js"></script>
+
+</body>
+</html>

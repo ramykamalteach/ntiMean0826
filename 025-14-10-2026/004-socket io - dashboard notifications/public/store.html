@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Storefront | Nexus Shop</title>
+  <meta name="description" content="Place orders that trigger real-time notifications to the admin dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="app-header">
+    <a href="/" class="brand">
+      <div class="brand-icon">🛍️</div>
+      <div>
+        <div style="display: flex; align-items: center;">
+          <span class="brand-name">Nexus Store</span>
+          <span class="brand-tag">Customer Portal</span>
+        </div>
+      </div>
+    </a>
+
+    <nav class="nav-switcher">
+      <a href="/" class="nav-btn">🔀 Split Screen Demo</a>
+      <a href="/store" class="nav-btn active">🛍️ Customer Store</a>
+      <a href="/admin" class="nav-btn">📊 Admin Dashboard</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="/admin" target="_blank" class="btn-secondary" style="font-size: 0.8rem;">
+        Open Admin in New Tab ↗
+      </a>
+    </div>
+  </header>
+
+  <main class="app-container" style="max-width: 900px;">
+    
+    <!-- Customer Checkout Panel -->
+    <section class="panel" id="customer-store-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">
+            <span>🛍️</span>
+            <h2>Place Your Order</h2>
+          </div>
+          <div class="panel-subtitle">When you submit this order, Express will trigger a Socket.IO notification to the admin!</div>
+        </div>
+        <button class="btn-secondary" id="btn-autofill">
+          🪄 Autofill Customer
+        </button>
+      </div>
+
+      <h4 style="font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 12px;">
+        Choose Products
+      </h4>
+      <div class="product-grid" id="products-grid"></div>
+
+      <div class="cart-box">
+        <h4>
+          <span>Your Cart Items</span>
+          <span class="brand-tag" id="cart-count">1</span>
+        </h4>
+        <div class="cart-items-list" id="cart-items-list"></div>
+        <div class="cart-total-row">
+          <span>Total Order Value:</span>
+          <span id="cart-total-amount" style="color: #a5b4fc; font-size: 1.15rem;">$999</span>
+        </div>
+      </div>
+
+      <form id="order-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="cust-name">Full Name *</label>
+            <input type="text" id="cust-name" class="form-control" value="Sophia Chen" required>
+          </div>
+          <div class="form-group">
+            <label for="cust-email">Email Address *</label>
+            <input type="email" id="cust-email" class="form-control" value="sophia.c@nexus.ai" required>
+          </div>
+          <div class="form-group">
+            <label for="cust-phone">Phone Number</label>
+            <input type="text" id="cust-phone" class="form-control" value="+1 (555) 234-5678">
+          </div>
+          <div class="form-group">
+            <label for="cust-city">City / State</label>
+            <input type="text" id="cust-city" class="form-control" value="San Francisco, CA">
+          </div>
+          <div class="form-group full">
+            <label for="cust-payment">Payment Method</label>
+            <select id="cust-payment" class="form-control">
+              <option value="Credit Card">💳 Credit / Debit Card</option>
+              <option value="Apple Pay" selected>🍎 Apple Pay</option>
+              <option value="PayPal">🅿️ PayPal</option>
+              <option value="Cash on Delivery">💵 Cash on Delivery</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-submit-order" style="padding: 15px; font-size: 1rem;">
+          <span>Submit Order (POST /api/orders)</span>
+          <span>➔</span>
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="order-success-modal">
+    <div class="modal-card">
+      <div class="modal-success-icon">✓</div>
+      <h3>Order Placed Successfully!</h3>
+      <p>Express REST API processed your order and broadcasted it live to the Admin Dashboard via Socket.IO.</p>
+      
+      <div class="modal-details">
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Order ID:</span>
+          <strong id="receipt-order-id" style="color: #a5b4fc; font-family: monospace;">-</strong>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Customer:</span>
+          <span id="receipt-customer">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Payment Method:</span>
+          <span id="receipt-payment">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span style="color: var(--text-dim);">Initial Status:</span>
+          <span id="receipt-status" style="color: #fbbf24; font-weight: 600;">Pending</span>
+        </div>
+        <div class="modal-detail-row">
+          <span>Amount Paid:</span>
+          <span id="receipt-total" style="color: var(--success); font-size: 1.1rem;">$0</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-close-modal">
+        Done & Continue Shopping
+      </button>
+    </div>
+  </div>
+
+  <script src="/js/store.js"></script>
+</body>
+</html>

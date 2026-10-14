@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node-Cache In-Memory Caching Lab | Express & MongoDB</title>
+    <meta name="description" content="Interactive demonstration of in-memory caching using node-cache in Node.js and Express with cache invalidation and MongoDB.">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background glow ambient effect -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="app-container">
+        <!-- Top Navigation / Header -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <h1 class="logo-title">Node-Cache Lab</h1>
+                    <p class="logo-subtitle">In-Memory Caching Architecture & Performance Engine</p>
+                </div>
+            </div>
+            <div class="header-status-group">
+                <div class="status-pill status-db" id="dbStatusPill">
+                    <span class="status-dot"></span>
+                    <span id="dbStatusText">MongoDB: Connected</span>
+                </div>
+                <div class="status-pill status-cache">
+                    <span class="status-icon">📦</span>
+                    <span>TTL: <strong>60s</strong></span>
+                </div>
+                <div class="status-pill status-engine">
+                    <span class="status-icon">🚀</span>
+                    <span>Express + node-cache</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Interactive Dashboard -->
+        <main class="main-content">
+            <!-- Action Bar -->
+            <section class="control-banner card-glass">
+                <div class="control-left">
+                    <h2 class="section-title">Cache Demonstration Controls</h2>
+                    <p class="section-desc">Trigger requests to observe in-memory cache hits vs database queries in real-time.</p>
+                </div>
+                <div class="control-actions">
+                    <button id="btnFetch" class="btn btn-primary" title="Send GET /api/products request">
+                        <span class="btn-icon">⚡</span>
+                        <span class="btn-text">Fetch Products</span>
+                        <span class="shortcut-tag">GET</span>
+                    </button>
+                    <button id="btnRapidBurst" class="btn btn-secondary" title="Run 5 rapid requests sequentially to test cache speedup">
+                        <span class="btn-icon">🔥</span>
+                        <span class="btn-text">Rapid 5x Burst</span>
+                    </button>
+                    <button id="btnOpenAddModal" class="btn btn-outline" title="Add a new product to test cache invalidation">
+                        <span class="btn-icon">➕</span>
+                        <span class="btn-text">Add Product</span>
+                    </button>
+                    <button id="btnFlushCache" class="btn btn-danger" title="Clear node-cache memory">
+                        <span class="btn-icon">🧹</span>
+                        <span class="btn-text">Flush Cache</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Real-time Metrics Grid -->
+            <section class="metrics-grid">
+                <!-- Card 1: Data Source -->
+                <div class="metric-card card-glass" id="metricSourceCard">
+                    <div class="metric-header">
+                        <span class="metric-label">Data Source</span>
+                        <span class="metric-badge" id="sourceBadge">—</span>
+                    </div>
+                    <div class="metric-hero">
+                        <div class="source-icon" id="sourceIcon">📡</div>
+                        <div class="metric-val" id="sourceValue">Ready</div>
+                    </div>
+                    <div class="metric-subtext" id="sourceSubtext">Click "Fetch Products" to initiate request</div>
+                </div>
+
+                <!-- Card 2: Latency & Speedup -->
+                <div class="metric-card card-glass">
+                    <div class="metric-header">
+                        <span class="metric-label">Response Latency</span>
+                        <span class="speedup-badge hidden" id="speedupBadge">⚡ 0x Faster</span>
+                    </div>
+                    <div class="metric-hero">
+                        <span class="metric-number" id="latencyNumber">0</span>
+                        <span class="metric-unit">ms</span>
+                    </div>
+                    <div class="latency-bar-container">
+                        <div class="latency-bar" id="latencyBar" style="width: 0%"></div>
+                    </div>
+                    <div class="metric-subtext" id="latencySubtext">Measures roundtrip execution time</div>
+                </div>
+
+                <!-- Card 3: Cache TTL Countdown -->
+                <div class="metric-card card-glass">
+                    <div class="metric-header">
+                        <span class="metric-label">Cache Key Expiry</span>
+                        <span class="ttl-status-tag" id="ttlStatusTag">EMPTY</span>
+                    </div>
+                    <div class="metric-hero">
+                        <span class="metric-number" id="ttlSeconds">0</span>
+                        <span class="metric-unit">s remaining</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="ttlProgressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="metric-subtext" id="ttlSubtext">Key 'products' (stdTTL: 60s)</div>
+                </div>
+
+                <!-- Card 4: Hits & Misses -->
+                <div class="metric-card card-glass">
+                    <div class="metric-header">
+                        <span class="metric-label">Telemetry Stats</span>
+                        <span class="metric-badge-neutral" id="hitRatioBadge">0% Ratio</span>
+                    </div>
+                    <div class="stats-counter-row">
+                        <div class="counter-box">
+                            <span class="counter-label">Hits (Cache)</span>
+                            <span class="counter-val hit-val" id="statHits">0</span>
+                        </div>
+                        <div class="counter-divider"></div>
+                        <div class="counter-box">
+                            <span class="counter-label">Misses (DB)</span>
+                            <span class="counter-val miss-val" id="statMisses">0</span>
+                        </div>
+                        <div class="counter-divider"></div>
+                        <div class="counter-box">
+                            <span class="counter-label">Cached Keys</span>
+                            <span class="counter-val keys-val" id="statKeys">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-subtext">Cumulative node-cache telemetry</div>
+                </div>
+            </section>
+
+            <!-- Two-Column Layout: Products Grid & Educational / Log Panel -->
+            <div class="content-split">
+                <!-- Left Column: Products Showcase -->
+                <section class="products-section card-glass">
+                    <div class="section-header-row">
+                        <div>
+                            <h3 class="subsection-title">Cached Catalog</h3>
+                            <p class="subsection-desc" id="catalogMetaText">Showing 0 products</p>
+                        </div>
+                        <div class="search-filter-box">
+                            <input type="text" id="searchInput" placeholder="Filter products..." class="search-field">
+                        </div>
+                    </div>
+
+                    <!-- Products Grid Container -->
+                    <div class="products-grid" id="productsGrid">
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <h4>No Products Loaded Yet</h4>
+                            <p>Click <strong>Fetch Products</strong> above to query MongoDB and prime the node-cache store.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right Column: Interactive Log Stream & Architecture Guide -->
+                <aside class="side-panel">
+                    <!-- Tab Navigation -->
+                    <div class="tab-nav">
+                        <button class="tab-btn active" data-tab="logsTab">
+                            <span>📜 Live Event Log</span>
+                            <span class="log-badge" id="logCountBadge">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="guideTab">
+                            <span>📘 Steps & Enhancements</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab 1: Live Event Log -->
+                    <div class="tab-content active" id="logsTab">
+                        <div class="log-container card-glass">
+                            <div class="log-header">
+                                <span class="log-title">Network & Cache Activity Stream</span>
+                                <button class="btn-text-only" id="btnClearLogs">Clear Log</button>
+                            </div>
+                            <div class="log-terminal" id="logTerminal">
+                                <div class="log-entry log-system">
+                                    <span class="log-time">[Init]</span>
+                                    <span class="log-msg">Lab initialized. Ready to execute Step 3 and Step 4 cache calls.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Architecture & Enhancements Guide -->
+                    <div class="tab-content" id="guideTab">
+                        <div class="guide-container card-glass">
+                            <h4 class="guide-heading">Implementation Breakdown</h4>
+                            
+                            <div class="guide-step">
+                                <div class="step-badge">Step 1 & 2</div>
+                                <div class="step-content">
+                                    <h5>node-cache Initialization</h5>
+                                    <p>Created <code>config/cache.js</code> with <code>stdTTL: 60</code> and <code>checkperiod: 120</code>.</p>
+                                </div>
+                            </div>
+
+                            <div class="guide-step">
+                                <div class="step-badge">Step 3</div>
+                                <div class="step-content">
+                                    <h5>Check Cache &rarr; Fallback to DB &rarr; Store</h5>
+                                    <p>First request checks <code>cache.get('products')</code>. When missing, executes MongoDB query, sets <code>cache.set('products', products)</code>, and responds.</p>
+                                </div>
+                            </div>
+
+                            <div class="guide-step">
+                                <div class="step-badge">Step 4</div>
+                                <div class="step-content">
+                                    <h5>Mount Express Route</h5>
+                                    <p>Registered at <code>/api/products</code> with JSON middleware and static dashboard.</p>
+                                </div>
+                            </div>
+
+                            <div class="guide-alert">
+                                <h5>✨ What Can Go Wrong & Our Enhancements</h5>
+                                <ul>
+                                    <li><strong>The Stale Cache Bug:</strong> If you add or delete a product without invalidation, clients receive old data for 60s. We implemented automatic <code>cache.del('products')</code> on POST and DELETE.</li>
+                                    <li><strong>Database Offline Fallback:</strong> If MongoDB is temporarily down, the app smoothly serves fallback catalog without crashing.</li>
+                                    <li><strong>Live Telemetry:</strong> Added response time benchmarks and TTL remaining countdown.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Add Product Form -->
+    <div class="modal-overlay hidden" id="addModal">
+        <div class="modal-window card-glass">
+            <div class="modal-header">
+                <h3>Add New Product</h3>
+                <button class="modal-close-btn" id="btnCloseModal">&times;</button>
+            </div>
+            <p class="modal-desc">Adding a product inserts it into MongoDB and triggers <strong>Cache Invalidation</strong> (<code>cache.del('products')</code>).</p>
+            <form id="addProductForm" class="modal-form">
+                <div class="form-group">
+                    <label for="prodName">Product Name *</label>
+                    <input type="text" id="prodName" required placeholder="e.g. Elgato Stream Deck Plus" class="form-control">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prodPrice">Price ($) *</label>
+                        <input type="number" id="prodPrice" required step="0.01" min="0" placeholder="199.99" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="prodCategory">Category *</label>
+                        <select id="prodCategory" class="form-control">
+                            <option value="Electronics">Electronics</option>
+                            <option value="Audio">Audio</option>
+                            <option value="Peripherals">Peripherals</option>
+                            <option value="Displays">Displays</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prodStock">Stock Quantity</label>
+                        <input type="number" id="prodStock" value="20" min="0" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="prodDesc">Short Description</label>
+                        <input type="text" id="prodDesc" placeholder="Brief feature summary" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="btnCancelModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitProduct">
+                        <span>Save & Invalidate Cache</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
