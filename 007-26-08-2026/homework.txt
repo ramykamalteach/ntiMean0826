@@ -1,0 +1,7 @@
+in Dashmin template create these pages in arabic RTL :
+    - sign in
+    - "الرئيسية" : table of products (5) 
+    - "الموظفين" : employe info and photo
+    - "إدخال منتج جديد" : form (name, weight, category, photo)
+
+    * arabic font : cairo

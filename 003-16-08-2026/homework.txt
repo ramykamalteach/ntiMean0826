@@ -1,0 +1,22 @@
+Regular expressions :
+    - password 
+        - must start with letter(capital or small)
+        - must contain digits
+        - must contain special charachters (@#$%)
+
+    - email
+        - must start with letter(capital or small)
+        - must contain @ in middle
+        - must contain . after some characters after @
+        - must end with characters
+
+    - card number (has 16 digits)
+        - want to mask the first 12 digits with *
+        - card number formatted with space or dash between every 4 digits (reserve dashes and spaces)
+
+    - mask phone number
+        - mask all digits except first 3 and last 3 digits
+
+    - from email
+        - extract username
+        - extract domain name

@@ -1,0 +1,27 @@
+<app-cart (messageEvent)="receiveMessage($event)"></app-cart>
+
+<h1>{{childMessage}}</h1>
+
+<app-header></app-header>
+
+<h1>Welcome</h1>
+<h2>{{ title }}</h2>
+
+<!-- <input type="text" [value]="userName"> -->
+
+<!-- <input type="text" (input)="onInput($event)">
+<h1>{{ userName }}</h1> -->
+
+<input type="text" [(ngModel)]="userName">
+<h1>Your name is: {{ userName }}</h1>
+
+
+
+<div class="items">
+    @for (i of [0,1,2,3,4]; track i) {
+        <app-item-card [itemName]="items[i].itemName" [itemPrice]="items[i].itemPrice"></app-item-card>
+    }
+</div>
+
+
+<app-footer></app-footer>

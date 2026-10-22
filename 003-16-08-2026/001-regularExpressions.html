@@ -1,0 +1,101 @@
+<h1>
+    Regular Expressions :
+</h1>
+<ol>
+    <li>Search in the give text with PATTERN</li>
+    <li>test</li>
+    <li>match</li>
+    <li>matchAll</li>
+    <li>replace</li>
+
+</ol>
+<script>
+    /* pattern = "welcome in NTI courses"; */
+    /* const pattern = new RegExp("NtI", "i"); */
+
+    /* pattern = /Nti/i;         // pattern
+    searchText = "welcome in nti courses, Nti in programming";
+    arr = searchText.match(pattern);
+    for(x = 0; x < arr.length; x++) {
+        console.log(arr[x]);
+    } */
+
+    /* pattern = /Nti/ig;         // pattern
+    searchText = "welcome in nti courses, Nti in programming... NTI";
+    arr = searchText.matchAll(pattern);
+    for (const [matchText] of arr) {
+        console.log(matchText);
+    } */
+
+
+    /* pattern = /Nti/i;
+    searchText = "welcome in nti courses, Nti in programming";
+
+    if (pattern.test(searchText)) {
+        console.log("nti is found");
+    }
+    else {
+        console.log("nti is not found");
+    } */
+
+
+    /* pattern = /Nti/ig;
+    searchText = "welcome in nti courses, Nti in programming";
+    newSearchText = searchText.replace(pattern, "Creativa");
+    console.log(newSearchText); */
+
+
+
+    /* username@domain.ext
+    1234-5678-1122-3344
+    30507151201155
+
+    password must starts with letter, contains captial and small, contains digits, contains special characters (@#$%^&{}[]())
+    */
+
+    /* pinCode = "12345";
+    piCodePattern = /^\d{2,4}$/;
+
+    if(piCodePattern.test(pinCode)) {
+        console.log("good pin code");
+    }
+    else {
+        console.log("bad pin code");
+    } */
+
+    /* carLabel = "d5";
+    carLabelPattern = /^([a-zA-Z]{1,3})([#@$%^-]+)(\d{1,4})$/;
+
+    if(carLabelPattern.test(carLabel)) {
+        console.log("good car Label");
+    }
+    else {
+        console.log("bad car Label");
+    } */
+
+
+    /* phone01 = "(02) 123 4567 789";
+    phone02 = "02-1234567789";
+    phone03 = "+2-123456778+9";
+
+    function clearPhoneNumber(phoneNumber) {
+        phoneNumber = phoneNumber.replace(/\+/, "00");
+        phoneNumber = phoneNumber.replace(/\D/g, "");
+        return phoneNumber;
+    }
+
+    console.log(clearPhoneNumber(phone01));
+    console.log(clearPhoneNumber(phone02));
+    console.log(clearPhoneNumber(phone03)); */
+
+
+    const url = "https://www.domainName.ext/v1/api/sales";
+
+    const pattern = /^(?<protocol>http(s)?):\/\/(?<domainName>[^\/]+)/;
+    const result = url.match(pattern);
+
+    if (result) {
+        console.log(result.groups.protocol);
+        console.log(result.groups.domainName);
+    }
+</script>

@@ -1,0 +1,149 @@
+DELETE
+    DELETE FROM `categories` WHERE `categories`.`categoryID` = 9
+
+
+UPDATE
+    UPDATE `categories` SET `Description` = 'Cheeses and milk' WHERE `categories`.`CategoryID` = 4;
+
+    UPDATE `categories` SET `CategoryName` = 'Dairy', `Description` = 'Cheeses, milk, Yogurt' WHERE `categories`.`CategoryID` = 4;
+
+SELECT
+
+SELECT * FROM `categories` WHERE `categories`.`CategoryID` = 4
+
+
+=   <>      >   >=  <   <=
+
+LIKE     %
+between AND
+IN ( , , , )
+OR      AND
+
+SELECT * FROM `categories` WHERE `categories`.`CategoryID` <> 4 AND `categories`.`CategoryID` <> 5
+
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE 'a%'
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE '%y';
+
+SELECT `employees`.`FirstName` FROM `employees` WHERE `employees`.`FirstName` LIKE '%an%';
+
+SELECT `orders`.`OrderID`, `orders`.`OrderDate` FROM `orders` WHERE `orders`.`OrderDate` BETWEEN '1996-03-01' AND '1996-03-31'
+
+SELECT `products`.`ProductName`, `products`.`UnitsInStock` FROM `products` WHERE `products`.`UnitsInStock` BETWEEN 60 AND 80
+
+
+SELECT `customers`.`CompanyName`, `customers`.`ContactTitle`, `customers`.`Country` FROM `customers` WHERE (`customers`.`Country` = 'USA' OR `customers`.`Country` = 'UK' OR `customers`.`Country` = 'GERMANY') AND `customers`.`ContactTitle` LIKE '%sales%';
+
+
+SELECT `customers`.`CompanyName`, `customers`.`ContactTitle`, `customers`.`Country` FROM `customers` WHERE `customers`.`Country` IN ('USA', 'UK', 'GERMANY') AND `customers`.`ContactTitle` LIKE '%sales%';
+
+
+------------------------------
+
+SELECT `categories`.`CategoryName`, `products`.`ProductName` FROM `categories`, `products`
+WHERE
+`categories`.`CategoryID` = `products`.`CategoryID`
+AND
+`categories`.`CategoryID` = 4;
+
+
+
+CUSTOMER NAME
+ORDER DATE
+producT NAMES
+
+
+SELECT `customers`.`CompanyName`, `orders`.`OrderDate`, `products`.`ProductName`
+FROM `customers`, `orders`, `products`, `order details`
+WHERE
+`orders`.`CustomerID` = `customers`.`CustomerID`
+AND
+`orders`.`OrderID` = `order details`.`OrderID`
+AND
+`order details`.`ProductID` = `products`.`ProductID`
+AND
+`orders`.`OrderID` = '11077'
+
+
+
+SHIP COMPANY NAME = 3
+ORDER DATE
+CUSTOMER COMPANY NAME
+WHERE SHIPCOUNTRY IS GERMANY
+
+SELECT `shippers`.`CompanyName`, `customers`.`CompanyName`, `orders`.`OrderDate`, `orders`.`ShipCountry`
+FROM `shippers`, `customers`, `orders`
+WHERE
+`orders`.`ShipVia` = `shippers`.`ShipperID`
+AND
+`orders`.`CustomerID` = `customers`.`CustomerID`
+AND
+`orders`.`ShipVia` = 3
+AND
+`orders`.`ShipCountry` = 'GERMANY';
+
+-------------------------------------------------------------
+
+ORDER bY
+
+SELECT * FROM `categories` ORDER BY `categories`.`CategoryName` ASC
+
+SELECT * FROM `categories` ORDER BY `categories`.`CategoryName` DESC
+
+
+
+LIMIT
+
+SELECT * FROM `categories` WHERE 1 LIMIT 3
+
+SELECT * FROM `categories` WHERE 1 LIMIT 0,3
+SELECT * FROM `categories` WHERE 1 LIMIT 3,3
+SELECT * FROM `categories` WHERE 1 LIMIT 6,3
+
+
+---------------------------------------------------------
+
+AGGREGATIONS
+
+SELECT `order details`.`OrderID`, COUNT(`order details`.`OrderID`) AS `ProductsCount`
+FROM `order details`
+WHERE 1
+GROUP BY `order details`.`OrderID`;
+
+
+
+
+SELECT `order details`.`OrderID`, (`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`) AS `productTotal`
+
+FROM `order details`
+
+WHERE `order details`.`OrderID` = 10250
+
+
+
+SELECT `order details`.`OrderID`, round((`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`), 4) AS `productTotal`
+
+FROM `order details`
+
+WHERE `order details`.`OrderID` = 10250
+
+
+
+
+SELECT `order details`.`OrderID`, round(SUM((`order details`.`Quantity` * `order details`.`UnitPrice`) * (1 - `order details`.`Discount`)),4) AS `OrderTotal`
+
+FROM `order details`
+
+WHERE 1
+
+GROUP BY `order details`.`OrderID`
+
+
+---------------------------
+
+home work :
+Get the total of orders for every customer
+arrange result from great to small
+مجموع كل فواتير كل عميل
+مرتبين من أكبر عميل دفع للشركة

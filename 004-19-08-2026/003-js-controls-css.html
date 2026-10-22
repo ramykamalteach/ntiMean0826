@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .myTitles {
+            text-align: center;
+            text-decoration: underline;
+            color: red;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="t01">my first title</h1>
+
+    <button onclick="changeFormat();">click to change format</button>
+    <br>
+    <button onclick="removeClassStyle();">remove class style</button>
+
+    <script>
+        function changeFormat(){
+            /* document.querySelector("#t01").style.color = "red";
+            document.querySelector("#t01").style.backgroundColor = "yellow"; */
+
+            document.querySelector("#t01").classList.add("myTitles");
+        }
+
+        function removeClassStyle(){
+            document.querySelector("#t01").classList.remove("myTitles");
+        }
+    </script>
+</body>
+</html>

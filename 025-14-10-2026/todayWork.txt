@@ -1,0 +1,24 @@
+a hotel with similar 100 rooms, revervation is by a day.
+
+employe : reserve for a client one room , with payment in one currency, for specific period (of days). and can't reserve ocuppied room.
+
+{
+  _id: ObjectId('6acfa7c3c957bfd0bfad6713'),
+  roomName: '101',
+  reservations: [
+    {
+      clientName: 'Emad',
+      payment: NumberInt('1500'),
+      start: '14-10-2026',
+      end: '15-10-2026',
+      status: 'done'	//pending, cancelled, current, done, not available
+    },
+    {
+      clientName: 'waleed',
+      payment: NumberInt('2500'),
+      start: '14-09-2026',
+      end: '17-09-2026',
+      status: 'pending'
+    }
+  ]
+}

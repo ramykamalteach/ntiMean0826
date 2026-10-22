@@ -1,0 +1,18 @@
+<script>
+    const products = [
+        { id: 1, name: "Laptop", price: 1200, category: "electronics" },
+        { id: 2, name: "Phone", price: 800, category: "electronics" },
+        { id: 3, name: "Book", price: 30, category: "education" },
+        { id: 4, name: "Monitor", price: 400, category: "electronics" },
+        { id: 5, name: "Pen", price: 50, category: "education" }
+    ];
+    
+    minProductPrice = products[0];
+
+    for(i = 1; i < products.length; i++) {
+        if(products[i].price < minProductPrice.price) {
+            minProductPrice = products[i];
+        }
+    }
+    console.log(minProductPrice);
+</script>

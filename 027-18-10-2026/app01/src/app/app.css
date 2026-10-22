@@ -1,0 +1,14 @@
+h1 {
+    font-size: 5em;
+    text-align: center;
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+input {
+    font-size: 55px;
+}

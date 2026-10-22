@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "STORE_NY",
+    "name": "New York Flagship",
+    "region": "East",
+    "manager": "Eleanor Vance"
+  },
+  {
+    "_id": "STORE_SF",
+    "name": "San Francisco Hub",
+    "region": "West",
+    "manager": "David Chen"
+  },
+  {
+    "_id": "STORE_TX",
+    "name": "Austin Metro",
+    "region": "South",
+    "manager": "Sarah Miller"
+  },
+  {
+    "_id": "STORE_IL",
+    "name": "Chicago Loop",
+    "region": "Midwest",
+    "manager": "James Wilson"
+  }
+]

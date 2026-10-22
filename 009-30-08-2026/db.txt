@@ -1,0 +1,38 @@
+database : a group of related data.
+
+SQL : Structured Query Language
+    - Tables & Relationships
+        - Table : Fields & Records
+
+id field : positive integer, Auto Increament, Primary (unique, indexed)
+
+---------------------------
+- Table Create/Edit
+- create record
+- edit record
+- delete record
+----------------------------
+
+Relationships :
+    - one-to-many
+    - one-to-one
+    - many-to-many  (2 * one-to-many)
+
+------------------------------------
+SQL Query :
+    - create : database, table
+    - drop : database, table
+
+    - Records : 
+        - insert
+        - delete
+        - update
+        - select
+
+-------------------------
+INSERT INTO :
+
+INSERT INTO `shippers` (`shippers`.`ShipperID`, `shippers`.`CompanyName`, `shippers`.`Phone`) VALUES (NULL, 'aramix', '324435456546');
+
+INSERT INTO `shippers` (`ShipperID`, `CompanyName`, `Phone`) VALUES (NULL, 'egypt post', '5959595599');
+

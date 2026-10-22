@@ -1,0 +1,12 @@
+div {
+    border: 3px pink solid;
+    box-shadow: 3px 3px 1px lightgreen;
+    width: 350px;
+    margin: 15px;
+    transition: all 0.5s;
+}
+
+div:hover {
+    box-shadow: 9px 9px 5px lightgreen;
+    transition: all 0.5s;
+}

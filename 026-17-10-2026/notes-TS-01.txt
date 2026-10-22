@@ -1,0 +1,305 @@
+
+Type Script
+
+TypeScript is a programming language developed by Microsoft.
+It is essentially JavaScript with extra features, mainly:
+
+1- Superset of JavaScript
+    - Any valid JavaScript code is also valid TypeScript.
+    - This means you can start with JavaScript and gradually add TypeScript features.
+
+2- Static Typing
+    - Unlike JavaScript, which is dynamically typed, TypeScript allows you to add types (like string, number, boolean, object, array, etc.) to your variables, functions, and classes.
+
+3- Error Checking at Compile Time
+    - TypeScript catches many errors before you run the code, which reduces runtime bugs.
+
+4- Modern JavaScript Features + More
+    - Supports ES6+ features (classes, modules, async/await, etc.).
+    - Adds features not in JavaScript yet (interfaces, enums, generics, etc.).
+
+5- Compiles to JavaScript
+    - Browsers don’t understand TypeScript directly.
+    - TypeScript must be compiled into plain JavaScript using the TypeScript compiler (tsc).
+
+
+--------------------------
+
+start TS code project
+
+first : install typescript on os :
+
+> npm i -g typescript
+> npm -g list
+> tsc -v
+
+> tsc --init
+
+in tsconfig.json
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+to compile .ts to .js
+    > tsc
+    or
+    > tsc --watch
+
+----------------------------------------------------
+In TypeScript, there are different data types that can be stored in variables. One of the main advantages of TypeScript over JavaScript is that you can specify the data type of each variable to help reduce errors while writing code.
+
+## 1. Basic Types in TypeScript
+
+| `string` | Text | `let name: string = "Ahmed";` |
+| `number` | Integers or decimal numbers | `let age: number = 25;` |
+| `boolean` | A logical value: true or false | `let isStudent: boolean = true;` |
+| `any` | Accepts any data type | `let value: any = 10;` |
+| `undefined` | An undefined value | `let x: undefined = undefined;` |
+| `null` | No value | `let x: null = null;` |
+| `bigint` | Very large integers | `let n: bigint = 123n;` |
+
+## 2. Other Important Types
+
+### Array
+
+Arrays store multiple values of the same type or of specified types.
+
+```typescript
+let numbers: number[] = [10, 20, 30];
+
+let names: string[] = ["Ali", "Mona", "Ahmed"];
+```
+
+### Tuple
+
+A tuple is an array with a specific order and specified types.
+
+```typescript
+let person: [string, number] = ["Ali", 25];
+```
+
+Here, the first element is a string and the second is a number.
+
+### Object
+
+Objects store a collection of properties and values.
+
+```typescript
+let student: {
+  name: string;
+  age: number;
+} = {
+  name: "Ali",
+  age: 20
+};
+```
+
+### Union
+
+A union allows a variable to accept one of several specified types.
+
+```typescript
+let id: number | string;
+
+id = 101;
+id = "A101";
+```
+
+### Enum
+
+An enum is a set of named values.
+
+```typescript
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+let move: Direction = Direction.Up;
+```
+
+### Unknown
+
+The `unknown` type is used when the type of a value is not known in advance.
+
+```typescript
+let value: unknown = "Hello";
+```
+
+It is similar to `any` in that it allows values of different types to be assigned. However, it is safer because you must check the value's type before performing operations that require a specific type.
+
+## 3. What Is the Difference Between `let`, `const`, and `var`?
+
+These are **ways to declare variables, not data types**.
+
+
+`let`    Declares a variable whose value can be changed 
+`const`  Declares a variable that cannot be reassigned 
+`var`    The older way to declare variables 
+
+Example:
+
+```typescript
+let age: number = 20;
+age = 21; // Valid
+
+const name: string = "Ali";
+// name = "Omar"; // Error
+
+var score: number = 100;
+```
+
+## 4. What Happens If You Do Not Specify a Type?
+
+TypeScript can infer the type automatically:
+
+```typescript
+let age = 25;       // TypeScript infers number
+let name = "Ali";   // TypeScript infers string
+let active = true;  // TypeScript infers boolean
+```
+
+If you then try to assign a string to `age`, TypeScript will report a type-checking error:
+
+```typescript
+let age = 25;
+age = "Twenty"; // TypeScript error
+```
+
+## Note :
+
+Start by learning `string`, `number`, `boolean`, `Array`, `Object`, and `Union`. Then move on to the other types.
+
+
+----------------------------------------------------
+define constants
+    const pi: number = 3.14;
+    const appName: string = "MyApp";
+
+    const user = { id: 1, name: "ALI" };
+    const numbers: number[] = [1, 2, 3];
+
+-------------
+define variables
+    let age: number = 25;
+    let city = "Cairo";     // inferred as string
+    var name: string = "Samy";    // not recommended
+
+    let score: number;
+    score = 100; // must assign a number
+
+
+
+    let isActive: boolean = true;
+    let price: number = 199.99;
+    let title: string = "My Book";
+    let tags: string[] = ["typescript", "javascript"];
+    let user: { id: number; name: string } = { id: 1, name: "Yasser" };
+
+------------------------------------------
+
+Functions
+
+
+function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+
+console.log(greet("Reda"));
+
+
+
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+console.log(add(5, 10));
+
+
+
+--function with no return 
+
+function logMessage(message: string): void {
+  console.log(message);
+}
+
+
+
+-- Optional Parameters
+
+function greetUser(name: string, age?: number): string {
+  return age ? `Hello, ${name}. You are ${age}.` : `Hello, ${name}`;
+}
+
+console.log(greetUser("Samy"));      // Hello, Ramy
+console.log(greetUser("Samy", 30));  // Hello, Ramy. You are 30.
+
+
+-- Default Parameters
+
+function multiply(a: number, b: number = 2): number {
+  return a * b;
+}
+
+console.log(multiply(5));    // 10
+console.log(multiply(5, 3)); // 15
+
+
+-- Arrow Functions
+
+const square = (x: number): number => {
+  return x * x;
+};
+
+console.log(square(4)); // 16
+
+
+-- Function Type
+
+let operation: (a: number, b: number) => number;
+
+operation = (x, y) => x + y;
+console.log(operation(3, 4)); // 7
+
+or
+
+function formatValue(value: string | number, prefix: string = "Value:", suffix?: string): string {
+  let result = `${prefix} ${value}`;
+  if (suffix) {
+    result += ` ${suffix}`;
+  }
+  return result;
+}
+
+console.log(formatValue(100));                    // "Value: 100"
+console.log(formatValue("Hello", "Message"));     // "Message Hello"
+console.log(formatValue(42, "Number", "✔"));      // "Number 42 ✔"
+
+
+or
+
+const greet = (name: string, age: number | null = null): string => {
+  return age ? `Hello ${name}, you are ${age} years old.` : `Hello ${name}`;
+};
+
+console.log(greet("Ramy"));       // Hello Ramy
+console.log(greet("Ramy", 30));   // Hello Ramy, you are 30 years old.
+
+
+or
+
+type Operation = (a: number, b: number | string) => string;
+
+const combine: Operation = (a, b) => {
+  if (typeof b === "number") {
+    return `Sum: ${a + b}`;
+  }
+  return `Concat: ${a}${b}`;
+};
+
+console.log(combine(5, 10));   // Sum: 15
+console.log(combine(5, "X"));  // Concat: 5X
+
+
+

@@ -1,0 +1,116 @@
+Create Routing   (updated for Angular 22)
+
+    - create components : home, about, show-product, navbar
+
+    - define Routing (app.routes.ts) :  (no change)
+
+        import { Routes } from '@angular/router';
+        import { Home } from './pages/home/home';
+        import { About } from './pages/about/about';
+        import { ShowProduct } from './pages/show-product/show-product';
+
+        export const routes: Routes = [
+            { path: '', component: Home },
+            { path: 'about', component: About },
+            { path: 'product/:id', component: ShowProduct },
+            { path: '**', redirectTo: '' } // fallback
+        ];
+
+
+        import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+        import { provideRouter } from '@angular/router';
+
+        import { routes } from './app.routes';
+
+        export const appConfig: ApplicationConfig = {
+            providers: [
+                provideBrowserGlobalErrorListeners(),
+                provideRouter(routes)
+            ]
+        };
+        
+
+    - navbar code :   (no change)
+        .ts
+
+            import { Component } from '@angular/core';
+            import { RouterLink, RouterLinkActive } from '@angular/router';
+
+            @Component({
+                selector: 'app-navbar',
+                imports: [RouterLink, RouterLinkActive],
+                templateUrl: './navbar.html',
+                styleUrl: './navbar.css'
+            })
+            export class Navbar {
+
+            }
+
+        .html
+
+            <nav>
+                <a routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a> |
+                <a routerLink="about" routerLinkActive="active">About</a> |
+                <a routerLink="product/101" routerLinkActive="active">Show Product</a>
+            </nav>
+
+
+        .css
+
+            nav {
+                margin: 1rem;
+            }
+
+            a {
+                text-decoration: none;
+                padding: 0.5rem;
+            }
+
+            .active {
+                font-weight: bold;
+                color: red;
+            }
+
+
+
+    - app component code :   (no change)
+        .ts
+            import { Component, signal } from '@angular/core';
+            import { RouterOutlet } from '@angular/router';
+            import { Navbar } from './shared/navbar/navbar';
+
+            @Component({
+                selector: 'app-root',
+                imports: [RouterOutlet, Navbar],
+                templateUrl: './app.html',
+                styleUrl: './app.css'
+            })
+            export class App {
+                protected readonly title = signal('route01');
+            }
+
+
+        .html
+            <app-navbar></app-navbar>
+            <router-outlet></router-outlet>
+
+
+        .ts
+            import { Component, inject } from '@angular/core';
+            import { ActivatedRoute } from '@angular/router';
+            import { toSignal } from '@angular/core/rxjs-interop';
+            import { map } from 'rxjs';
+
+            @Component({
+                selector: 'app-show-product',
+                templateUrl: './show-product.html',
+                styleUrl: './show-product.css'
+            })
+            export class ShowProduct {
+                private route = inject(ActivatedRoute);
+                productId = toSignal(this.route.paramMap.pipe(map(params => params.get('id'))));
+            }
+
+        .html
+            <h2>Show Product Page</h2>
+            <p>Product ID: {{ productId() }}</p>

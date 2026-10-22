@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Scope / Hoisting</h1>
+
+    <script>
+        
+        let x = function(a1){
+            console.log("hi ", a1);
+        };
+        x("waleed");
+        y = x;
+        y("osama");
+
+
+        for(let i = 1; i < 3; i++) {
+            console.log(i);
+        }
+        console.log("last of i is ", i);
+
+        let a1 = 1;
+        function parent() {
+            console.log(a1);
+            let a2 = 10;
+            c1();
+            c2();
+            function c1(){
+                let c11 = 100;
+                console.log(a1, a2, c11);
+            }
+            function c2() {
+                console.log(c11);
+            }
+        }
+
+        parent();
+    </script>
+
+</body>
+</html>

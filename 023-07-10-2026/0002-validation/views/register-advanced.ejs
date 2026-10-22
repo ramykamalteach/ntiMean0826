@@ -1,0 +1,283 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <header class="page-header">
+    <div class="category">Lesson 02 &bull; Intermediate Concepts</div>
+    <h1 class="page-title">Advanced Rules, Enums & Refine</h1>
+    <p class="page-subtitle">
+      Learn cross-field validation (.refine for password match), strict enums, date coercion,
+      optional URLs, checkbox booleans, and multi-value array parsing.
+    </p>
+  </header>
+
+  <div class="lesson-grid">
+    <!-- Advanced Form Section -->
+    <div class="glass-card">
+      <div class="form-toolbar">
+        <div class="toolbar-title">
+          <span>⚡</span>
+          <span>Advanced User Profile</span>
+        </div>
+        <div class="demo-buttons">
+          <button type="button" class="btn-demo valid" onclick="fillAdvancedForm(true)">
+            <span>✔</span> Fill Valid
+          </button>
+          <button type="button" class="btn-demo invalid" onclick="fillAdvancedForm(false)">
+            <span>✖</span> Fill Invalid
+          </button>
+        </div>
+      </div>
+
+      <% if (Object.keys(errors).length > 0) { %>
+        <div class="callout callout-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Validation Error (HTTP 422):</strong>
+            <span><%= Object.keys(errors).length %> issue(s) detected in the submission.</span>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/register-advanced" method="POST" novalidate>
+        <!-- Username -->
+        <div class="form-group <%= errors.username ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Username</span>
+            <span class="tag">z.string().regex(/^[a-zA-Z0-9_]+$/)</span>
+          </label>
+          <input
+            type="text"
+            name="username"
+            class="form-control"
+            placeholder="e.g. sarah_99"
+            value="<%= oldData.username || '' %>"
+          >
+          <% if (errors.username) { %>
+            <div class="form-error"><span>✖</span> <%= errors.username %></div>
+          <% } else { %>
+            <div class="form-hint">Alphanumeric and underscores only (3-20 chars).</div>
+          <% } %>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group <%= errors.email ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Email</span>
+            <span class="tag">z.string().email().toLowerCase()</span>
+          </label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="sarah@example.com"
+            value="<%= oldData.email || '' %>"
+          >
+          <% if (errors.email) { %>
+            <div class="form-error"><span>✖</span> <%= errors.email %></div>
+          <% } %>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group <%= errors.password ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Password</span>
+            <span class="tag">Min 8, 1 uppercase, 1 number</span>
+          </label>
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Must include A-Z and 0-9"
+          >
+          <% if (errors.password) { %>
+            <div class="form-error"><span>✖</span> <%= errors.password %></div>
+          <% } %>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group <%= errors.confirmPassword ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Confirm Password</span>
+            <span class="tag">.refine(cross-field comparison)</span>
+          </label>
+          <input
+            type="password"
+            name="confirmPassword"
+            class="form-control"
+            placeholder="Re-type your password"
+          >
+          <% if (errors.confirmPassword) { %>
+            <div class="form-error"><span>✖</span> <%= errors.confirmPassword %></div>
+          <% } else { %>
+            <div class="form-hint">Must match password exactly.</div>
+          <% } %>
+        </div>
+
+        <!-- Role (Enum) -->
+        <div class="form-group <%= errors.role ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Assigned Role</span>
+            <span class="tag">z.enum(['user', 'editor', 'admin'])</span>
+          </label>
+          <select name="role" class="form-control">
+            <option value="user" <%= oldData.role === 'user' ? 'selected' : '' %>>User (Standard Member)</option>
+            <option value="editor" <%= oldData.role === 'editor' ? 'selected' : '' %>>Editor (Content Manager)</option>
+            <option value="admin" <%= oldData.role === 'admin' ? 'selected' : '' %>>Admin (Full Access)</option>
+          </select>
+          <% if (errors.role) { %>
+            <div class="form-error"><span>✖</span> <%= errors.role %></div>
+          <% } %>
+        </div>
+
+        <!-- Birth Date (Coerce Date) -->
+        <div class="form-group <%= errors.birthDate ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Date of Birth</span>
+            <span class="tag">z.coerce.date().refine(past)</span>
+          </label>
+          <input
+            type="date"
+            name="birthDate"
+            class="form-control"
+            value="<%= oldData.birthDate || '' %>"
+          >
+          <% if (errors.birthDate) { %>
+            <div class="form-error"><span>✖</span> <%= errors.birthDate %></div>
+          <% } else { %>
+            <div class="form-hint">Must be a date in the past.</div>
+          <% } %>
+        </div>
+
+        <!-- Website (Optional URL) -->
+        <div class="form-group <%= errors.website ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Personal Portfolio / Website</span>
+            <span class="tag">z.string().url().optional()</span>
+          </label>
+          <input
+            type="url"
+            name="website"
+            class="form-control"
+            placeholder="https://mywebsite.com (optional)"
+            value="<%= oldData.website || '' %>"
+          >
+          <% if (errors.website) { %>
+            <div class="form-error"><span>✖</span> <%= errors.website %></div>
+          <% } else { %>
+            <div class="form-hint">Optional. If provided, must be a valid URL with protocol.</div>
+          <% } %>
+        </div>
+
+        <!-- Skills Checkboxes (Array) -->
+        <div class="form-group <%= errors.skills ? 'has-error' : '' %>">
+          <label class="form-label">
+            <span>Technical Skills</span>
+            <span class="tag">z.array(z.string()).min(1)</span>
+          </label>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.25rem;">
+            <% const userSkills = Array.isArray(oldData.skills) ? oldData.skills : (oldData.skills ? [oldData.skills] : []); %>
+            <label class="checkbox-group">
+              <input type="checkbox" name="skills" value="Node.js" <%= userSkills.includes('Node.js') ? 'checked' : '' %>>
+              <span class="checkbox-label">Node.js</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" name="skills" value="Express" <%= userSkills.includes('Express') ? 'checked' : '' %>>
+              <span class="checkbox-label">Express</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" name="skills" value="MongoDB" <%= userSkills.includes('MongoDB') ? 'checked' : '' %>>
+              <span class="checkbox-label">MongoDB</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" name="skills" value="Angular" <%= userSkills.includes('Angular') ? 'checked' : '' %>>
+              <span class="checkbox-label">Angular</span>
+            </label>
+          </div>
+          <% if (errors.skills) { %>
+            <div class="form-error"><span>✖</span> <%= errors.skills %></div>
+          <% } else { %>
+            <div class="form-hint">Select at least one skill.</div>
+          <% } %>
+        </div>
+
+        <!-- Terms Agreement (Coerce Boolean) -->
+        <div class="form-group <%= errors.agreeTerms ? 'has-error' : '' %>" style="margin-top: 1rem;">
+          <label class="checkbox-group">
+            <input
+              type="checkbox"
+              name="agreeTerms"
+              <%= oldData.agreeTerms === 'on' || oldData.agreeTerms === true || oldData.agreeTerms === 'true' ? 'checked' : '' %>
+            >
+            <span class="checkbox-label">
+              I agree to the Terms of Service & Privacy Policy <span class="tag" style="display: inline;">(z.coerce.boolean())</span>
+            </span>
+          </label>
+          <% if (errors.agreeTerms) { %>
+            <div class="form-error"><span>✖</span> <%= errors.agreeTerms %></div>
+          <% } %>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <span>Submit Advanced Profile</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Teaching Sidebar -->
+    <div class="teaching-sidebar">
+      <!-- Concept: Cross-Field .refine() -->
+      <div class="concept-box">
+        <h3><span>🔗</span> Cross-Field .refine()</h3>
+        <p>
+          Individual field schemas cannot inspect sibling values. To compare <code>password</code> and <code>confirmPassword</code>, we call <code>.refine()</code> on the whole object:
+        </p>
+        <pre class="code-snippet">const schema = z.object({
+  password: z.string(),
+  confirmPassword: z.string()
+}).refine(
+  data => data.password === data.confirmPassword,
+  {
+    message: "Passwords do not match",
+    path: ["confirmPassword"] // Attaches error to this field!
+  }
+);</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          Notice the <code>path: ["confirmPassword"]</code> property. This tells Zod which input element caused the failure!
+        </p>
+      </div>
+
+      <!-- Concept: z.enum() -->
+      <div class="concept-box">
+        <h3><span>📋</span> Strict Enums (z.enum)</h3>
+        <p>
+          Enums ensure incoming data strictly belongs to a finite set of allowed string constants:
+        </p>
+        <pre class="code-snippet">role: z.enum(["user", "editor", "admin"])</pre>
+        <p>
+          If a malicious client attempts to tamper with the <code>&lt;select&gt;</code> HTML and send <code>role="super_admin"</code>, Zod automatically rejects it with HTTP 422!
+        </p>
+      </div>
+
+      <!-- Concept: Optional vs Empty Strings -->
+      <div class="concept-box">
+        <h3><span>⚠️</span> The Empty Input Pitfall</h3>
+        <p>
+          When an HTML input is left blank, browsers send an empty string <code>""</code>, <strong>not</strong> <code>undefined</code>.
+        </p>
+        <pre class="code-snippet">// Recommended pattern for optional URLs in HTML forms:
+website: z.string()
+  .url("Invalid URL")
+  .optional()
+  .or(z.literal(""))</pre>
+        <p style="font-size: 0.8rem; color: #94a3b8;">
+          This prevents Zod from rejecting empty optional inputs!
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

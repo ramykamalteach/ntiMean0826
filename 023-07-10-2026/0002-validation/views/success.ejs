@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="success-container">
+  <div class="success-hero">
+    <div class="success-icon">✔</div>
+    <div class="category" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">
+      Validation Successful &bull; HTTP 200 OK
+    </div>
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+      Data Passed Zod Validation!
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto;">
+      Source: <strong><%= source %></strong>. The request body was safely parsed, type-coerced, and sanitized.
+    </p>
+  </div>
+
+  <!-- Sanitization & Transformation Inspector -->
+  <div class="glass-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <span>🔄</span>
+      <span>Before & After: How Zod Transformed Your Data</span>
+    </h3>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+      Notice the difference between the raw string data submitted by the client browser and the sanitized, typed object returned in <code>result.data</code>:
+    </p>
+
+    <% if (typeof transformationHighlights !== 'undefined' && transformationHighlights.length > 0) { %>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Raw Input (from req.body)</th>
+            <th>Zod Result (result.data)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% transformationHighlights.forEach(function(item) { %>
+            <tr>
+              <td><code><%= item.field %></code></td>
+              <td style="color: #fb7185; font-family: var(--font-mono); font-size: 0.8rem;"><%= item.raw %></td>
+              <td style="color: #34d399; font-family: var(--font-mono); font-size: 0.8rem;"><%= item.coerced %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <div class="callout callout-success">
+      <span>🛡️</span>
+      <div>
+        <strong>Safe for Database Storage:</strong>
+        <span>
+          Never save raw <code>req.body</code> directly into MongoDB / SQL. Always use <code>result.data</code> because Zod guarantees clean types and strips unauthorized injected fields.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validated Data JSON Output -->
+  <div class="glass-card" style="margin-bottom: 2rem;">
+    <div class="form-toolbar">
+      <div class="toolbar-title">
+        <span>📦</span>
+        <span>Validated Data Object (result.data)</span>
+      </div>
+      <button class="btn-demo" onclick="copySnippet(document.getElementById('validatedJsonData').innerText, this)">
+        📋 Copy JSON
+      </button>
+    </div>
+
+    <pre id="validatedJsonData" class="code-snippet" style="max-height: 350px; font-size: 0.85rem;"><%= JSON.stringify(data, null, 2) %></pre>
+  </div>
+
+  <!-- Navigation Action Buttons -->
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="/register" class="btn-demo" style="padding: 0.75rem 1.25rem; font-size: 0.9rem;">
+      &larr; Try Basic Form Again
+    </a>
+    <a href="/register-advanced" class="btn-demo" style="padding: 0.75rem 1.25rem; font-size: 0.9rem;">
+      ⚡ Try Advanced Form
+    </a>
+    <a href="/product" class="btn-demo" style="padding: 0.75rem 1.25rem; font-size: 0.9rem;">
+      📦 Try Product Form
+    </a>
+    <a href="/api-tester" class="btn-demo valid" style="padding: 0.75rem 1.25rem; font-size: 0.9rem;">
+      🧪 Open API Tester
+    </a>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

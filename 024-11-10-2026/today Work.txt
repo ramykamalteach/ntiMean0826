@@ -1,0 +1,9 @@
+Create all collection of end-points :
+1- add category (category name, description)
+2- update category
+
+3- add product (name, price, photo, category id)
+4- show all products with its category name
+5- delete product by its id
+
+database : mongo (collections : categories, products)

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redis Caching in Node.js & Express | Interactive Tutorial & Visual Lab</title>
+    <meta name="description" content="Learn why Redis is superior to in-memory caching for large Node.js applications. Interactive visual simulator, Cache-Aside pattern, and step-by-step code tutorial.">
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background glowing ambient mesh -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand-logo" id="brand-logo">
+                <div class="redis-icon-wrapper">
+                    <svg class="redis-logo-svg" viewBox="0 0 100 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 0L98.66 28.1V74.9L50 86L1.34 74.9V28.1L50 0Z" fill="#DC382D"/>
+                        <path d="M50 8L91 31.5V69.5L50 78.8L9 69.5V31.5L50 8Z" fill="#A81D13"/>
+                        <path d="M50 16L82.5 34.6V63.5L50 71L17.5 63.5V34.6L50 16Z" fill="#DC382D"/>
+                        <circle cx="50" cy="43" r="14" fill="#FFFFFF"/>
+                        <circle cx="50" cy="43" r="9" fill="#DC382D"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Redis Caching</span>
+                    <span class="brand-subtitle">NTI MEAN Stack Masterclass</span>
+                </div>
+            </a>
+
+            <nav class="nav-links" id="nav-menu">
+                <a href="#why-redis" class="nav-link">Why Redis?</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#simulator" class="nav-link active">Live Simulator</a>
+                <a href="#code-walkthrough" class="nav-link">Code Tutorial</a>
+                <a href="#quiz-section" class="nav-link">Knowledge Check</a>
+            </nav>
+
+            <div class="server-status-pill" id="server-status-badge">
+                <span class="pulse-dot"></span>
+                <span id="server-status-text">Checking Backend...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section" id="hero">
+            <div class="hero-badge">
+                <span class="badge-icon">⚡</span> High-Performance Backend Architecture
+            </div>
+            <h1 class="hero-title">
+                Scaling Node.js with <span class="gradient-text">Redis Caching</span>
+            </h1>
+            <p class="hero-description">
+                For larger applications, <strong>Redis is often a superior solution</strong> compared to in-memory caching.
+                Explore the 5 core architectural reasons, interact with a live Cache-Aside simulator, and inspect production-ready code.
+            </p>
+
+            <!-- Quick Key Metric Highlights -->
+            <div class="hero-metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value text-red">~2 ms</div>
+                    <div class="metric-label">Redis Cache Hit Latency</div>
+                    <div class="metric-sub">vs ~180ms MongoDB disk query</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value text-cyan">Shared</div>
+                    <div class="metric-label">Cross-Instance State</div>
+                    <div class="metric-sub">Multi-instance cluster synchronization</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value text-green">Persistent</div>
+                    <div class="metric-label">Survives Server Restarts</div>
+                    <div class="metric-sub">RDB snapshots & AOF append-only log</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value text-amber">60s TTL</div>
+                    <div class="metric-label">Native Expiration</div>
+                    <div class="metric-sub">Automated memory reclamation</div>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <a href="#simulator" class="btn btn-primary" id="btn-jump-sim">
+                    <span>⚡ Launch Interactive Simulator</span>
+                </a>
+                <a href="#code-walkthrough" class="btn btn-secondary" id="btn-jump-code">
+                    <span>💻 Explore Step-by-Step Code</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Section 1: The 5 Core Pillars - Why Redis? -->
+        <section class="section-block" id="why-redis">
+            <div class="section-header">
+                <div class="section-tag">ARCHITECTURAL ADVANTAGES</div>
+                <h2 class="section-title">Why Redis Instead of In-Memory Caching?</h2>
+                <p class="section-subtitle">
+                    In smaller toy apps, developers often store cached data in a simple JavaScript object or Map in memory. Here is why larger production systems switch to Redis:
+                </p>
+            </div>
+
+            <div class="pillars-grid">
+                <!-- Pillar 1 -->
+                <div class="pillar-card">
+                    <div class="pillar-header">
+                        <div class="pillar-icon bg-red-soft">🌐</div>
+                        <span class="pillar-number">01</span>
+                    </div>
+                    <h3 class="pillar-title">Runs Separately from Node.js</h3>
+                    <p class="pillar-text">
+                        Redis operates as an independent, highly-optimized C process with its own dedicated memory space.
+                    </p>
+                    <div class="pillar-compare">
+                        <div class="compare-row bad">
+                            <span class="bullet">✕</span> <strong>In-Memory:</strong> Cache competes with Node.js V8 heap. A heavy cache triggers V8 Garbage Collection pauses and risks OOM (Out Of Memory) crashes.
+                        </div>
+                        <div class="compare-row good">
+                            <span class="bullet">✓</span> <strong>Redis:</strong> Zero impact on Node's single-threaded event loop. Node crash won't destroy Redis, and Redis heavy usage won't stall Node.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 2 -->
+                <div class="pillar-card">
+                    <div class="pillar-header">
+                        <div class="pillar-icon bg-cyan-soft">🔄</div>
+                        <span class="pillar-number">02</span>
+                    </div>
+                    <h3 class="pillar-title">Shared Across Multiple Instances</h3>
+                    <p class="pillar-text">
+                        Modern Node apps scale horizontally using PM2 cluster mode, Docker containers, or Kubernetes pods.
+                    </p>
+                    <div class="pillar-compare">
+                        <div class="compare-row bad">
+                            <span class="bullet">✕</span> <strong>In-Memory:</strong> Each Node instance maintains its own isolated cache. Instance A caches an update, but Instance B serves stale data!
+                        </div>
+                        <div class="compare-row good">
+                            <span class="bullet">✓</span> <strong>Redis:</strong> Central single source of truth. All instances query and invalidate the exact same Redis instance.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div class="pillar-card">
+                    <div class="pillar-header">
+                        <div class="pillar-icon bg-green-soft">💾</div>
+                        <span class="pillar-number">03</span>
+                    </div>
+                    <h3 class="pillar-title">Survives Application Restarts</h3>
+                    <p class="pillar-text">
+                        Node.js apps restart frequently during CI/CD deployments, crash reboots, or rolling upgrades.
+                    </p>
+                    <div class="pillar-compare">
+                        <div class="compare-row bad">
+                            <span class="bullet">✕</span> <strong>In-Memory:</strong> Every restart completely wipes the cache, causing a "Cache Avalanche" where every request pounds MongoDB.
+                        </div>
+                        <div class="compare-row good">
+                            <span class="bullet">✓</span> <strong>Redis:</strong> Supports RDB snapshots & AOF logging. Cached data stays warm across all Node server restarts.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 4 -->
+                <div class="pillar-card">
+                    <div class="pillar-header">
+                        <div class="pillar-icon bg-amber-soft">⏱️</div>
+                        <span class="pillar-number">04</span>
+                    </div>
+                    <h3 class="pillar-title">Supports Expiration Times (TTL)</h3>
+                    <p class="pillar-text">
+                        Redis has built-in millisecond and second precision Key Expiration (TTL = Time-To-Live).
+                    </p>
+                    <div class="pillar-compare">
+                        <div class="compare-row bad">
+                            <span class="bullet">✕</span> <strong>In-Memory:</strong> Requires complex manual <code>setInterval</code> loops or third-party memory caches that easily leak memory.
+                        </div>
+                        <div class="compare-row good">
+                            <span class="bullet">✓</span> <strong>Redis:</strong> Built-in <code>{ EX: 60 }</code> parameter automatically evicts keys using passive & active background eviction algorithms.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 5 -->
+                <div class="pillar-card">
+                    <div class="pillar-header">
+                        <div class="pillar-icon bg-purple-soft">🧱</div>
+                        <span class="pillar-number">05</span>
+                    </div>
+                    <h3 class="pillar-title">Rich Native Data Structures</h3>
+                    <p class="pillar-text">
+                        Redis is not just a key-value store; it is an in-memory data structure server.
+                    </p>
+                    <div class="pillar-compare">
+                        <div class="compare-row bad">
+                            <span class="bullet">✕</span> <strong>In-Memory:</strong> Manipulating nested complex collections requires full serialization, deserialization, and deep object cloning.
+                        </div>
+                        <div class="compare-row good">
+                            <span class="bullet">✓</span> <strong>Redis:</strong> First-class support for Strings, Hashes, Lists, Sets, Sorted Sets (ZSET for leaderboards), Bitmaps, and Streams.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deep Comparison Table -->
+            <div class="table-container">
+                <div class="table-title-bar">
+                    <h3>Summary: Node.js In-Memory Cache vs. Distributed Redis Cache</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Evaluation Metric</th>
+                                <th>Node.js In-Memory Cache (Object/Map)</th>
+                                <th>Redis External Cache Service</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Execution Scope</strong></td>
+                                <td>Inside Node.js V8 Process Memory</td>
+                                <td>Independent external service (C-based daemon)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Horizontal Scaling (Multi-instance)</strong></td>
+                                <td>❌ Isolated per process; High inconsistency risk</td>
+                                <td>✅ Centralized; Unified cache across all instances</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lifecycle on App Restart</strong></td>
+                                <td>❌ 100% data loss on reboot/deploy</td>
+                                <td>✅ Cache preserved; Optional disk persistence</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TTL & Eviction</strong></td>
+                                <td>⚠️ Manual timer coding; Memory leak prone</td>
+                                <td>✅ Native TTL, LRU/LFU memory eviction policies</td>
+                            </tr>
+                            <tr>
+                                <td><strong>V8 Heap Impact</strong></td>
+                                <td>⚠️ Bloats heap; Triggers Garbage Collector lag</td>
+                                <td>✅ Zero footprint on Node.js heap</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case Fit</strong></td>
+                                <td>Small script, micro utilities, static config</td>
+                                <td>Production Web Apps, APIs, Microservices</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Architecture & Request Lifecycle -->
+        <section class="section-block" id="architecture">
+            <div class="section-header">
+                <div class="section-tag">PATTERN BLUEPRINT</div>
+                <h2 class="section-title">The Cache-Aside Pattern Lifecycle</h2>
+                <p class="section-subtitle">
+                    The requested products route uses the industry-standard <strong>Cache-Aside (Lazy Loading)</strong> pattern. Observe how requests travel between Client, Node.js, Redis, and MongoDB:
+                </p>
+            </div>
+
+            <div class="architecture-diagram-card">
+                <div class="diagram-toolbar">
+                    <span class="diagram-legend-item"><span class="legend-color hit-color"></span> Cache HIT Flow (Redis)</span>
+                    <span class="diagram-legend-item"><span class="legend-color miss-color"></span> Cache MISS Flow (MongoDB -> Redis)</span>
+                </div>
+
+                <div class="interactive-diagram" id="flow-diagram">
+                    <div class="diagram-node client-node" id="node-client">
+                        <div class="node-icon">💻</div>
+                        <div class="node-name">Client / Browser</div>
+                        <div class="node-sub">HTTP GET /api/products</div>
+                    </div>
+
+                    <div class="diagram-arrow arrow-1" id="arrow-client-node">
+                        <span class="arrow-label">1. Request</span>
+                        <div class="packet packet-1"></div>
+                    </div>
+
+                    <div class="diagram-node server-node" id="node-server">
+                        <div class="node-icon">🟢</div>
+                        <div class="node-name">Node.js Express App</div>
+                        <div class="node-sub">Port 3000</div>
+                    </div>
+
+                    <div class="branch-container">
+                        <!-- Redis Branch -->
+                        <div class="branch-item branch-redis">
+                            <div class="diagram-arrow arrow-redis" id="arrow-node-redis">
+                                <span class="arrow-label">2. redisClient.get('products')</span>
+                                <div class="packet packet-redis"></div>
+                            </div>
+                            <div class="diagram-node redis-node" id="node-redis">
+                                <div class="node-icon">🟥</div>
+                                <div class="node-name">Redis Cache</div>
+                                <div class="node-sub">Port 6379 (In-Memory)</div>
+                                <div class="node-status-tag" id="redis-cache-state-tag">Key: "products" [EX: 60s]</div>
+                            </div>
+                        </div>
+
+                        <!-- MongoDB Branch -->
+                        <div class="branch-item branch-mongo">
+                            <div class="diagram-arrow arrow-mongo" id="arrow-node-mongo">
+                                <span class="arrow-label">3. Miss: Product.find().lean()</span>
+                                <div class="packet packet-mongo"></div>
+                            </div>
+                            <div class="diagram-node mongo-node" id="node-mongo">
+                                <div class="node-icon">🍃</div>
+                                <div class="node-name">MongoDB Database</div>
+                                <div class="node-sub">Port 27017 (Disk Storage)</div>
+                                <div class="node-status-tag">Collections: "products"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-steps-bar">
+                    <div class="step-card" id="step-card-1">
+                        <div class="step-num">Step 1</div>
+                        <div class="step-title">Client Calls Route</div>
+                        <div class="step-desc"><code>GET /api/products</code> hits Express router.</div>
+                    </div>
+                    <div class="step-card" id="step-card-2">
+                        <div class="step-num">Step 2</div>
+                        <div class="step-title">Query Redis First</div>
+                        <div class="step-desc"><code>await redisClient.get('products')</code></div>
+                    </div>
+                    <div class="step-card" id="step-card-3">
+                        <div class="step-num">Step 3A (Hit)</div>
+                        <div class="step-title">Cache Hit (~2ms)</div>
+                        <div class="step-desc">Parse JSON & return immediately!</div>
+                    </div>
+                    <div class="step-card" id="step-card-4">
+                        <div class="step-num">Step 3B (Miss)</div>
+                        <div class="step-title">Query MongoDB (~180ms)</div>
+                        <div class="step-desc">Execute <code>Product.find().lean()</code></div>
+                    </div>
+                    <div class="step-card" id="step-card-5">
+                        <div class="step-num">Step 4</div>
+                        <div class="step-title">Populate Cache</div>
+                        <div class="step-desc"><code>redisClient.set(..., { EX: 60 })</code></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Live Interactive Simulation Playground -->
+        <section class="section-block" id="simulator">
+            <div class="section-header">
+                <div class="section-tag">HANDS-ON LAB</div>
+                <h2 class="section-title">Live Interactive Redis Cache Simulator</h2>
+                <p class="section-subtitle">
+                    Interact with real or simulated Redis requests in real time. Experience cache hits, cache misses, TTL countdowns, and server restart survivability:
+                </p>
+            </div>
+
+            <div class="simulator-wrapper">
+                <!-- Controls & Dashboard Column -->
+                <div class="sim-sidebar">
+                    <div class="control-card">
+                        <h3 class="card-heading">Simulation Controls</h3>
+                        
+                        <div class="control-actions">
+                            <button class="btn btn-primary btn-block" id="btn-fetch-products">
+                                <span class="btn-icon">🚀</span>
+                                <span>Fetch Products (GET /api/products)</span>
+                            </button>
+
+                            <div class="action-row">
+                                <button class="btn btn-warning" id="btn-flush-cache" title="Delete Redis key 'products'">
+                                    <span class="btn-icon">🗑️</span> Flush Cache
+                                </button>
+                                <button class="btn btn-info" id="btn-expire-fast" title="Simulate TTL expiration immediately">
+                                    <span class="btn-icon">⏩</span> Expire TTL
+                                </button>
+                            </div>
+
+                            <button class="btn btn-secondary btn-block" id="btn-restart-node" title="Simulates restarting Node.js to prove Redis survives">
+                                <span class="btn-icon">🔄</span> Restart Node.js Server
+                            </button>
+
+                            <div class="multi-instance-selector">
+                                <div class="selector-label">Simulate Scaled Node Instances:</div>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="node-instance" value="1" checked id="inst-1">
+                                        <span>Node Instance #1 (Port 3000)</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="node-instance" value="2" id="inst-2">
+                                        <span>Node Instance #2 (Port 3001)</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">Both instances share the same Redis cache!</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TTL Gauge Card -->
+                    <div class="ttl-card">
+                        <div class="ttl-header">
+                            <span class="ttl-title">Key: <code>"products"</code> TTL</span>
+                            <span class="ttl-badge" id="ttl-status-badge">Empty (Not Cached)</span>
+                        </div>
+                        <div class="ttl-visual">
+                            <div class="circular-progress" id="ttl-circle">
+                                <div class="inner-circle">
+                                    <span class="ttl-seconds" id="ttl-number">0</span>
+                                    <span class="ttl-unit">sec left</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ttl-meta">
+                            <span id="ttl-info-text">Click "Fetch Products" to populate cache with 60s TTL</span>
+                        </div>
+                    </div>
+
+                    <!-- Performance Comparison Card -->
+                    <div class="stats-card">
+                        <h4 class="stats-title">Performance Analytics</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="stat-total-reqs">0</div>
+                                <div class="stat-name">Total Requests</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number text-green" id="stat-hits">0</div>
+                                <div class="stat-name">Cache Hits</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number text-amber" id="stat-misses">0</div>
+                                <div class="stat-name">Cache Misses</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number text-cyan" id="stat-hit-ratio">0%</div>
+                                <div class="stat-name">Hit Ratio</div>
+                            </div>
+                        </div>
+                        <div class="latency-bar-group">
+                            <div class="latency-label-row">
+                                <span>Redis Response Time</span>
+                                <span class="text-green font-mono" id="latency-redis">2 ms</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill fill-green" style="width: 2%;"></div></div>
+                            <div class="latency-label-row mt-2">
+                                <span>MongoDB Response Time</span>
+                                <span class="text-red font-mono" id="latency-mongo">184 ms</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill fill-red" style="width: 95%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Results & Inspector Column -->
+                <div class="sim-content">
+                    <!-- Current Request Status Banner -->
+                    <div class="result-banner banner-idle" id="result-status-banner">
+                        <div class="banner-status-icon" id="banner-icon">💤</div>
+                        <div class="banner-text">
+                            <div class="banner-headline" id="banner-title">Simulator Ready</div>
+                            <div class="banner-sub" id="banner-desc">Click "Fetch Products" above to trigger a request through the Cache-Aside pattern.</div>
+                        </div>
+                        <div class="banner-latency" id="banner-latency-badge">
+                            <span class="latency-value" id="badge-latency-time">--</span>
+                            <span class="latency-source" id="badge-latency-source">NO REQUEST</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Step-by-Step Activity Log -->
+                    <div class="activity-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Request Execution Timeline</span>
+                            <button class="btn-text" id="btn-clear-logs">Clear Log</button>
+                        </div>
+                        <div class="log-stream" id="activity-log-stream">
+                            <div class="log-entry system-entry">
+                                <span class="log-time">[System Ready]</span>
+                                <span class="log-text">Server running on port 3000. Redis connection initialized.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Inspector Tabs -->
+                    <div class="inspector-card">
+                        <div class="inspector-nav">
+                            <button class="tab-btn active" data-tab="cards-view" id="tab-cards">Product Catalog Cards</button>
+                            <button class="tab-btn" data-tab="json-view" id="tab-json">Raw JSON Response</button>
+                            <button class="tab-btn" data-tab="headers-view" id="tab-headers">HTTP Headers</button>
+                        </div>
+
+                        <div class="tab-content active" id="cards-view">
+                            <div class="products-grid" id="products-render-area">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📦</div>
+                                    <p>No products loaded yet. Trigger a request above to load data from MongoDB or Redis.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="json-view">
+                            <pre class="code-output" id="raw-json-output">// JSON response will display here upon request...</pre>
+                        </div>
+
+                        <div class="tab-content" id="headers-view">
+                            <pre class="code-output" id="headers-output">HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Cache-Status: PENDING
+X-Response-Time: --</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Step-by-Step Code Tutorial -->
+        <section class="section-block" id="code-walkthrough">
+            <div class="section-header">
+                <div class="section-tag">SOURCE IMPLEMENTATION</div>
+                <h2 class="section-title">Step-by-Step Code Walkthrough</h2>
+                <p class="section-subtitle">
+                    Examine the exact Node.js and Express files written for this tutorial. Click each tab to inspect the source code with line-by-line annotations:
+                </p>
+            </div>
+
+            <div class="code-tutorial-container">
+                <div class="code-tabs-header">
+                    <button class="code-tab-btn active" data-code="step1">
+                        <span class="step-pill">1</span> npm install redis
+                    </button>
+                    <button class="code-tab-btn" data-code="step2">
+                        <span class="step-pill">2</span> config/redis.js
+                    </button>
+                    <button class="code-tab-btn" data-code="step3">
+                        <span class="step-pill">3</span> app.js
+                    </button>
+                    <button class="code-tab-btn" data-code="step4">
+                        <span class="step-pill">4</span> models/Product.js
+                    </button>
+                    <button class="code-tab-btn" data-code="step5">
+                        <span class="step-pill">5</span> routes/products.js
+                    </button>
+                </div>
+
+                <div class="code-body-wrapper">
+                    <!-- Step 1: Install -->
+                    <div class="code-panel active" id="code-panel-step1">
+                        <div class="code-info-bar">
+                            <span class="code-file-name">Terminal / Command Prompt</span>
+                            <button class="copy-btn" data-target="cmd-snippet">Copy Command</button>
+                        </div>
+                        <pre class="code-block" id="cmd-snippet"><code class="language-bash"># Install official Redis client for Node.js (version 4.x+)
+npm install redis</code></pre>
+                        <div class="code-annotations">
+                            <div class="annotation-card">
+                                <strong>💡 Note on modern <code>redis</code> package:</strong>
+                                Since version 4.0, the official Node.js Redis client natively returns Promises and supports <code>async / await</code> syntax out of the box. No manual Promisify or bluebird wrappers required!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: config/redis.js -->
+                    <div class="code-panel" id="code-panel-step2">
+                        <div class="code-info-bar">
+                            <span class="code-file-name">config/redis.js</span>
+                            <button class="copy-btn" data-target="redis-config-snippet">Copy Code</button>
+                        </div>
+                        <pre class="code-block" id="redis-config-snippet"><code class="language-javascript">const { createClient } = require('redis'); 
+
+// 1. Instantiate the client pointing to Redis server URL
+const redisClient = createClient({ 
+    url: 'redis://localhost:6379' 
+}); 
+
+// 2. Attach error event listener to catch network / connection issues
+redisClient.on('error', (err) => { 
+    console.error('Redis Error:', err); 
+}); 
+
+// 3. Async function to establish socket connection
+async function connectRedis() { 
+    await redisClient.connect(); 
+    console.log('Redis connected successfully'); 
+} 
+
+// 4. Export client and connection function
+module.exports = { redisClient, connectRedis };</code></pre>
+                        <div class="code-annotations">
+                            <div class="annotation-item">
+                                <span class="badge-num">1</span> <code>createClient({ url })</code>: Configures the Redis connection endpoint. Default port is <code>6379</code>.
+                            </div>
+                            <div class="annotation-item">
+                                <span class="badge-num">2</span> <code>redisClient.on('error')</code>: Essential to prevent unhandled socket exceptions from terminating the Node.js process.
+                            </div>
+                            <div class="annotation-item">
+                                <span class="badge-num">3</span> <code>await redisClient.connect()</code>: In Redis v4+, the socket connection must be explicitly opened before executing commands.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: app.js -->
+                    <div class="code-panel" id="code-panel-step3">
+                        <div class="code-info-bar">
+                            <span class="code-file-name">app.js</span>
+                            <button class="copy-btn" data-target="app-snippet">Copy Code</button>
+                        </div>
+                        <pre class="code-block" id="app-snippet"><code class="language-javascript">const express = require('express'); 
+const { connectRedis } = require('./config/redis'); 
+const productsRouter = require('./routes/products');
+
+const app = express(); 
+
+// Mount routes
+app.use('/api/products', productsRouter);
+
+// Start server only after establishing Redis connection
+async function startServer() { 
+    await connectRedis(); 
+    app.listen(3000, () => { 
+        console.log('Server running on port 3000'); 
+    }); 
+} 
+
+startServer();</code></pre>
+                        <div class="code-annotations">
+                            <div class="annotation-item">
+                                <span class="badge-num">💡</span> <strong>Best Practice:</strong> Always await <code>connectRedis()</code> before invoking <code>app.listen()</code>. This guarantees that Redis is ready to handle incoming queries as soon as HTTP traffic arrives.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: models/Product.js -->
+                    <div class="code-panel" id="code-panel-step4">
+                        <div class="code-info-bar">
+                            <span class="code-file-name">models/Product.js</span>
+                            <button class="copy-btn" data-target="product-model-snippet">Copy Code</button>
+                        </div>
+                        <pre class="code-block" id="product-model-snippet"><code class="language-javascript">const mongoose = require('mongoose');
+
+const productSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    price: { type: Number, required: true },
+    stock: { type: Number, default: 0 },
+    description: String
+}, { timestamps: true });
+
+module.exports = mongoose.model('Product', productSchema);</code></pre>
+                        <div class="code-annotations">
+                            <div class="annotation-item">
+                                <span class="badge-num">⚡</span> <strong>Why <code>.lean()</code>?</strong> In the route, <code>Product.find().lean()</code> tells Mongoose to return plain JavaScript objects instead of heavy Mongoose Documents (with getters/setters/methods). This speeds up execution and makes JSON serialization for Redis instant!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: routes/products.js -->
+                    <div class="code-panel" id="code-panel-step5">
+                        <div class="code-info-bar">
+                            <span class="code-file-name">routes/products.js (The Cache-Aside Route)</span>
+                            <button class="copy-btn" data-target="route-snippet">Copy Code</button>
+                        </div>
+                        <pre class="code-block" id="route-snippet"><code class="language-javascript">const express = require('express'); 
+const router = express.Router(); 
+const { redisClient } = require('../config/redis'); 
+const Product = require('../models/Product'); 
+
+router.get('/', async (req, res) => { 
+    try { 
+        // 1. Check Redis for existing cached products
+        const cachedProducts = await redisClient.get('products'); 
+        if (cachedProducts) { 
+            // CACHE HIT: Parse and return instantly without touching MongoDB
+            return res.json({ source: 'redis', data: JSON.parse(cachedProducts) }); 
+        } 
+
+        // 2. CACHE MISS: Query MongoDB
+        const products = await Product.find().lean(); 
+
+        // 3. Store in Redis with 60 seconds expiration (TTL)
+        await redisClient.set('products', JSON.stringify(products), { EX: 60 }); 
+
+        // 4. Return database result to client
+        res.json({ source: 'database', data: products }); 
+    } catch (error) { 
+        res.status(500).json({ message: error.message }); 
+    } 
+}); 
+
+module.exports = router;</code></pre>
+                        <div class="code-annotations">
+                            <div class="annotation-item">
+                                <span class="badge-num">1</span> <code>await redisClient.get('products')</code>: Returns string or <code>null</code> if key doesn't exist or expired.
+                            </div>
+                            <div class="annotation-item">
+                                <span class="badge-num">2</span> <code>JSON.parse(cachedProducts)</code>: Redis stores strings, so we parse back into JavaScript objects for the client response.
+                            </div>
+                            <div class="annotation-item">
+                                <span class="badge-num">3</span> <code>{ EX: 60 }</code>: Automatically deletes key after 60 seconds (Time-To-Live), preventing stale data from lingering forever.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Knowledge Check (Interactive Quiz) -->
+        <section class="section-block" id="quiz-section">
+            <div class="section-header">
+                <div class="section-tag">TEST YOUR MASTERY</div>
+                <h2 class="section-title">Redis Caching Knowledge Check</h2>
+                <p class="section-subtitle">
+                    Verify your understanding of Redis caching in Node.js architectures with these 4 interactive questions:
+                </p>
+            </div>
+
+            <div class="quiz-container">
+                <!-- Question 1 -->
+                <div class="quiz-card" data-correct="2">
+                    <div class="quiz-question">
+                        <span class="q-number">Q1.</span>
+                        <span>Why does running Redis separately from your Node.js application prevent performance degradation?</span>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-index="0">
+                            A. It converts Node.js into a multi-threaded C++ compiler.
+                        </button>
+                        <button class="quiz-option" data-index="1">
+                            B. It disables the Node.js event loop completely.
+                        </button>
+                        <button class="quiz-option" data-index="2">
+                            C. It isolates cached data outside the V8 heap, avoiding Garbage Collection pauses and OOM crashes.
+                        </button>
+                        <button class="quiz-option" data-index="3">
+                            D. Redis automatically rewrites MongoDB database indexes.
+                        </button>
+                    </div>
+                    <div class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-card" data-correct="1">
+                    <div class="quiz-question">
+                        <span class="q-number">Q2.</span>
+                        <span>What does the option <code>{ EX: 60 }</code> do in <code>redisClient.set('products', ..., { EX: 60 })</code>?</span>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-index="0">
+                            A. Extends the maximum memory size to 60 Megabytes.
+                        </button>
+                        <button class="quiz-option" data-index="1">
+                            B. Sets an expiration Time-To-Live (TTL) of 60 seconds, after which Redis automatically deletes the key.
+                        </button>
+                        <button class="quiz-option" data-index="2">
+                            C. Restricts the query to return only 60 products.
+                        </button>
+                        <button class="quiz-option" data-index="3">
+                            D. Retries connecting to Redis 60 times before throwing an error.
+                        </button>
+                    </div>
+                    <div class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-card" data-correct="3">
+                    <div class="quiz-question">
+                        <span class="q-number">Q3.</span>
+                        <span>When horizontally scaling across multiple Node.js instances (e.g. Cluster mode or Kubernetes), what occurs with In-Memory caching?</span>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-index="0">
+                            A. Node.js automatically shares its memory across all CPU cores.
+                        </button>
+                        <button class="quiz-option" data-index="1">
+                            B. In-memory caching runs faster because memory is synced across the local network.
+                        </button>
+                        <button class="quiz-option" data-index="2">
+                            C. Nothing changes; in-memory cache is distributed by default.
+                        </button>
+                        <button class="quiz-option" data-index="3">
+                            D. Each instance holds an isolated memory cache, leading to severe cache inconsistency and duplicate DB hits.
+                        </button>
+                    </div>
+                    <div class="quiz-feedback" style="display: none;"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-card" data-correct="0">
+                    <div class="quiz-question">
+                        <span class="q-number">Q4.</span>
+                        <span>Why is <code>Product.find().lean()</code> used prior to storing data into Redis?</span>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-index="0">
+                            A. It returns plain JavaScript objects instead of heavy Mongoose documents, speeding up execution and JSON serialization.
+                        </button>
+                        <button class="quiz-option" data-index="1">
+                            B. It automatically saves the results into Redis without calling <code>redisClient.set()</code>.
+                        </button>
+                        <button class="quiz-option" data-index="2">
+                            C. It compresses MongoDB documents using gzip before returning.
+                        </button>
+                        <button class="quiz-option" data-index="3">
+                            D. It is required by Redis v4 client to prevent schema errors.
+                        </button>
+                    </div>
+                    <div class="quiz-feedback" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <div class="footer-logo">Redis Caching Masterclass</div>
+                <div class="footer-sub">NTI MEAN Stack Course • Caching Architecture Module</div>
+            </div>
+            <div class="footer-right">
+                <span>Express 5 • Redis 4+ • Node.js v24</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

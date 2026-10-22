@@ -1,0 +1,51 @@
+<script>
+
+    // السبت 29 أغسطس 2026
+    arabicDate("2026-08-25");
+
+    function arabicDate(dateString){
+        var z = new Date(dateString);
+        arabicDayName = [
+            "الأحد",
+            "الأثنين",
+            "الثلاثاء",
+            "الأربعاء",
+            "الخميس",
+            "الجمعة",
+            "السبت"
+        ];
+
+        arabicMonthName = [
+            "يناير",
+            "فبراير",
+            "مارس",
+            "أبريل",
+            "مايو",
+            "يونيو",
+            "يوليو",
+            "أغسطس",
+            "سبتمبر",
+            "أكتوبر",
+            "نوفمبر",
+            "ديسمبر",
+        ];
+
+        dayName = arabicDayName[z.getDay()];
+        monthName = arabicMonthName[z.getMonth()];
+
+        arabicDateFormat = dayName + " " + z.getDate() + " " + monthName + " " + z.getFullYear();
+
+        console.log(arabicDateFormat);
+    }
+
+
+    /* var z = new Date("2026-08-29");
+
+    console.log(z.getDay());
+    console.log(z.getDate());
+    console.log(z.getMonth());
+    console.log(z.getFullYear()); */
+
+
+    
+</script>

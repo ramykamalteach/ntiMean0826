@@ -1,0 +1,120 @@
+[
+  {
+    "orderId": "ORD-1001",
+    "customer": { "name": "Alice Green", "email": "alice@example.com", "tier": "Gold" },
+    "storeId": "STORE_NY",
+    "status": "delivered",
+    "orderDate": "2026-01-15T10:30:00Z",
+    "payment": { "method": "Credit Card", "shippingFee": 15 },
+    "items": [
+      { "sku": "LAPTOP-PRO", "category": "Electronics", "qty": 1, "price": 1200, "tags": ["work", "portable"] },
+      { "sku": "MOUSE-WL", "category": "Accessories", "qty": 2, "price": 25, "tags": ["office"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1002",
+    "customer": { "name": "Bob Martin", "email": "bob@example.com", "tier": "Bronze" },
+    "storeId": "STORE_SF",
+    "status": "delivered",
+    "orderDate": "2026-01-16T14:15:00Z",
+    "payment": { "method": "PayPal", "shippingFee": 0 },
+    "items": [
+      { "sku": "KEYBOARD-MEC", "category": "Accessories", "qty": 1, "price": 110, "tags": ["gaming", "office"] },
+      { "sku": "MONITOR-4K", "category": "Electronics", "qty": 2, "price": 350, "tags": ["gaming", "screen"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1003",
+    "customer": { "name": "Charlie Ray", "email": "charlie@example.com", "tier": "Silver" },
+    "storeId": "STORE_NY",
+    "status": "cancelled",
+    "orderDate": "2026-01-18T09:00:00Z",
+    "payment": { "method": "Debit Card", "shippingFee": 10 },
+    "items": [
+      { "sku": "DESK-SITSTAND", "category": "Furniture", "qty": 1, "price": 450, "tags": ["office", "ergonomic"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1004",
+    "customer": { "name": "Diana Ross", "email": "diana@example.com", "tier": "Gold" },
+    "storeId": "STORE_TX",
+    "status": "delivered",
+    "orderDate": "2026-01-20T11:45:00Z",
+    "payment": { "method": "Credit Card", "shippingFee": 0 },
+    "items": [
+      { "sku": "HEADSET-BT", "category": "Accessories", "qty": 1, "price": 85, "tags": ["wireless", "audio"] },
+      { "sku": "WEBCAM-HD", "category": "Electronics", "qty": 1, "price": 65, "tags": ["video", "office"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1005",
+    "customer": { "name": "Evan Wright", "email": "evan@example.com", "tier": "Bronze" },
+    "storeId": "STORE_IL",
+    "status": "pending",
+    "orderDate": "2026-01-21T16:20:00Z",
+    "payment": { "method": "Cash On Delivery", "shippingFee": 20 },
+    "items": [
+      { "sku": "CHAIR-ERGO", "category": "Furniture", "qty": 1, "price": 280, "tags": ["ergonomic", "home"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1006",
+    "customer": { "name": "Fiona Gallagher", "email": "fiona@example.com", "tier": "Silver" },
+    "storeId": "STORE_SF",
+    "status": "delivered",
+    "orderDate": "2026-01-22T13:10:00Z",
+    "payment": { "method": "Credit Card", "shippingFee": 12 },
+    "items": [
+      { "sku": "LAPTOP-AIR", "category": "Electronics", "qty": 1, "price": 950, "tags": ["work", "portable"] },
+      { "sku": "MOUSE-WL", "category": "Accessories", "qty": 1, "price": 25, "tags": ["office"] },
+      { "sku": "USB-HUB", "category": "Accessories", "qty": 2, "price": 30, "tags": ["utility"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1007",
+    "customer": { "name": "George King", "email": "george@example.com", "tier": "Gold" },
+    "storeId": "STORE_TX",
+    "status": "delivered",
+    "orderDate": "2026-01-25T18:05:00Z",
+    "payment": { "method": "Credit Card", "shippingFee": 0 },
+    "items": [
+      { "sku": "MONITOR-4K", "category": "Electronics", "qty": 1, "price": 350, "tags": ["screen"] },
+      { "sku": "DESK-SITSTAND", "category": "Furniture", "qty": 2, "price": 450, "tags": ["ergonomic"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1008",
+    "customer": { "name": "Hannah Abbott", "email": "hannah@example.com", "tier": "Bronze" },
+    "storeId": "STORE_NY",
+    "status": "delivered",
+    "orderDate": "2026-01-27T08:40:00Z",
+    "payment": { "method": "Debit Card", "shippingFee": 5 },
+    "items": [
+      { "sku": "MOUSEPAD-XL", "category": "Accessories", "qty": 3, "price": 15, "tags": ["desk"] },
+      { "sku": "KEYBOARD-MEC", "category": "Accessories", "qty": 1, "price": 110, "tags": ["office"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1009",
+    "customer": { "name": "Ian Malcolm", "email": "ian@example.com", "tier": "Silver" },
+    "storeId": "STORE_IL",
+    "status": "delivered",
+    "orderDate": "2026-01-28T15:55:00Z",
+    "payment": { "method": "PayPal", "shippingFee": 10 },
+    "items": [
+      { "sku": "CHAIR-ERGO", "category": "Furniture", "qty": 1, "price": 280, "tags": ["ergonomic", "office"] },
+      { "sku": "WEBCAM-HD", "category": "Electronics", "qty": 1, "price": 65, "tags": ["office"] }
+    ]
+  },
+  {
+    "orderId": "ORD-1010",
+    "customer": { "name": "Julia Roberts", "email": "julia@example.com", "tier": "Gold" },
+    "storeId": "STORE_SF",
+    "status": "cancelled",
+    "orderDate": "2026-01-30T12:00:00Z",
+    "payment": { "method": "Credit Card", "shippingFee": 15 },
+    "items": [
+      { "sku": "LAPTOP-PRO", "category": "Electronics", "qty": 2, "price": 1200, "tags": ["work"] }
+    ]
+  }
+]

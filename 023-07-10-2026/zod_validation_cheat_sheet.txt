@@ -1,0 +1,375 @@
+ZOD VALIDATION CHEAT SHEET
+===========================
+
+Node.js + Express Backend Validation
+
+1. STRINGS
+----------
+
+z.string()
+
+Examples:
+z.string().min(3)
+z.string().max(50)
+z.string().length(10)
+z.string().email()
+z.string().url()
+z.string().uuid()
+z.string().startsWith("A")
+z.string().endsWith(".com")
+z.string().regex(/^[A-Z]+$/)
+z.string().trim()
+z.string().toLowerCase()
+z.string().toUpperCase()
+
+Example:
+
+name: z.string()
+    .min(3, "Name must be at least 3 characters")
+    .max(50)
+
+------------------------------------------------------------
+
+2. NUMBERS
+----------
+
+z.number()
+
+Examples:
+
+z.number().min(18)
+z.number().max(100)
+z.number().gt(0)
+z.number().gte(18)
+z.number().lt(100)
+z.number().lte(100)
+z.number().int()
+z.number().positive()
+z.number().negative()
+z.number().nonnegative()
+z.number().nonpositive()
+z.number().finite()
+
+Example:
+
+age: z.number()
+    .int()
+    .min(18)
+
+------------------------------------------------------------
+
+3. HTML FORM NUMBERS
+--------------------
+
+Forms send values as strings.
+
+Example:
+
+req.body.age === "25"
+
+Use:
+
+age: z.coerce.number()
+
+Example:
+
+age: z.coerce.number()
+    .int()
+    .min(18)
+
+------------------------------------------------------------
+
+4. BOOLEAN
+-----------
+
+z.boolean()
+
+Example:
+
+isActive: z.boolean()
+
+Convert values:
+
+z.coerce.boolean()
+
+------------------------------------------------------------
+
+5. DATES
+--------
+
+z.date()
+
+Examples:
+
+z.date()
+    .min(new Date("2026-01-01"))
+    .max(new Date("2026-12-31"))
+
+Convert string to date:
+
+z.coerce.date()
+
+------------------------------------------------------------
+
+6. OPTIONAL / NULLABLE
+----------------------
+
+Required:
+
+z.string()
+
+Optional:
+
+z.string().optional()
+
+Nullable:
+
+z.string().nullable()
+
+Optional + Nullable:
+
+z.string().optional().nullable()
+
+------------------------------------------------------------
+
+7. DEFAULT VALUES
+-----------------
+
+role: z.string().default("user")
+
+------------------------------------------------------------
+
+8. ENUM
+--------
+
+role: z.enum([
+    "admin",
+    "editor",
+    "user"
+])
+
+------------------------------------------------------------
+
+9. ARRAYS
+---------
+
+tags: z.array(z.string())
+
+scores: z.array(z.number())
+
+Array size:
+
+z.array(z.string())
+    .min(1)
+    .max(5)
+
+------------------------------------------------------------
+
+10. OBJECTS
+-----------
+
+const userSchema = z.object({
+    name: z.string(),
+    email: z.string().email(),
+    age: z.coerce.number()
+});
+
+Nested object:
+
+address: z.object({
+    city: z.string(),
+    country: z.string()
+})
+
+------------------------------------------------------------
+
+11. CUSTOM VALIDATION
+---------------------
+
+.refine()
+
+Example:
+
+password: z.string()
+    .refine(
+        p => p.includes("@"),
+        "Password must contain @"
+    )
+
+------------------------------------------------------------
+
+12. MULTI-FIELD VALIDATION
+--------------------------
+
+const schema = z.object({
+    password: z.string(),
+    confirmPassword: z.string()
+})
+.refine(
+    data => data.password === data.confirmPassword,
+    {
+        message: "Passwords do not match",
+        path: ["confirmPassword"]
+    }
+);
+
+------------------------------------------------------------
+
+13. TRANSFORM
+-------------
+
+username: z.string()
+    .trim()
+    .toLowerCase()
+
+age: z.string()
+    .transform(value => Number(value))
+
+------------------------------------------------------------
+
+14. NULLISH
+-----------
+
+z.string().nullish()
+
+Equivalent to:
+
+z.string()
+    .nullable()
+    .optional()
+
+------------------------------------------------------------
+
+15. COMMON TYPES
+----------------
+
+String:    z.string()
+Number:    z.number()
+Boolean:   z.boolean()
+Date:      z.date()
+Object:    z.object({})
+Array:     z.array()
+Enum:      z.enum()
+Literal:   z.literal()
+Union:     z.union()
+Any:       z.any()
+Unknown:   z.unknown()
+
+------------------------------------------------------------
+
+16. IMPORTANT METHODS
+---------------------
+
+.min()
+.max()
+.int()
+.email()
+.url()
+.regex()
+.optional()
+.nullable()
+.default()
+.refine()
+.transform()
+
+------------------------------------------------------------
+
+17. safeParse()
+---------------
+
+const result = schema.safeParse(req.body);
+
+Valid:
+
+{
+    success: true,
+    data: ...
+}
+
+Invalid:
+
+{
+    success: false,
+    error: ...
+}
+
+Get errors:
+
+result.error.issues
+
+------------------------------------------------------------
+
+18. COMPLETE EXPRESS EXAMPLE
+----------------------------
+
+const registerSchema = z.object({
+
+    name: z.string()
+        .trim()
+        .min(3)
+        .max(50),
+
+    email: z.string()
+        .email(),
+
+    password: z.string()
+        .min(8),
+
+    age: z.coerce.number()
+        .int()
+        .min(18),
+
+    role: z.enum([
+        "user",
+        "editor",
+        "admin"
+    ]),
+
+    phone: z.string()
+        .optional()
+});
+
+Validation:
+
+const result = registerSchema.safeParse(req.body);
+
+if (!result.success) {
+
+    return res.status(422).json({
+        errors: result.error.issues
+    });
+}
+
+const data = result.data;
+
+------------------------------------------------------------
+
+TOPIC PRIORITY FOR A 3-HOUR COURSE
+----------------------------------
+
+Must Teach:
+
+✓ z.object()
+✓ z.string()
+✓ z.number()
+✓ z.coerce.number()
+✓ z.boolean()
+✓ z.array()
+✓ z.enum()
+
+✓ .min()
+✓ .max()
+✓ .email()
+✓ .int()
+
+✓ .optional()
+✓ .nullable()
+
+✓ .refine()
+
+✓ safeParse()
+✓ result.success
+✓ result.data
+✓ result.error.issues
+
+These cover most validation scenarios in Express applications.

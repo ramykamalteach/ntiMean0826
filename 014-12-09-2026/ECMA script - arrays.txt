@@ -1,0 +1,356 @@
+JavaScript Array Methods — Quick Guide
+============================================
+
+This guide covers the most useful JavaScript array methods:
+forEach, map, filter, find, findIndex, some, every, reduce,
+includes, indexOf, sort, and slice.
+
+Example Data
+------------
+
+const products = [
+  { id: 1, name: "Laptop", price: 1200, category: "electronics" },
+  { id: 2, name: "Phone", price: 800, category: "electronics" },
+  { id: 3, name: "Book", price: 30, category: "education" },
+  { id: 4, name: "Monitor", price: 400, category: "electronics" },
+  { id: 5, name: "Pen", price: 5, category: "education" }
+];
+
+
+
+
+
+1. forEach() — Do something with every element
+------------------------------------------------
+
+Use forEach when you want to loop through all elements.
+
+products.forEach(product => {
+  console.log(product.name);
+});
+
+Output:
+Laptop
+Phone
+Book
+Monitor
+Pen
+
+IMPORTANT:
+forEach() does NOT return a new array.
+
+const result = products.forEach(product => {
+  return product.name;
+});
+
+console.log(result); // undefined
+
+Think:
+    forEach = perform an action for every item
+
+
+2. map() — Transform every element
+-----------------------------------
+
+map() goes through every element and creates a NEW array.
+
+const names = products.map(product => {
+  return product.name;
+});
+
+Result:
+["Laptop", "Phone", "Book", "Monitor", "Pen"]
+
+You can also transform objects:
+
+const productNames = products.map(product => ({
+  name: product.name,
+  price: product.price
+}));
+
+Result:
+[
+  { name: "Laptop", price: 1200 },
+  { name: "Phone", price: 800 },
+  { name: "Book", price: 30 },
+  { name: "Monitor", price: 400 },
+  { name: "Pen", price: 5 }
+]
+
+Think:
+    map = transform every item
+
+
+3. filter() — Get multiple matching elements
+---------------------------------------------
+
+filter() returns a NEW ARRAY containing all elements that satisfy a condition.
+
+const expensiveProducts = products.filter(product => {
+  return product.price > 100;
+});
+
+Result:
+[
+  { id: 1, name: "Laptop", price: 1200, category: "electronics" },
+  { id: 2, name: "Phone", price: 800, category: "electronics" },
+  { id: 4, name: "Monitor", price: 400, category: "electronics" }
+]
+
+If nothing matches, filter() returns an empty array:
+
+const result = products.filter(product => product.price > 5000);
+
+console.log(result); // []
+
+Think:
+    filter = give me ALL items that satisfy this condition
+
+
+4. find() — Get the first matching element
+-------------------------------------------
+
+find() returns the FIRST element that matches the condition.
+
+const product = products.find(product => {
+  return product.id === 3;
+});
+
+Result:
+{
+  id: 3,
+  name: "Book",
+  price: 30,
+  category: "education"
+}
+
+If nothing is found:
+
+const product = products.find(product => product.id === 99);
+
+console.log(product); // undefined
+
+Think:
+    find = give me the FIRST item that matches
+
+
+5. findIndex() — Find the position
+-----------------------------------
+
+findIndex() returns the index of the FIRST matching element.
+
+const index = products.findIndex(product => product.id === 3);
+
+console.log(index); // 2
+
+Array positions:
+    0 -> Laptop
+    1 -> Phone
+    2 -> Book
+    3 -> Monitor
+    4 -> Pen
+
+If nothing is found:
+    -1
+
+Think:
+    findIndex = where is the first matching item?
+
+
+6. some() — Does at least one match?
+-------------------------------------
+
+some() returns true if AT LEAST ONE element satisfies the condition.
+
+const result = products.some(product => product.price > 1000);
+
+console.log(result); // true
+
+const result = products.some(product => product.category === "clothing");
+
+console.log(result); // false
+
+Think:
+    some = is there AT LEAST ONE?
+
+
+7. every() — Do ALL elements match?
+------------------------------------
+
+every() returns true only if ALL elements satisfy the condition.
+
+const result = products.every(product => product.price < 2000);
+
+console.log(result); // true
+
+const result = products.every(product => product.price < 1000);
+
+console.log(result); // false
+
+The second result is false because the Laptop costs 1200.
+
+Think:
+    every = do ALL items satisfy the condition?
+
+
+8. includes() — Does an array contain a value?
+-----------------------------------------------
+
+includes() checks for an exact value.
+
+const fruits = ["apple", "banana", "orange"];
+
+console.log(fruits.includes("banana")); // true
+console.log(fruits.includes("mango"));  // false
+
+Think:
+    includes = does this exact value exist?
+
+
+9. indexOf() — Find the position of a value
+--------------------------------------------
+
+indexOf() returns the index of a value.
+
+const fruits = ["apple", "banana", "orange"];
+
+console.log(fruits.indexOf("banana")); // 1
+console.log(fruits.indexOf("mango"));  // -1
+
+Think:
+    indexOf = what is the position of this value?
+
+
+10. reduce() — Calculate / accumulate something
+------------------------------------------------
+
+reduce() combines array elements into one result.
+
+Example: calculate the total price.
+
+const total = products.reduce((sum, product) => {
+  return sum + product.price;
+}, 0);
+
+console.log(total); // 2435
+
+How it works:
+
+    0 + 1200 = 1200
+    1200 + 800 = 2000
+    2000 + 30 = 2030
+    2030 + 400 = 2430
+    2430 + 5 = 2435
+
+reduce() does not have to return a number. It can create other
+types of results as well.
+
+Think:
+    reduce = COMBINE all elements into one result
+
+
+11. sort() — Sort an array
+---------------------------
+
+Sort numbers from smallest to largest:
+
+const numbers = [50, 10, 100, 20];
+
+numbers.sort((a, b) => a - b);
+
+console.log(numbers);
+// [10, 20, 50, 100]
+
+Descending:
+
+numbers.sort((a, b) => b - a);
+
+Sort objects by price:
+
+products.sort((a, b) => a.price - b.price);
+
+IMPORTANT:
+sort() changes (mutates) the original array.
+
+
+12. slice() — Take part of an array
+------------------------------------
+
+slice() extracts part of an array and returns a NEW array.
+
+const numbers = [10, 20, 30, 40, 50];
+
+const result = numbers.slice(1, 4);
+
+console.log(result);
+// [20, 30, 40]
+
+IMPORTANT:
+slice() does NOT modify the original array.
+
+
+Important Comparisons
+=====================
+
+A. find() vs filter()
+---------------------
+
+find():
+    - Returns ONE element
+    - Returns the FIRST match
+    - Returns undefined if nothing matches
+
+Example:
+
+const product = products.find(p => p.category === "electronics");
+
+filter():
+    - Returns an ARRAY
+    - Returns ALL matching elements
+    - Returns [] if nothing matches
+
+Example:
+
+const products2 = products.filter(p => p.category === "electronics");
+
+
+B. map() vs forEach()
+---------------------
+
+forEach():
+    - Used to perform an action
+    - Does NOT return a new array
+
+Example:
+
+products.forEach(p => {
+  console.log(p.name);
+});
+
+map():
+    - Used to transform data
+    - Returns a NEW array
+
+Example:
+
+const names = products.map(p => p.name);
+
+
+C. includes() vs some()
+-----------------------
+
+includes():
+    - Searches for an exact value
+
+Example:
+
+const numbers = [10, 20, 30];
+numbers.includes(20); // true
+
+some():
+    - Searches using a condition
+
+Example:
+
+products.some(product => product.price > 1000); // true
+

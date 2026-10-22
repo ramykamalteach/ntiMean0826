@@ -1,0 +1,23 @@
+{
+  "name": "node-cache-caching-demo",
+  "version": "1.0.0",
+  "description": "In-memory caching demonstration using Express, node-cache, and MongoDB with smart fallback",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [
+    "node-cache",
+    "express",
+    "caching",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "node-cache": "^5.1.2"
+  }
+}

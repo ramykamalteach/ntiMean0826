@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="https://www.google.com" method="post" onsubmit="formSubmit(event);" id="myForm">
+        <label for="userName">User name</label>
+        <input type="text" id="userName" name="userName">
+        <br><br>
+        <label for="password"></label>
+        <input type="password" id="password" name="password">
+        <br><br>
+        <input type="submit" value="Login">
+    </form>
+
+
+
+    <button onclick="alertMsg();">Click this</button>
+    <br><br>
+    <input type="text" onkeyup="countChrs();" id="userName">
+    <span id="numChrs"></span>
+
+    <br><br>
+    <input type="text" onkeyup="countChrs01(this);">
+    <span id="s1"></span>
+
+    <br><br>
+    <input type="text" onblur="countChrs02(this);">
+
+    <script>
+        function formSubmit(e) {
+            e.preventDefault();
+            allAreValid = true;
+            if(!(document.querySelector("#userName").value.length >= 5)) {
+                document.querySelector("#userName").style.backgroundColor = "pink";
+                allAreValid = false;
+            }
+            if(!(document.querySelector("#password").value.length >= 5)) {
+                document.querySelector("#password").style.backgroundColor = "pink";
+                allAreValid = false;
+            }
+
+            if(allAreValid) {
+                document.querySelector("#myForm").submit();
+            }
+
+        }
+
+        function countChrs02() {
+            alert("done !!");
+        }
+        function countChrs01(obj){
+            if(obj.value.length < 5 || obj.value.length > 10) {
+                obj.style.backgroundColor = "red";
+            }
+            else  {
+                obj.style.backgroundColor = "lightgreen";
+            }
+            document.querySelector("#s1").innerHTML = obj.value.length;
+        }
+
+
+        function countChrs(){
+            document.querySelector("#numChrs").innerHTML = document.querySelector("#userName").value.length;
+        }
+        function alertMsg(){
+            alert("hi from code !!!");
+        }
+    </script>
+</body>
+</html>

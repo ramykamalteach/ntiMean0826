@@ -1,0 +1,191 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main>
+  <!-- Hero Section -->
+  <header class="page-header">
+    <div class="category">🎓 NTI Node.js & Express Curriculum</div>
+    <h1 class="page-title">Mastering Backend Validation with Zod</h1>
+    <p class="page-subtitle">
+      A comprehensive, classroom-ready project designed to teach modern schema declaration,
+      type coercion, error extraction, and resilient HTTP request validation.
+    </p>
+  </header>
+
+  <!-- Visual Architecture Flowchart -->
+  <section class="flow-container">
+    <h2 class="flow-title">The Complete Express + Zod Validation Flow</h2>
+    <p class="flow-subtitle">Never trust incoming client data. Every payload must pass through schema verification.</p>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <h4 class="flow-step-title">Incoming Request</h4>
+        <p class="flow-step-desc">Client submits HTML form or JSON payload to Express route.</p>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <h4 class="flow-step-title">Express Body Parser</h4>
+        <p class="flow-step-desc"><code>urlencoded</code> or <code>json</code> middleware populates <code>req.body</code>.</p>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <h4 class="flow-step-title">Zod safeParse()</h4>
+        <p class="flow-step-desc">Schema validates rules without throwing exceptions. Returns <code>success: true/false</code>.</p>
+      </div>
+
+      <div class="flow-step" style="border-color: rgba(244, 63, 94, 0.4);">
+        <div class="flow-step-num" style="background: var(--color-error);">4A</div>
+        <h4 class="flow-step-title" style="color: #fb7185;">Invalid: 422 Error</h4>
+        <p class="flow-step-desc">Extract issues array, map to fields, re-render view with <code>errors</code> and <code>oldData</code>.</p>
+      </div>
+
+      <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+        <div class="flow-step-num" style="background: var(--color-success);">4B</div>
+        <h4 class="flow-step-title" style="color: #34d399;">Valid: 200/201 Success</h4>
+        <p class="flow-step-desc">Receive sanitized, coerced <code>result.data</code> ready for database storage.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Modules Hub -->
+  <section>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.6rem; font-weight: 800;">Teaching Modules & Demos</h2>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">Designed for a 3-Hour Interactive Lecture</span>
+    </div>
+
+    <div class="hub-grid">
+      <!-- Lesson 1 -->
+      <div class="hub-card">
+        <div class="hub-card-icon">📝</div>
+        <div class="hub-card-number">Lesson 01 &bull; Core Basics</div>
+        <h3 class="hub-card-title">Basic User Form</h3>
+        <p class="hub-card-desc">
+          Learn fundamental string rules, email validation, and the essential 
+          <code>z.coerce.number()</code> solution for HTML form number strings.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">z.object()</span>
+          <span class="tag-badge">z.string()</span>
+          <span class="tag-badge">z.coerce.number()</span>
+          <span class="tag-badge">safeParse()</span>
+          <span class="tag-badge">oldData</span>
+        </div>
+        <a href="/register" class="hub-card-btn">
+          <span>Explore Lesson 1</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Lesson 2 -->
+      <div class="hub-card">
+        <div class="hub-card-icon">⚡</div>
+        <div class="hub-card-number">Lesson 02 &bull; Intermediate</div>
+        <h3 class="hub-card-title">Advanced Rules & Refine</h3>
+        <p class="hub-card-desc">
+          Compare fields with <code>.refine()</code> (confirm password), validate roles with
+          <code>z.enum()</code>, parse dates, checkboxes, and multi-select arrays.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">.refine()</span>
+          <span class="tag-badge">z.enum()</span>
+          <span class="tag-badge">z.coerce.date()</span>
+          <span class="tag-badge">z.array()</span>
+          <span class="tag-badge">z.coerce.boolean()</span>
+        </div>
+        <a href="/register-advanced" class="hub-card-btn">
+          <span>Explore Lesson 2</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Lesson 3 -->
+      <div class="hub-card">
+        <div class="hub-card-icon">📦</div>
+        <div class="hub-card-number">Lesson 03 &bull; Complex Data</div>
+        <h3 class="hub-card-title">Nested Objects & Regex</h3>
+        <p class="hub-card-desc">
+          Validate deeply nested objects (e.g., product warehouse specifications), enforce custom
+          regular expression patterns for SKUs, and handle array transforms.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">nested z.object()</span>
+          <span class="tag-badge">.regex()</span>
+          <span class="tag-badge">.positive()</span>
+          <span class="tag-badge">.default()</span>
+          <span class="tag-badge">z.preprocess()</span>
+        </div>
+        <a href="/product" class="hub-card-btn">
+          <span>Explore Lesson 3</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Lesson 4 -->
+      <div class="hub-card">
+        <div class="hub-card-icon">🧪</div>
+        <div class="hub-card-number">Lesson 04 &bull; REST APIs</div>
+        <h3 class="hub-card-title">API Middleware & Live Tester</h3>
+        <p class="hub-card-desc">
+          Build reusable Express validation middlewares for RESTful services.
+          Test JSON payloads live right in your browser with instant visual error feedback.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">validateBody()</span>
+          <span class="tag-badge">REST API</span>
+          <span class="tag-badge">HTTP 422 JSON</span>
+          <span class="tag-badge">Live Console</span>
+        </div>
+        <a href="/api-tester" class="hub-card-btn">
+          <span>Open Live Tester</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Lesson 5 -->
+      <div class="hub-card">
+        <div class="hub-card-icon">📖</div>
+        <div class="hub-card-number">Lesson 05 &bull; Quick Reference</div>
+        <h3 class="hub-card-title">Interactive Cheat Sheet</h3>
+        <p class="hub-card-desc">
+          A complete, categorized cheatsheet of Zod methods, type definitions, modifiers,
+          and patterns covering strings, numbers, booleans, dates, arrays, and enums.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">Quick Lookup</span>
+          <span class="tag-badge">Code Samples</span>
+          <span class="tag-badge">Best Practices</span>
+        </div>
+        <a href="/cheatsheet" class="hub-card-btn">
+          <span>View Cheat Sheet</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Why Backend Validation -->
+      <div class="hub-card" style="background: rgba(99, 102, 241, 0.05); border-color: rgba(99, 102, 241, 0.25);">
+        <div class="hub-card-icon" style="background: rgba(99, 102, 241, 0.3);">🛡️</div>
+        <div class="hub-card-number">Core Principle &bull; Security</div>
+        <h3 class="hub-card-title">Why Frontend Isn't Enough</h3>
+        <p class="hub-card-desc">
+          Any client can disable JavaScript, edit DevTools HTML attributes, or use Postman/curl
+          directly. Backend validation is the ultimate shield protecting your database.
+        </p>
+        <div class="hub-card-tags">
+          <span class="tag-badge">Data Integrity</span>
+          <span class="tag-badge">SQL/NoSQL Safety</span>
+          <span class="tag-badge">Deterministic Types</span>
+        </div>
+        <a href="/register" class="hub-card-btn" style="background: var(--accent-primary);">
+          <span>Start Teaching Now</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

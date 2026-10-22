@@ -1,0 +1,36 @@
+
+
+#welcomeSec {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+    height: 50vh;
+    margin: 0 auto;
+    background-color: rgb(249, 249, 127);
+    border: 3px solid green;
+}
+
+#welcomeSec .col {
+    width: 36%;
+    height: 80%;
+    background-color: lightsalmon;
+    border: 3px solid red;
+}
+
+@media screen and (max-width: 800px) {
+  #welcomeSec {
+    background-color: lightgreen;
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 50px;
+    padding: 25px 0;
+    font-size: 64px;
+  }
+
+  #welcomeSec .col {
+    width: 88%;
+    height: 200px;
+    font-size: 1.1em;
+  }
+}

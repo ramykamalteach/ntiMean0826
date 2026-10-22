@@ -1,0 +1,270 @@
+================================================================================
+         MONGODB AGGREGATION PIPELINE - PRACTICE CHALLENGES & SOLUTIONS
+================================================================================
+Based on the Retail Operations dataset (`orders` and `stores` collections).
+
+--------------------------------------------------------------------------------
+CHALLENGE 1: Basic Filtering & Status Verification
+--------------------------------------------------------------------------------
+Task:
+  Filter the `orders` collection to retrieve only orders with a status of 
+  "delivered" where the customer's membership tier is "Gold".
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered",
+      "customer.tier": "Gold"
+    }
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 2: Array Deconstruction
+--------------------------------------------------------------------------------
+Task:
+  Deconstruct the `items` array from all delivered orders so that each 
+  purchased item is output as an individual document.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $unwind: "$items"
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 3: Field Calculation with $addFields
+--------------------------------------------------------------------------------
+Task:
+  Flatten the items array and compute a new field called `lineTotal` for each item 
+  by multiplying its quantity (`qty`) and unit price (`price`). Retain all original 
+  document fields.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $unwind: "$items"
+  },
+  {
+    $addFields: {
+      lineTotal: { $multiply: ["$items.qty", "$items.price"] }
+    }
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 4: Grouping & Metrics Aggregation
+--------------------------------------------------------------------------------
+Task:
+  Group delivered order items by product category (`items.category`). Compute:
+    - `totalRevenue`: Sum of each item's total cost (qty * price).
+    - `totalUnitsSold`: Total quantity of units sold.
+    - `distinctBuyers`: An array of unique customer names who bought from this category.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $unwind: "$items"
+  },
+  {
+    $group: {
+      _id: "$items.category",
+      totalRevenue: {
+        $sum: { $multiply: ["$items.qty", "$items.price"] }
+      },
+      totalUnitsSold: {
+        $sum: "$items.qty"
+      },
+      distinctBuyers: {
+        $addToSet: "$customer.name"
+      }
+    }
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 5: Output Reshaping with $project
+--------------------------------------------------------------------------------
+Task:
+  Take the grouped result from Challenge 4, remove the default `_id` field, 
+  rename `_id` to `categoryName`, display `totalRevenue`, and calculate 
+  `buyerCount` as the total number of unique customers.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $unwind: "$items"
+  },
+  {
+    $group: {
+      _id: "$items.category",
+      totalRevenue: {
+        $sum: { $multiply: ["$items.qty", "$items.price"] }
+      },
+      distinctBuyers: {
+        $addToSet: "$customer.name"
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      categoryName: "$_id",
+      totalRevenue: 1,
+      buyerCount: { $size: "$distinctBuyers" }
+    }
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 6: Sorting & Pagination ($sort, $skip, $limit)
+--------------------------------------------------------------------------------
+Task:
+  Using the grouped category revenue from Challenge 5, sort categories 
+  from highest revenue to lowest, skip the top 1 category, and limit the 
+  result to the next 2 categories.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $unwind: "$items"
+  },
+  {
+    $group: {
+      _id: "$items.category",
+      totalRevenue: {
+        $sum: { $multiply: ["$items.qty", "$items.price"] }
+      }
+    }
+  },
+  {
+    $sort: {
+      totalRevenue: -1
+    }
+  },
+  {
+    $skip: 1
+  },
+  {
+    $limit: 2
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 7: Multi-Collection Join ($lookup)
+--------------------------------------------------------------------------------
+Task:
+  Join each delivered order with its physical store information from the 
+  `stores` collection using `storeId` as the local field and `_id` as the 
+  foreign field. Output the store data in a field named `storeDetails`.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $lookup: {
+      from: "stores",
+      localField: "storeId",
+      foreignField: "_id",
+      as: "storeDetails"
+    }
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 8: Document Counting ($count)
+--------------------------------------------------------------------------------
+Task:
+  Count the total number of orders that were either cancelled or left pending.
+
+Solution:
+[
+  {
+    $match: {
+      status: { $in: ["cancelled", "pending"] }
+    }
+  },
+  {
+    $count: "unfulfilledOrdersCount"
+  }
+]
+
+
+--------------------------------------------------------------------------------
+CHALLENGE 9: Multi-Track Analytics ($facet)
+--------------------------------------------------------------------------------
+Task:
+  In a single aggregation pipeline stage, produce two parallel reports for 
+  delivered orders:
+    1. `revenueByCategory`: Categories grouped with their total revenue.
+    2. `ordersByPaymentMethod`: Payment methods grouped with total order counts.
+
+Solution:
+[
+  {
+    $match: {
+      status: "delivered"
+    }
+  },
+  {
+    $facet: {
+      revenueByCategory: [
+        { $unwind: "$items" },
+        {
+          $group: {
+            _id: "$items.category",
+            revenue: { $sum: { $multiply: ["$items.qty", "$items.price"] } }
+          }
+        },
+        { $sort: { revenue: -1 } }
+      ],
+      ordersByPaymentMethod: [
+        {
+          $group: {
+            _id: "$payment.method",
+            orderCount: { $sum: 1 }
+          }
+        },
+        { $sort: { orderCount: -1 } }
+      ]
+    }
+  }
+]

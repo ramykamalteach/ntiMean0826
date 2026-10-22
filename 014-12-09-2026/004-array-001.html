@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Arrays & loop</h1>
+    <script>
+        const products = [
+            { id: 1, name: "Laptop", price: 1200, category: "electronics" },
+            { id: 2, name: "Phone", price: 800, category: "electronics" },
+            { id: 3, name: "Book", price: 30, category: "education" },
+            { id: 4, name: "Monitor", price: 400, category: "electronics" },
+            { id: 5, name: "Pen", price: 5, category: "education" }
+        ];
+
+        /* products.forEach(oneProduct => {
+            console.log(oneProduct.name);
+        });
+
+        result = [];
+        products.forEach(product => {
+            result.push(product.name);
+        });
+
+        console.log(result); */
+
+        /* const names = products.map(product => {
+            product.price /= 50;
+            return product;
+        });
+        console.log(names); */
+
+        /* const shortDescription = products.map(product => {
+            return {
+                shortName : product.name,
+                shortPrice : product.price
+            }
+        }); */
+        /* const shortDescription = products.map(product => ({            
+            shortName : product.name,
+            shortPrice : product.price            
+        }));
+        console.log(shortDescription); */
+
+
+        /* const expensiveProducts = products.filter(product => {
+            return product.price > 100;
+        });
+
+        console.log(expensiveProducts); */
+
+
+        /* const product = products.find(product => {
+            return product.id === 3;
+        }); */
+
+        /* const product = products.find(product => product.id === 99);
+
+        console.log(product); */
+
+        /* const index = products.findIndex(product => product.id === 33);
+
+        console.log(index); */ // 2
+
+        /* const result = products.some(product => product.price > 9000);
+
+        console.log(result); */
+
+
+        /* const result = products.every(product => product.price < 2000);
+
+        console.log(result);  */// true
+
+
+
+        /* const fruits = ["apple", "banana", "orange"];
+
+        console.log(fruits.includes("banana")); // true
+        console.log(fruits.includes("mango"));  // false */
+
+        /* const fruits = ["apple", "banana", "orange"];
+
+        console.log(fruits.indexOf("banana")); // 1
+        console.log(fruits.indexOf("mango"));  // -1 */
+
+
+        /* const total = products.reduce((sum, product) => {
+            return sum + product.price;
+        }, 0);
+
+        console.log(total); */
+
+
+        /* const numbers = [50, 100, 10, 20];
+
+        console.log(numbers.sort((a, b) => b-a)); */
+
+
+        /* products.sort((a, b) => b.name.localeCompare(a.name));
+
+        console.log(products); */
+
+        /* products.sort(() => Math.random() - 0.5);
+
+        console.log(products); */
+
+
+        /* const numbers = [10, 20, 30, 40, 50];
+
+        const result = numbers.slice(1, 3);
+
+        console.log(result); */
+
+
+
+        elements = [1, 2, 3];
+
+        newArray = [...elements, 55, 77, 99];
+
+        console.log(newArray);
+
+    </script>
+</body>
+
+</html>

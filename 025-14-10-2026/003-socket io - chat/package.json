@@ -1,0 +1,27 @@
+{
+  "name": "socketio-simple-chat",
+  "version": "1.0.0",
+  "description": "Simple real-time chat application using Node.js, Express, and Socket.io without a database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test-e2e.js"
+  },
+  "keywords": [
+    "chat",
+    "socket.io",
+    "express",
+    "nodejs",
+    "realtime"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  }
+}

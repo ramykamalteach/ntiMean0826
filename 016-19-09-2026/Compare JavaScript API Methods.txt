@@ -1,0 +1,293 @@
+JavaScript — AJAX, APIs, REST, and GraphQL
+===============================================
+
+AJAX
+----
+AJAX = Asynchronous JavaScript and XML.
+
+It is a technique for sending and receiving data from a server
+without reloading the entire webpage.
+
+Today, AJAX commonly uses JSON + fetch() rather than XML.
+
+Example:
+
+const response = await fetch("/api/users");
+const data = await response.json();
+
+
+ARE REST API, GRAPHQL, ETC. MADE OF AJAX?
+-----------------------------------------
+
+No. They are different concepts.
+
+AJAX
+    A client-side technique for communicating with a server
+    asynchronously.
+
+API
+    An interface that allows software to communicate with
+    another software.
+
+REST API
+    An API designed around REST principles and HTTP.
+
+RESTful API
+    Commonly means an API that follows REST principles.
+
+GraphQL
+    An API query language and runtime for requesting data.
+
+HTTP
+    The communication protocol used by REST APIs and commonly
+    by GraphQL.
+
+Fetch
+    A JavaScript API used to make HTTP requests.
+
+Axios
+    A JavaScript library used to make HTTP requests.
+
+
+RELATIONSHIP
+------------
+
+JavaScript
+    |
+    +-- fetch() / Axios
+    |       |
+    |       v
+    |    HTTP Request
+    |       |
+    |       +-- REST API
+    |       |
+    |       +-- GraphQL API
+    |
+    v
+Receive JSON / other data
+
+
+KEY IDEA
+--------
+
+AJAX = How the browser communicates asynchronously with a server.
+
+REST / GraphQL = How the API is designed and how data is requested.
+
+fetch() / Axios = Tools JavaScript can use to communicate with these APIs.
+
+=====================================================================================
+
+REST (Representational State Transfer) is a set of principles for designing web APIs.
+
+The main principles are:
+
+1- Client–Server — Client and server are separate.
+2- Stateless — Each request contains all information needed to process it.
+3- Uniform Interface — Use a consistent way to access resources.
+4- Resources — Everything is treated as a resource, usually identified by a URL.
+    such as :   /users
+                /products/10
+5- HTTP Methods — Use HTTP methods according to the operation:
+    GET     → Read
+    POST    → Create
+    PUT     → Update/replace
+    PATCH   → Partial update
+    DELETE  → Delete
+
+6- Representations — Resources are exchanged in formats such as JSON.
+7- Cacheable — Responses can indicate whether they may be cached.
+
+In short:
+
+REST = a set of principles for designing APIs around resources, URLs, HTTP methods, stateless requests, and standardized communication.
+
+====================================================================
+
+
+
+JavaScript API Methods
+==============================
+
+Different Ways to Call / Read a REST API in JavaScript
+
+1. FETCH API — Recommended
+--------------------------
+
+Built into modern JavaScript. No installation is required.
+
+Using async/await:
+
+async function getUsers() {
+    const response = await fetch("https://api.example.com/users");
+
+    if (!response.ok) {
+        throw new Error("Request failed");
+    }
+
+    const users = await response.json();
+    console.log(users);
+}
+
+getUsers();
+
+
+Using .then():
+
+fetch("https://api.example.com/users")
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+
+
+Advantages:
+- Built into modern JavaScript
+- No installation required
+- Works in browsers and modern Node.js
+- Clean and easy to use with async/await
+
+
+2. XMLHttpRequest — Older Approach
+----------------------------------
+
+XMLHttpRequest was the traditional way to communicate with APIs before
+fetch() became widely used.
+
+Example:
+
+const xhr = new XMLHttpRequest();
+
+xhr.open("GET", "https://api.example.com/users");
+
+xhr.onload = function () {
+    const data = JSON.parse(xhr.responseText);
+    console.log(data);
+};
+
+xhr.onerror = function () {
+    console.log("Request failed");
+};
+
+xhr.send();
+
+
+Recommendation:
+Use XMLHttpRequest mainly when maintaining older/legacy projects.
+
+
+3. Axios
+---------
+
+Axios is a third-party HTTP client library.
+
+Installation:
+
+npm install axios
+
+
+Example:
+
+import axios from "axios";
+
+async function getUsers() {
+    try {
+        const response = await axios.get(
+            "https://api.example.com/users"
+        );
+
+        console.log(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
+POST example:
+
+const response = await axios.post(
+    "https://api.example.com/users",
+    {
+        name: "Ahmed",
+        age: 25
+    }
+);
+
+
+Advantages:
+- Promise-based
+- Works well with async/await
+- Convenient request and response handling
+- Useful for larger applications
+- Provides additional features compared with basic fetch()
+
+
+4. jQuery AJAX
+--------------
+
+If a project already uses jQuery, AJAX can be used to communicate with
+an API.
+
+Example:
+
+$.ajax({
+    url: "https://api.example.com/users",
+    method: "GET",
+    success: function (data) {
+        console.log(data);
+    },
+    error: function (error) {
+        console.log(error);
+    }
+});
+
+
+Recommendation:
+For new JavaScript projects, fetch() is generally preferred over
+jQuery AJAX.
+
+
+Comparison Table
+----------------
+
+Method              Built-in?   Async Style          Best Use
+----------------------------------------------------------------------
+fetch()             Yes         Promise / async      Modern projects
+XMLHttpRequest      Yes         Events / callbacks   Legacy projects
+Axios               No          Promise / async      Larger applications
+jQuery AJAX         No          Callbacks / Promise  Existing jQuery apps
+
+
+The Most Important Comparison: fetch() vs Axios
+-----------------------------------------------
+
+Fetch:
+
+const response = await fetch(url);
+const data = await response.json();
+
+
+Axios:
+
+const response = await axios.get(url);
+const data = response.data;
+
+
+Both can communicate with REST APIs using HTTP methods:
+
+GET      → Read data
+POST     → Create data
+PUT      → Replace / update data
+PATCH    → Partially update data
+DELETE   → Delete data
+
+
+Conclusion
+----------
+
+For modern JavaScript projects, fetch() is an excellent starting point
+because it is built into JavaScript environments and teaches the core
+concepts of HTTP requests, Promises, async/await, JSON, and error
+handling without requiring an additional library.
+
+Axios is a useful alternative, especially when working on larger
+applications where its additional HTTP-client features are valuable.
