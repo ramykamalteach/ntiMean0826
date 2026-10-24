@@ -1,0 +1,252 @@
+@if (cartService.isCheckoutModalOpen()) {
+  <div class="modal-backdrop" (click)="cartService.closeCheckout()"></div>
+
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <span class="font-overline text-tertiary">Direct Studio Escrow Checkout</span>
+        <h2 id="checkout-title" class="modal-title">
+          @if (step === 'details') { Artisan Shipping & Provenance }
+          @if (step === 'payment') { Maker Payout & Confirmation }
+          @if (step === 'confirmation') { Order Placed Directly with Makers }
+        </h2>
+      </div>
+      <button type="button" (click)="cartService.closeCheckout()" class="modal-close-btn" aria-label="Close checkout">
+        ✕
+      </button>
+    </div>
+
+    <!-- Step Progress Bar -->
+    <div class="checkout-steps">
+      <div class="step-chip" [class.active]="step === 'details'" [class.done]="step !== 'details'">
+        <span class="step-num">1</span>
+        <span>Studio Destination</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-chip" [class.active]="step === 'payment'" [class.done]="step === 'confirmation'">
+        <span class="step-num">2</span>
+        <span>Maker Payment</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-chip" [class.active]="step === 'confirmation'">
+        <span class="step-num">3</span>
+        <span>Dispatch Code</span>
+      </div>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-body">
+      <!-- Step 1: Details -->
+      @if (step === 'details') {
+        <div class="checkout-form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" [(ngModel)]="fullName" class="form-input" placeholder="e.g. Clara Sterling" required />
+            <span class="form-helper">Name printed on the artisan package label</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email for Workshop Updates</label>
+            <input type="email" [(ngModel)]="email" class="form-input" placeholder="e.g. clara@example.com" required />
+            <span class="form-helper">Makers will send personal dispatch tracking here</span>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Delivery Street Address</label>
+            <input type="text" [(ngModel)]="address" class="form-input" placeholder="Street address or studio apartment" required />
+          </div>
+
+          <div class="form-row-three full-width">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" [(ngModel)]="city" class="form-input" placeholder="City" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Postal Code</label>
+              <input type="text" [(ngModel)]="postalCode" class="form-input" placeholder="Postal Code" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              <select [(ngModel)]="country" class="form-select form-input">
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Sweden">Sweden</option>
+                <option value="Japan">Japan</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Ireland">Ireland</option>
+                <option value="France">France</option>
+                <option value="Germany">Germany</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Radio Shipping Options -->
+          <div class="full-width shipping-selection">
+            <label class="form-label">Dispatch Method</label>
+            <div class="radio-options-group">
+              <label class="custom-radio radio-box" [class.selected]="deliveryMethod === 'standard'">
+                <input type="radio" name="deliveryMethod" value="standard" [(ngModel)]="deliveryMethod" />
+                <div class="radio-content">
+                  <div class="radio-title-row">
+                    <strong>Standard Carbon-Neutral Delivery</strong>
+                    <span class="radio-price">{{ cartService.shippingEstimate() === 0 ? 'FREE' : '$12' }}</span>
+                  </div>
+                  <span class="radio-desc">Delivered via certified green transport in compostable wood-wool packaging.</span>
+                </div>
+              </label>
+
+              <label class="custom-radio radio-box" [class.selected]="deliveryMethod === 'express'">
+                <input type="radio" name="deliveryMethod" value="express" [(ngModel)]="deliveryMethod" />
+                <div class="radio-content">
+                  <div class="radio-title-row">
+                    <strong>Priority Workshop Courier</strong>
+                    <span class="radio-price">$24</span>
+                  </div>
+                  <span class="radio-desc">Direct air courier with signature verification on arrival.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="cartService.closeCheckout()" class="btn btn-ghost btn-md">
+            Return to Cart
+          </button>
+          <button type="button" (click)="goToPayment()" class="btn btn-primary btn-md">
+            Continue to Payment (${{ cartService.orderTotal() + (deliveryMethod === 'express' ? 12 : 0) }})
+          </button>
+        </div>
+      }
+
+      <!-- Step 2: Payment -->
+      @if (step === 'payment') {
+        <div class="payment-step-wrap">
+          <div class="maker-guarantee-card">
+            <div class="guarantee-header">
+              <span class="font-overline text-tertiary">Direct Escrow Guarantee</span>
+              <h4 class="guarantee-title">90% Direct Artisan Payout</h4>
+            </div>
+            <p class="guarantee-text">
+              Your payment of <strong>${{ cartService.orderTotal() + (deliveryMethod === 'express' ? 12 : 0) }}</strong> is held in MarketNest Fair-Trade Escrow until the artisan confirms shipment from their studio.
+            </p>
+            <div class="payout-split">
+              <div class="split-row">
+                <span>Direct Artisan Studio Funds (90%):</span>
+                <strong class="text-tertiary font-code">${{ cartService.makerDirectContribution() }}</strong>
+              </div>
+              <div class="split-row">
+                <span>Green Logistics & Guild Platform (10%):</span>
+                <span class="font-code">${{ (cartService.orderTotal() + (deliveryMethod === 'express' ? 12 : 0)) - cartService.makerDirectContribution() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-method-selector">
+            <label class="form-label">Payment Method</label>
+            <div class="radio-options-group">
+              <label class="custom-radio radio-box" [class.selected]="paymentMethod === 'card'">
+                <input type="radio" name="paymentMethod" value="card" [(ngModel)]="paymentMethod" />
+                <div class="radio-content">
+                  <strong>Credit / Debit Card</strong>
+                  <span class="radio-desc">Visa, Mastercard, American Express</span>
+                </div>
+              </label>
+
+              <label class="custom-radio radio-box" [class.selected]="paymentMethod === 'escrow'">
+                <input type="radio" name="paymentMethod" value="escrow" [(ngModel)]="paymentMethod" />
+                <div class="radio-content">
+                  <strong>Fair-Trade Artisan Direct Escrow</strong>
+                  <span class="radio-desc">Instant verified bank transfer with zero credit fee</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          @if (paymentMethod === 'card') {
+            <div class="card-inputs-grid">
+              <div class="form-group full-width">
+                <label class="form-label">Card Number</label>
+                <input type="text" class="form-input font-code" value="•••• •••• •••• 4242" placeholder="4532 •••• •••• ••••" />
+              </div>
+              <div class="form-row-two full-width">
+                <div class="form-group">
+                  <label class="form-label">Expiry</label>
+                  <input type="text" class="form-input font-code" value="11/28" placeholder="MM/YY" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Security CVC</label>
+                  <input type="text" class="form-input font-code" value="892" placeholder="CVC" />
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="terms-checkbox-wrap">
+            <label class="custom-checkbox">
+              <input type="checkbox" [(ngModel)]="agreeTerms" />
+              <span>I respect slow craft timelines and understand pieces are shaped by hand with natural material variations.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="backToDetails()" class="btn btn-secondary btn-md">
+            Back to Shipping
+          </button>
+          <button 
+            type="button" 
+            (click)="completeOrder()" 
+            [disabled]="!agreeTerms"
+            class="btn btn-primary btn-md"
+          >
+            Authorize Payment & Commission Makers
+          </button>
+        </div>
+      }
+
+      <!-- Step 3: Confirmation -->
+      @if (step === 'confirmation') {
+        <div class="confirmation-wrap">
+          <div class="success-icon-badge">✓</div>
+          <h3 class="success-title">Order Received by Independent Studios</h3>
+          <p class="success-subtitle">
+            Thank you, {{ fullName }}. Your order is now directly with the artisans.
+          </p>
+
+          <!-- Tracking code in Source Code Pro font as required by marketnest-DESIGN.md:35 -->
+          <div class="tracking-card">
+            <div class="tracking-row">
+              <span class="tracking-label">Order Reference:</span>
+              <span class="font-code tracking-code-value">{{ orderTrackingCode }}</span>
+            </div>
+            <div class="tracking-row">
+              <span class="tracking-label">Date Commissioned:</span>
+              <span class="font-code">{{ orderDate }}</span>
+            </div>
+            <div class="tracking-row">
+              <span class="tracking-label">Dispatch Destination:</span>
+              <span>{{ city }}, {{ country }}</span>
+            </div>
+          </div>
+
+          <div class="artisan-letter-box">
+            <div class="artisan-letter-icon">📜</div>
+            <p class="artisan-letter-text">
+              "Every time an order arrives on MarketNest, it allows independent artisans to purchase raw clay, fallen timber, and natural flax without bowing to corporate factory quotas. Thank you for choosing patient, human hands."
+            </p>
+          </div>
+
+          <div class="modal-footer single-action">
+            <button type="button" (click)="finish()" class="btn btn-primary btn-lg">
+              Return to Marketplace
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

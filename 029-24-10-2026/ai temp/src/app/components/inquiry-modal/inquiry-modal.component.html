@@ -1,0 +1,92 @@
+@if (inquiryService.isInquiryOpen()) {
+  <div class="inquiry-backdrop" (click)="inquiryService.closeInquiry()"></div>
+
+  <div class="inquiry-dialog" role="dialog" aria-modal="true" aria-labelledby="inquiry-dialog-title">
+    <div class="inquiry-header">
+      <div class="header-details">
+        <span class="font-overline text-tertiary">Direct Studio Communication</span>
+        <h2 id="inquiry-dialog-title" class="inquiry-title">
+          Message {{ inquiryService.activeArtisan()?.name }}
+        </h2>
+        <p class="inquiry-subtitle">
+          {{ inquiryService.activeArtisan()?.studioName }} • {{ inquiryService.activeArtisan()?.location }}
+        </p>
+      </div>
+      <button type="button" (click)="inquiryService.closeInquiry()" class="modal-close-btn" aria-label="Close dialog">
+        ✕
+      </button>
+    </div>
+
+    <!-- Maker context banner -->
+    @if (inquiryService.activeProduct(); as prod) {
+      <div class="inquiry-product-context">
+        <img [src]="prod.images[0]" [alt]="prod.title" class="context-img" />
+        <div class="context-text">
+          <span class="context-label">Inquiring regarding:</span>
+          <strong>{{ prod.title }}</strong> (${{ prod.price }})
+        </div>
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="inquiry-body">
+      <!-- Radio button choices for inquiry purpose -->
+      <div class="form-group">
+        <label class="form-label">Nature of Inquiry</label>
+        <div class="inquiry-radio-grid">
+          <label class="custom-radio">
+            <input type="radio" name="inquiryType" value="custom" [(ngModel)]="inquiryType" />
+            <span>Custom dimensions / Bespoke request</span>
+          </label>
+          <label class="custom-radio">
+            <input type="radio" name="inquiryType" value="materials" [(ngModel)]="inquiryType" />
+            <span>Materials & kiln/process question</span>
+          </label>
+          <label class="custom-radio">
+            <input type="radio" name="inquiryType" value="shipping" [(ngModel)]="inquiryType" />
+            <span>Shipping origin & delivery timeline</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row-two">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" [(ngModel)]="senderName" name="name" class="form-input" placeholder="e.g. Maya Thorne" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Email Address</label>
+          <input type="email" [(ngModel)]="senderEmail" name="email" class="form-input" placeholder="e.g. maya@example.com" required />
+          <span class="form-helper">The artisan will reply straight to your inbox</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Personal Message to the Maker</label>
+        <textarea 
+          [(ngModel)]="messageText" 
+          name="message" 
+          class="form-textarea" 
+          rows="4" 
+          placeholder="Describe your inquiry, custom sizing preferences, or questions regarding craftsmanship..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="custom-checkbox">
+          <input type="checkbox" [(ngModel)]="subscribeToStudio" name="sub" />
+          <span>Keep me updated on this studio’s upcoming kiln firings and limited batch drops</span>
+        </label>
+      </div>
+
+      <div class="inquiry-footer">
+        <button type="button" (click)="inquiryService.closeInquiry()" class="btn btn-ghost btn-md">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary btn-md">
+          Send Message to Studio
+        </button>
+      </div>
+    </form>
+  </div>
+}

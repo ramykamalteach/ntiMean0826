@@ -1,0 +1,120 @@
+<footer class="site-footer">
+  <!-- Values Banner: Flat with warm background layering -->
+  <div class="footer-values-banner">
+    <div class="container values-grid">
+      <div class="value-item">
+        <div class="value-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="value-text">
+          <h4 class="value-title">Direct Maker Provenance</h4>
+          <p class="value-desc">No middlemen warehouses. Every piece ships directly from independent maker workshops.</p>
+        </div>
+      </div>
+
+      <div class="value-item">
+        <div class="value-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M16 8l-8 8"></path>
+            <path d="M8 8h8v8"></path>
+          </svg>
+        </div>
+        <div class="value-text">
+          <h4 class="value-title">Fair Economics (90% to Makers)</h4>
+          <p class="value-desc">Makers set their own prices and receive 90% of checkout value directly into their studio accounts.</p>
+        </div>
+      </div>
+
+      <div class="value-item">
+        <div class="value-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <div class="value-text">
+          <h4 class="value-title">Every Object Has a Story</h4>
+          <p class="value-desc">We never use pressure sales or fake countdown timers. We celebrate patient hands and natural materials.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Footer Content -->
+  <div class="container footer-main">
+    <div class="footer-grid">
+      <!-- Column 1: Brand & Philosophy -->
+      <div class="footer-col brand-col">
+        <div class="footer-brand">
+          <span class="footer-brand-title">MarketNest</span>
+          <span class="footer-brand-subtitle">Artisan Goods & Community Marketplace</span>
+        </div>
+        <p class="footer-mission">
+          MarketNest embraces the beauty of imperfection, natural earth clays, hand-loomed fibers, and felled timber. Our flat, border-driven aesthetic reflects the honesty and warmth of the artisan workshop.
+        </p>
+        <div class="maker-guarantee">
+          <span class="badge-material">100% Traceable Provenance</span>
+          <span class="badge-material">Plastic-Free Shipping</span>
+        </div>
+      </div>
+
+      <!-- Column 2: Marketplace Disciplines -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Artisan Crafts</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/" [queryParams]="{category: 'Ceramics'}">Ceramics & Stoneware</a></li>
+          <li><a routerLink="/" [queryParams]="{category: 'Woodwork'}">Carved & Turned Wood</a></li>
+          <li><a routerLink="/" [queryParams]="{category: 'Textiles'}">Handloom & Indigo Textiles</a></li>
+          <li><a routerLink="/" [queryParams]="{category: 'Leather'}">Bark-Tanned Leather</a></li>
+          <li><a routerLink="/" [queryParams]="{category: 'Candles'}">Wild Botanical Candles</a></li>
+          <li><a routerLink="/" [queryParams]="{category: 'Jewelry'}">Hand-Forged Brass</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: The Movement -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Community</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/makers">Artisan Directory</a></li>
+          <li><a routerLink="/journal">The Craft Journal</a></li>
+          <li><a routerLink="/philosophy">Our Flat Design Manifesto</a></li>
+          <li><a routerLink="/philosophy">Ethical Maker Economics</a></li>
+          <li><a routerLink="/philosophy">Slow Craft vs Fast Retail</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Newsletter -->
+      <div class="footer-col newsletter-col">
+        <h4 class="footer-heading">The Studio Dispatch</h4>
+        <p class="newsletter-desc">
+          Receive Sunday stories from independent studios, kiln opening reports, and limited batch announcements.
+        </p>
+        <form (ngSubmit)="onSubscribe()" class="newsletter-form">
+          <input 
+            type="email" 
+            [(ngModel)]="newsletterEmail" 
+            name="footerEmail" 
+            placeholder="Your email address" 
+            class="form-input newsletter-input" 
+            required 
+          />
+          <button type="submit" class="btn btn-primary btn-sm">Join</button>
+        </form>
+        <p class="privacy-note">No spam. Only warm stories and maker updates.</p>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        © 2026 MarketNest Artisan Guild. Built with handcrafted precision in Angular 22.
+      </div>
+      <div class="footer-design-tag">
+        Design System: Terracotta (#C2410C), Warm Sand (#D4A373), Forest Green (#365314) • Zero Drop Shadows
+      </div>
+    </div>
+  </div>
+</footer>

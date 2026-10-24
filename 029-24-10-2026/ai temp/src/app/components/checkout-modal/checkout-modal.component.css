@@ -1,0 +1,362 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay-backdrop);
+  z-index: 95;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92%;
+  max-width: 680px;
+  max-height: 90vh;
+  background-color: var(--color-surface);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--overlay-shadow);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: translate(-50%, -46%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.modal-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--color-background);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-title {
+  font-family: var(--font-headline);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-top: 4px;
+}
+
+.modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.modal-close-btn:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* Steps progress bar */
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.step-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+}
+
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.step-chip.active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.step-chip.active .step-num {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.step-chip.done {
+  color: var(--color-tertiary);
+}
+
+.step-chip.done .step-num {
+  background-color: var(--color-tertiary-light);
+  color: var(--color-tertiary);
+  border-color: var(--color-tertiary-border);
+}
+
+.step-divider {
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 0 12px;
+}
+
+/* Modal Body */
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+.checkout-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-row-three {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr;
+  gap: 12px;
+}
+
+.form-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Radio boxes */
+.radio-options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.radio-box {
+  padding: 12px 16px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.radio-box:hover {
+  border-color: var(--border-strong);
+  background-color: var(--color-background);
+}
+
+.radio-box.selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.radio-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.radio-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.radio-price {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.radio-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Guarantee Card */
+.maker-guarantee-card {
+  background-color: var(--color-background);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.guarantee-title {
+  font-family: var(--font-headline);
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+  margin-bottom: 6px;
+}
+
+.guarantee-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.payout-split {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.split-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-inputs-grid {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: var(--color-background);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.terms-checkbox-wrap {
+  margin-top: 20px;
+}
+
+/* Confirmation */
+.confirmation-wrap {
+  text-align: center;
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-icon-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.success-title {
+  font-family: var(--font-headline);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.success-subtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.tracking-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--color-background);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.tracking-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.tracking-label {
+  color: var(--color-text-muted);
+}
+
+.tracking-code-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.artisan-letter-box {
+  max-width: 500px;
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 14px;
+  text-align: left;
+}
+
+.artisan-letter-icon {
+  font-size: 24px;
+}
+
+.artisan-letter-text {
+  font-family: var(--font-headline);
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-main);
+}
+
+/* Modal Footer */
+.modal-footer {
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-footer.single-action {
+  justify-content: center;
+}
+
+.text-tertiary {
+  color: var(--color-tertiary);
+}

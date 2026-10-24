@@ -1,0 +1,75 @@
+@if (favoritesService.isFavoritesDrawerOpen()) {
+  <div class="fav-backdrop" (click)="favoritesService.closeDrawer()"></div>
+
+  <aside class="fav-drawer" role="dialog" aria-label="Saved Artisan Goods">
+    <div class="drawer-header">
+      <div class="header-titles">
+        <h2 class="drawer-title">Saved Creations</h2>
+        <span class="drawer-count">({{ favoriteProducts().length }} saved)</span>
+      </div>
+      <button type="button" (click)="favoritesService.closeDrawer()" class="drawer-close-btn" aria-label="Close saved items">
+        ✕
+      </button>
+    </div>
+
+    <div class="drawer-body">
+      @if (favoriteProducts().length === 0) {
+        <div class="empty-fav-state">
+          <div class="empty-icon">♡</div>
+          <h3 class="empty-title">No saved pieces yet</h3>
+          <p class="empty-desc">
+            Click the heart icon on any handcrafted piece to save it for later or compare maker stories.
+          </p>
+          <button (click)="favoritesService.closeDrawer()" routerLink="/" class="btn btn-secondary btn-md">
+            Browse Artisans
+          </button>
+        </div>
+      } @else {
+        <ul class="fav-list">
+          @for (product of favoriteProducts(); track product.id) {
+            <li class="fav-item">
+              <div class="fav-item-image">
+                <img [src]="product.images[0]" [alt]="product.title" />
+              </div>
+
+              <div class="fav-item-content">
+                <div class="fav-item-top">
+                  <span class="badge-material">{{ product.materialTag }}</span>
+                  <button 
+                    type="button" 
+                    (click)="removeFavorite(product.id)" 
+                    class="fav-remove-btn" 
+                    title="Remove from saved"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <h4 class="fav-item-title">
+                  <a [routerLink]="['/product', product.id]" (click)="favoritesService.closeDrawer()">
+                    {{ product.title }}
+                  </a>
+                </h4>
+
+                <div class="fav-item-maker">
+                  By {{ product.artisan.name }} • {{ product.artisan.location }}
+                </div>
+
+                <div class="fav-item-bottom">
+                  <span class="fav-item-price">${{ product.price }}</span>
+                  <button 
+                    type="button" 
+                    (click)="moveToCart(product)" 
+                    class="btn btn-primary btn-sm"
+                  >
+                    Add to Basket
+                  </button>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </aside>
+}

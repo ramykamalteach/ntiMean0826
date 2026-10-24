@@ -1,0 +1,86 @@
+<div class="journal-page container section-spacing">
+  <!-- Header -->
+  <div class="journal-header text-center">
+    <span class="font-overline text-tertiary">Editorial & Slow Living</span>
+    <h1 class="font-display journal-title">The MarketNest Craft Journal</h1>
+    <p class="font-body-large journal-subtitle max-w-700">
+      Essays on materials, time, and human hands. Exploring why slow craft endures in an age of disposable speed.
+    </p>
+  </div>
+
+  <!-- Featured Lead Article -->
+  @if (articles.length > 0) {
+    <div class="lead-article card-elevated">
+      <div class="lead-image-wrap">
+        <img [src]="articles[0].coverImage" [alt]="articles[0].title" class="lead-image" />
+        <span class="badge-material lead-cat-tag">{{ articles[0].category }}</span>
+      </div>
+      <div class="lead-content">
+        <div class="meta-row">
+          <span>By {{ articles[0].author }} ({{ articles[0].authorRole }})</span>
+          <span>•</span>
+          <span>{{ articles[0].readTime }}</span>
+        </div>
+        <h2 class="font-headline lead-title">
+          <a [routerLink]="['/journal', articles[0].id]">{{ articles[0].title }}</a>
+        </h2>
+        <p class="lead-excerpt font-body-large">
+          {{ articles[0].excerpt }}
+        </p>
+        <blockquote class="lead-quote font-headline">
+          "{{ articles[0].quote }}"
+        </blockquote>
+        <div class="lead-footer">
+          <a [routerLink]="['/journal', articles[0].id]" class="btn btn-primary btn-md">
+            Read Full Essay
+          </a>
+          @if (articles[0].featuredProductId) {
+            <a [routerLink]="['/product', articles[0].featuredProductId]" class="btn btn-secondary btn-md">
+              View Featured Creation
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Articles Grid -->
+  <div class="articles-grid">
+    @for (art of articles.slice(1); track art.id) {
+      <article class="article-card card-default">
+        <div class="article-img-wrap">
+          <a [routerLink]="['/journal', art.id]">
+            <img [src]="art.coverImage" [alt]="art.title" class="article-img" />
+          </a>
+          <span class="badge-material article-cat">{{ art.category }}</span>
+        </div>
+
+        <div class="article-card-body">
+          <div class="meta-row">
+            <span>By {{ art.author }}</span>
+            <span>•</span>
+            <span>{{ art.readTime }}</span>
+          </div>
+
+          <h3 class="font-headline article-card-title">
+            <a [routerLink]="['/journal', art.id]">{{ art.title }}</a>
+          </h3>
+
+          <p class="article-card-excerpt font-body">
+            {{ art.excerpt }}
+          </p>
+
+          <blockquote class="card-quote font-subhead">
+            "{{ art.quote }}"
+          </blockquote>
+
+          <div class="article-card-footer">
+            <a [routerLink]="['/journal', art.id]" class="btn btn-secondary btn-sm">
+              Read Story →
+            </a>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</div>

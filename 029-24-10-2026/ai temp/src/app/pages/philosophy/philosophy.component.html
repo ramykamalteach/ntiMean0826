@@ -1,0 +1,153 @@
+<div class="philosophy-page container section-spacing">
+  <!-- Header -->
+  <div class="philosophy-header text-center">
+    <span class="font-overline text-tertiary">Our Ethical & Visual Manifesto</span>
+    <h1 class="font-display philosophy-title">The MarketNest Creed</h1>
+    <p class="font-body-large philosophy-subtitle max-w-700">
+      We believe that the way an online marketplace is designed should reflect the integrity of the objects sold within it. Here is why we do things differently.
+    </p>
+  </div>
+
+  <!-- The 4 Core Principles -->
+  <div class="principles-grid">
+    <!-- Pillar 1: Honest Flat Design -->
+    <div class="principle-card card-elevated">
+      <div class="principle-number">01</div>
+      <h3 class="font-headline principle-title">No Drop Shadows: The Honesty of Borders</h3>
+      <p class="font-body principle-desc">
+        Corporate retail uses heavy dropshadows to manufacture artificial depth on a digital screen. At MarketNest, we follow a flat, border-driven design philosophy. Depth is achieved naturally through warm cream layering (#FFFBF5) and crisp stone borders (#E7E5E4 and #D6D3D1). The visual simplicity allows the tactile authenticity of raw stoneware, oak grain, and linen weave to command the viewer’s full attention.
+      </p>
+    </div>
+
+    <!-- Pillar 2: No False Urgency -->
+    <div class="principle-card card-elevated">
+      <div class="principle-number">02</div>
+      <h3 class="font-headline principle-title">Zero Manipulative Pressure Tactics</h3>
+      <p class="font-body principle-desc">
+        You will never find flashing countdown timers, fake stock alerts ("Only 1 left! Hurry!"), or high-pressure popups on MarketNest. True craft is made for patient living. An artisan teapot or leather satchel is an investment intended to serve your household for decades. We give buyers space, quiet, and comprehensive provenance so decisions are rooted in admiration, not anxiety.
+      </p>
+    </div>
+
+    <!-- Pillar 3: 90% Direct Maker Economics -->
+    <div class="principle-card card-elevated">
+      <div class="principle-number">03</div>
+      <h3 class="font-headline principle-title">90% Direct Artisan Revenue</h3>
+      <p class="font-body principle-desc">
+        Mainstream department stores and wholesale distributors mark products up 400% while paying creators a meager fraction of retail value. On MarketNest, 90 cents of every dollar spent flows directly into the artisan’s studio account. This ensures master craftspeople can afford sustainable wild materials, fair studio wages, and the freedom to experiment.
+      </p>
+    </div>
+
+    <!-- Pillar 4: Natural & Biodegradable Only -->
+    <div class="principle-card card-elevated">
+      <div class="principle-number">04</div>
+      <h3 class="font-headline principle-title">Uncompromising Material Provenance</h3>
+      <p class="font-body principle-desc">
+        Every material on our platform is transparently sourced: storm-felled Swedish timber, Oaxaca river silt, unbleached Provencal beeswax, and vegetable-tanned hides. All goods are packed in 100% compostable wood-wool and unbleached kraft cardboard, with zero synthetic bubble wrap or single-use plastics.
+      </p>
+    </div>
+  </div>
+
+  <!-- Interactive Artisan Economics Calculator -->
+  <section class="calculator-section card-default">
+    <div class="calc-header text-center">
+      <span class="font-overline text-tertiary">Interactive Transparency Tool</span>
+      <h2 class="font-headline calc-title">Where Does Your Money Actually Go?</h2>
+      <p class="font-body calc-subtitle">
+        Adjust the order amount below to compare how MarketNest directly empowers independent artisans compared to mainstream corporate retail.
+      </p>
+    </div>
+
+    <div class="calc-slider-wrap">
+      <div class="calc-slider-labels">
+        <label for="price-range" class="form-label">Simulated Artisan Order Amount:</label>
+        <span class="font-headline calc-amount-display">${{ testAmount() }}</span>
+      </div>
+      <input 
+        id="price-range"
+        type="range" 
+        min="25" 
+        max="500" 
+        step="5"
+        [value]="testAmount()" 
+        (input)="updateAmount(+$any($event.target).value)" 
+        class="calc-slider"
+      />
+    </div>
+
+    <div class="calc-comparison-grid">
+      <!-- MarketNest Model -->
+      <div class="comparison-column marketnest-col">
+        <div class="model-badge">
+          <span class="badge-material">MarketNest Guild</span>
+        </div>
+        <h4 class="model-name">Independent Artisan Escrow</h4>
+        <div class="payout-stat">
+          <span class="payout-big font-headline">${{ artisanShare() }}</span>
+          <span class="payout-percent">(90% Straight to Maker)</span>
+        </div>
+        <div class="payout-breakdown">
+          <div class="breakdown-row">
+            <span>Direct Maker Workshop:</span>
+            <strong>${{ artisanShare() }}</strong>
+          </div>
+          <div class="breakdown-row">
+            <span>Platform & Green Logistics (10%):</span>
+            <span>${{ guildShare() }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Corporate Middlemen & Ad Brokers:</span>
+            <span>$0.00</span>
+          </div>
+        </div>
+        <p class="model-note">
+          Elena, Søren, Aiko, or Nora receives these funds directly to purchase clay, fallen timber, or natural flax.
+        </p>
+      </div>
+
+      <!-- Traditional Retail Model -->
+      <div class="comparison-column retail-col">
+        <div class="model-badge">
+          <span class="chip-status chip-status-warning">Traditional Department Retail</span>
+        </div>
+        <h4 class="model-name">Wholesale & Distributor Chain</h4>
+        <div class="payout-stat">
+          <span class="payout-big font-headline text-muted">${{ retailArtisanShare() }}</span>
+          <span class="payout-percent">(Only ~18% Reaches Maker)</span>
+        </div>
+        <div class="payout-breakdown">
+          <div class="breakdown-row">
+            <span>What Maker Gets:</span>
+            <strong>${{ retailArtisanShare() }}</strong>
+          </div>
+          <div class="breakdown-row">
+            <span>Importer & Wholesale Margins:</span>
+            <span>${{ retailWholesaleShare() }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Retail Overhead & Corporate Profits:</span>
+            <span>${{ retailOverheadShare() }}</span>
+          </div>
+        </div>
+        <p class="model-note">
+          Forces independent artisans to reduce material quality or outsource to sweatshop mass production.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Call to Action -->
+  <div class="philosophy-cta-card card-elevated text-center">
+    <h2 class="font-headline">Stand With Independent Hands</h2>
+    <p class="font-body-large max-w-600">
+      Every purchase you make on MarketNest is an active vote against disposable culture and corporate consolidation.
+    </p>
+    <div class="cta-btns-row">
+      <a routerLink="/" class="btn btn-primary btn-lg">
+        Explore Handcrafted Catalog
+      </a>
+      <a routerLink="/makers" class="btn btn-secondary btn-lg">
+        Meet Our Independent Makers
+      </a>
+    </div>
+  </div>
+</div>

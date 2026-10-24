@@ -1,0 +1,194 @@
+@if (cartService.isCartOpen()) {
+  <div class="cart-backdrop" (click)="cartService.closeCart()"></div>
+
+  <aside class="cart-drawer" role="dialog" aria-label="Artisan Shopping Basket">
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <h2 class="drawer-title">Artisan Basket</h2>
+        <span class="drawer-count">({{ cartService.itemCount() }} {{ cartService.itemCount() === 1 ? 'item' : 'items' }})</span>
+      </div>
+      <button type="button" (click)="cartService.closeCart()" class="drawer-close-btn" aria-label="Close basket">
+        ✕
+      </button>
+    </div>
+
+    <!-- Maker Direct Support Banner -->
+    <div class="maker-support-banner">
+      <div class="support-icon">🌱</div>
+      <div class="support-text">
+        <strong>Direct Maker Impact:</strong> ${{ cartService.makerDirectContribution() }} of this order goes directly into artisan hands.
+      </div>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="drawer-body">
+      @if (cartService.cartItems().length === 0) {
+        <div class="empty-cart-state">
+          <div class="empty-icon-wrap">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+          </div>
+          <h3 class="empty-title">Your basket is waiting</h3>
+          <p class="empty-desc">
+            Explore authentic stoneware, handloom textiles, and carved timber crafted by independent makers.
+          </p>
+          <button (click)="cartService.closeCart()" routerLink="/" class="btn btn-primary btn-md">
+            Explore Marketplace
+          </button>
+        </div>
+      } @else {
+        <ul class="cart-item-list">
+          @for (item of cartService.cartItems(); track item.product.id + (item.selectedVariant || ''); let idx = $index) {
+            <li class="cart-item">
+              <!-- Item Image -->
+              <div class="cart-item-thumb">
+                <img [src]="item.product.images[0]" [alt]="item.product.title" />
+              </div>
+
+              <!-- Item Info -->
+              <div class="cart-item-details">
+                <div class="item-header">
+                  <h4 class="item-title">
+                    <a [routerLink]="['/product', item.product.id]" (click)="cartService.closeCart()">
+                      {{ item.product.title }}
+                    </a>
+                  </h4>
+                  <button 
+                    type="button" 
+                    (click)="removeItem(item.product.id, item.product.title, item.selectedVariant)"
+                    class="item-remove-btn" 
+                    aria-label="Remove item"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div class="item-maker">
+                  By {{ item.product.artisan.name }} • {{ item.product.artisan.location }}
+                </div>
+
+                @if (item.selectedVariant) {
+                  <div class="item-variant">
+                    <span>Option:</span> <strong>{{ item.selectedVariant }}</strong>
+                  </div>
+                }
+
+                <div class="item-footer">
+                  <!-- Quantity adjuster -->
+                  <div class="qty-adjuster">
+                    <button 
+                      type="button" 
+                      (click)="cartService.updateQuantity(item.product.id, -1, item.selectedVariant)"
+                      class="qty-btn"
+                      [disabled]="item.quantity <= 1"
+                      aria-label="Decrease quantity"
+                    >−</button>
+                    <span class="qty-display">{{ item.quantity }}</span>
+                    <button 
+                      type="button" 
+                      (click)="cartService.updateQuantity(item.product.id, 1, item.selectedVariant)"
+                      class="qty-btn"
+                      aria-label="Increase quantity"
+                    >+</button>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="item-price-block">
+                    <span class="item-total-price">${{ item.product.price * item.quantity }}</span>
+                    @if (item.quantity > 1) {
+                      <span class="item-unit-price">${{ item.product.price }} each</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Personal note to the maker -->
+                <div class="maker-note-section">
+                  <button type="button" (click)="toggleNote(idx)" class="note-toggle-btn">
+                    ✍️ {{ item.noteToMaker ? 'Edit note to ' + item.product.artisan.name : '+ Add note for ' + item.product.artisan.name }}
+                  </button>
+
+                  @if (activeNoteIndex === idx) {
+                    <div class="note-input-wrap">
+                      <textarea 
+                        #noteInput
+                        [value]="item.noteToMaker || ''"
+                        placeholder="Write a custom sizing request, gift message, or note to the artisan..."
+                        class="form-textarea note-textarea"
+                        rows="2"
+                      ></textarea>
+                      <button 
+                        type="button" 
+                        (click)="saveNote(item.product.id, noteInput.value, item.selectedVariant); toggleNote(idx)"
+                        class="btn btn-secondary btn-sm"
+                      >
+                        Save Note
+                      </button>
+                    </div>
+                  } @else if (item.noteToMaker) {
+                    <p class="saved-note-preview">"{{ item.noteToMaker }}"</p>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Drawer Footer / Summary -->
+    @if (cartService.cartItems().length > 0) {
+      <div class="drawer-footer">
+        <div class="summary-breakdown">
+          <div class="summary-row">
+            <span>Handmade Goods Subtotal</span>
+            <span class="font-code font-bold">${{ cartService.subtotal() }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Direct Maker Support (90%)</span>
+            <span class="text-tertiary font-bold">${{ cartService.makerDirectContribution() }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Carbon-Neutral Workshop Shipping</span>
+            <span>
+              @if (cartService.shippingEstimate() === 0) {
+                <strong class="text-tertiary">Complimentary</strong>
+              } @else {
+                <span class="font-code">${{ cartService.shippingEstimate() }}</span>
+              }
+            </span>
+          </div>
+          @if (cartService.subtotal() < 150) {
+            <div class="shipping-hint">
+              Add ${{ 150 - cartService.subtotal() }} more to receive free carbon-neutral shipping!
+            </div>
+          }
+          <div class="summary-total-row">
+            <span class="total-label">Estimated Total</span>
+            <span class="total-amount">${{ cartService.orderTotal() }}</span>
+          </div>
+        </div>
+
+        <button 
+          type="button" 
+          (click)="onCheckout()" 
+          class="btn btn-primary btn-lg checkout-btn"
+        >
+          Proceed to Maker Checkout (${{ cartService.orderTotal() }})
+        </button>
+
+        <div class="transparency-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          Direct payout escrow protected • Plastic-free packaging
+        </div>
+      </div>
+    }
+  </aside>
+}

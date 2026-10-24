@@ -1,0 +1,152 @@
+<!-- Top Provenance Announcement Bar -->
+<div class="announcement-bar">
+  <div class="container announcement-content">
+    <span>
+      <span class="dot-indicator"></span>
+      <strong>Handmade & Slow Craft:</strong> Every piece is individually shaped by verified independent artisans.
+    </span>
+    <span class="announcement-highlight">
+      90% of revenue goes directly to the makers
+    </span>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="site-header">
+  <div class="container header-container">
+    <!-- Brand / Logo -->
+    <a routerLink="/" (click)="clearSearch()" class="brand-link" id="brand-logo-link">
+      <div class="brand-emblem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">MarketNest</span>
+        <span class="brand-tagline">Artisan Marketplace</span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav" aria-label="Main Navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+        Marketplace
+      </a>
+      <a routerLink="/makers" routerLinkActive="active" class="nav-item">
+        Makers & Studios
+      </a>
+      <a routerLink="/journal" routerLinkActive="active" class="nav-item">
+        Craft Journal
+      </a>
+      <a routerLink="/philosophy" routerLinkActive="active" class="nav-item">
+        Our Philosophy
+      </a>
+    </nav>
+
+    <!-- Header Actions (Search, Favorites, Cart) -->
+    <div class="header-actions">
+      <!-- Search Input -->
+      <form (ngSubmit)="onSearchSubmit()" class="header-search-form" role="search">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="search" 
+            [(ngModel)]="searchInput" 
+            name="search" 
+            placeholder="Search craft, maker, material..."
+            class="header-search-input"
+            aria-label="Search artisan goods"
+          />
+          @if (searchInput) {
+            <button type="button" (click)="clearSearch()" class="search-clear-btn" aria-label="Clear search">
+              ✕
+            </button>
+          }
+        </div>
+      </form>
+
+      <!-- Favorites Icon Button -->
+      <button 
+        type="button" 
+        (click)="favoritesService.toggleDrawer()" 
+        class="action-icon-btn" 
+        title="Saved Artisan Pieces"
+        aria-label="View Saved Artisan Pieces"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        @if (favoritesService.count() > 0) {
+          <span class="badge-count">{{ favoritesService.count() }}</span>
+        }
+      </button>
+
+      <!-- Cart Button -->
+      <button 
+        type="button" 
+        (click)="cartService.toggleCart()" 
+        class="cart-toggle-btn" 
+        aria-label="Open Shopping Basket"
+      >
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="cart-label">Basket</span>
+        @if (cartService.itemCount() > 0) {
+          <span class="cart-count-pill">{{ cartService.itemCount() }}</span>
+        }
+      </button>
+
+      <!-- Mobile Hamburger Button -->
+      <button 
+        type="button" 
+        (click)="toggleMobileMenu()" 
+        class="mobile-menu-btn" 
+        aria-label="Toggle navigation menu"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          @if (!isMobileMenuOpen) {
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          } @else {
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          }
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Navigation -->
+  @if (isMobileMenuOpen) {
+    <div class="mobile-nav-panel">
+      <form (ngSubmit)="onSearchSubmit()" class="mobile-search-form">
+        <input 
+          type="search" 
+          [(ngModel)]="searchInput" 
+          name="mobileSearch" 
+          placeholder="Search goods, artisans, materials..."
+          class="form-input"
+        />
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+      </form>
+      <nav class="mobile-nav-links">
+        <a routerLink="/" (click)="closeMobileMenu()" class="mobile-nav-item">Marketplace</a>
+        <a routerLink="/makers" (click)="closeMobileMenu()" class="mobile-nav-item">Makers & Studios</a>
+        <a routerLink="/journal" (click)="closeMobileMenu()" class="mobile-nav-item">Craft Journal</a>
+        <a routerLink="/philosophy" (click)="closeMobileMenu()" class="mobile-nav-item">Our Philosophy</a>
+      </nav>
+      <div class="mobile-nav-footer">
+        <div class="provenance-note">
+          <strong>Direct to Maker:</strong> Fair trade, ethical slow craft, zero plastic packaging.
+        </div>
+      </div>
+    </div>
+  }
+</header>

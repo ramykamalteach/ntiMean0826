@@ -1,0 +1,405 @@
+<!-- Hero Section: Editorial & Warm Craft Story -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-card">
+      <div class="hero-content">
+        <div class="hero-badge-wrap">
+          <span class="badge-material">Independent Artisan Guild</span>
+          <span class="font-overline text-tertiary">Zero Mass Production</span>
+        </div>
+        <h1 class="hero-headline">
+          Where every handcrafted object carries the soul of its maker.
+        </h1>
+        <p class="hero-description">
+          MarketNest is a sanctuary for authentic craft. From pit-fired Oaxaca earthenware and hand-hewn Swedish oak trenchers to fermented indigo linen, discover patient goods shaped by independent artisans who honor their materials.
+        </p>
+
+        <div class="hero-actions">
+          <a routerLink="/" (click)="onSelectCategory('All')" class="btn btn-primary btn-lg">
+            Explore Handcrafted Goods
+          </a>
+          <a routerLink="/makers" class="btn btn-secondary btn-lg">
+            Meet the Artisans
+          </a>
+        </div>
+
+        <div class="hero-metrics">
+          <div class="metric-item">
+            <span class="metric-number">90%</span>
+            <span class="metric-label">Direct Revenue to Makers</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-number">100%</span>
+            <span class="metric-label">Traceable Provenance</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-number">0%</span>
+            <span class="metric-label">Plastic Packaging</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Maker Callout -->
+      <div class="hero-spotlight">
+        <div class="spotlight-card">
+          <div class="spotlight-image-wrap">
+            <img 
+              src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=800&q=80" 
+              alt="Elena Morales shaping wild clay" 
+              class="spotlight-image"
+            />
+            <span class="spotlight-tag">Maker of the Month</span>
+          </div>
+          <div class="spotlight-info">
+            <div class="maker-identity">
+              <img 
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" 
+                alt="Elena Morales" 
+                class="maker-avatar-img"
+              />
+              <div>
+                <h3 class="maker-spotlight-name">Elena Morales</h3>
+                <span class="maker-spotlight-studio">Barro Vivo Studio • Oaxaca, Mexico</span>
+              </div>
+            </div>
+            <p class="maker-spotlight-quote">
+              "Wild clay isn’t something you force into submission. You listen to its grit and moisture, and allow the subterranean wood kiln to leave its mark."
+            </p>
+            <div class="spotlight-footer">
+              <span class="font-overline text-tertiary">Pit-Fired Ceramics</span>
+              <a [routerLink]="['/product', 'prod-1']" class="btn btn-secondary btn-sm">
+                View Her Teapot
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Marketplace Section -->
+<section class="container marketplace-section" id="marketplace-feed">
+  <!-- Section Title -->
+  <div class="section-header">
+    <div class="header-titles">
+      <span class="font-overline text-tertiary">Curated Artisan Catalog</span>
+      <h2 class="font-headline section-title">Slow Craft Marketplace</h2>
+      <p class="section-subtitle">
+        Direct from individual studios. Every purchase directly sustains master craftspeople.
+      </p>
+    </div>
+
+    <!-- Active Search / Reset Notice -->
+    @if (marketplaceService.searchQuery()) {
+      <div class="search-indicator-pill">
+        <span>Results for "<strong>{{ marketplaceService.searchQuery() }}</strong>"</span>
+        <button type="button" (click)="marketplaceService.setSearchQuery('')" class="clear-search-btn">
+          Clear Filter ✕
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Filter & Categories Bar -->
+  <div class="filter-controls-wrapper">
+    <!-- Category Chips -->
+    <div class="chips-scroll-row" role="tablist" aria-label="Craft Categories">
+      @for (cat of categories; track cat.value) {
+        <button 
+          type="button" 
+          (click)="onSelectCategory(cat.value)"
+          class="chip-filter"
+          [class.active]="marketplaceService.selectedCategory() === cat.value"
+          role="tab"
+          [attr.aria-selected]="marketplaceService.selectedCategory() === cat.value"
+        >
+          {{ cat.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Material Chips & Controls Row -->
+    <div class="materials-and-sorting-bar">
+      <div class="material-chips-group">
+        <span class="filter-label">Filter Material:</span>
+        @for (mat of materials; track mat.value) {
+          <button 
+            type="button" 
+            (click)="onSelectMaterial(mat.value)"
+            class="chip-filter"
+            [class.active]="marketplaceService.selectedMaterial() === mat.value"
+          >
+            {{ mat.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Sorting & Verified Toggles -->
+      <div class="sorting-group">
+        <label class="custom-checkbox verified-toggle">
+          <input 
+            type="checkbox" 
+            [checked]="marketplaceService.verifiedOnly()" 
+            (change)="marketplaceService.toggleVerifiedOnly()" 
+          />
+          <span>Verified Guild Makers</span>
+        </label>
+
+        <div class="sort-select-wrap">
+          <label for="price-sort" class="sort-label">Sort:</label>
+          <select 
+            id="price-sort" 
+            (change)="onSortChange($event)" 
+            class="form-select form-input sort-select"
+          >
+            <option value="default">Featured & Curated</option>
+            <option value="low-high">Price: Low to High</option>
+            <option value="high-low">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Feed Grid -->
+  @if (marketplaceService.filteredProducts().length === 0) {
+    <div class="no-results-card">
+      <div class="no-results-icon">🌿</div>
+      <h3 class="no-results-title">No pieces match your current filters</h3>
+      <p class="no-results-desc">
+        Try selecting "All Crafts" or clearing your material filter to browse our full artisan guild catalog.
+      </p>
+      <button type="button" (click)="marketplaceService.resetFilters()" class="btn btn-primary btn-md">
+        Reset All Filters
+      </button>
+    </div>
+  } @else {
+    <div class="product-grid">
+      @for (product of marketplaceService.filteredProducts(); track product.id) {
+        <article class="card-default product-card">
+          <!-- Image Container (Natural Aspect Ratio, Flush Top) -->
+          <div class="product-image-container">
+            <a [routerLink]="['/product', product.id]" class="product-image-link">
+              <img 
+                [src]="product.images[0]" 
+                [alt]="product.title" 
+                class="product-image"
+                loading="lazy"
+              />
+            </a>
+
+            <!-- Material Badge in Tertiary Forest Green #365314 -->
+            <div class="product-badges-overlay">
+              <span class="badge-material">{{ product.materialTag }}</span>
+            </div>
+
+            <!-- Wishlist Heart Button -->
+            <button 
+              type="button" 
+              (click)="toggleFavorite(product, $event)" 
+              class="fav-toggle-btn"
+              [class.is-favorite]="favoritesService.isFavorite(product.id)"
+              title="Save to favorites"
+              aria-label="Save to favorites"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="favoritesService.isFavorite(product.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Product Content Area (20px padding) -->
+          <div class="product-content">
+            <!-- Maker Info Header (Mandatory Do: Maker Avatar & Studio Bio on Every Card) -->
+            <div class="card-maker-bar">
+              <img 
+                [src]="product.artisan.avatar" 
+                [alt]="product.artisan.name" 
+                class="card-maker-avatar"
+              />
+              <div class="card-maker-text">
+                <div class="card-maker-name-row">
+                  <span class="card-maker-name">{{ product.artisan.name }}</span>
+                  @if (product.artisan.verified) {
+                    <span class="verified-dot" title="Verified Guild Maker">✓</span>
+                  }
+                </div>
+                <span class="card-maker-origin">{{ product.artisan.studioName }} • {{ product.artisan.location }}</span>
+              </div>
+            </div>
+
+            <!-- Short Maker Bio Snippet -->
+            <p class="card-maker-bio">
+              "{{ product.artisan.bio }}"
+            </p>
+
+            <!-- Product Title (Lora Serif) -->
+            <h3 class="product-title">
+              <a [routerLink]="['/product', product.id]">
+                {{ product.title }}
+              </a>
+            </h3>
+
+            <!-- Process & Narrative Snippet -->
+            <p class="product-narrative">
+              {{ product.processSummary }}
+            </p>
+
+            <!-- Stock & Batch Chip -->
+            <div class="card-batch-row">
+              <span class="chip-status chip-status-success">
+                {{ product.batchInfo }}
+              </span>
+              <span class="product-rating">
+                ★ {{ product.rating }} ({{ product.reviewCount }})
+              </span>
+            </div>
+
+            <!-- Price & Actions Footer -->
+            <div class="card-footer-row">
+              <div class="price-container">
+                <span class="price-amount">${{ product.price }}</span>
+                <span class="price-label">USD • Handcrafted</span>
+              </div>
+
+              <div class="card-action-btns">
+                <button 
+                  type="button" 
+                  (click)="openMakerInquiry(product.artisan, product, $event)" 
+                  class="btn btn-ghost btn-sm"
+                  title="Ask artisan a question"
+                >
+                  Ask Maker
+                </button>
+                <button 
+                  type="button" 
+                  (click)="quickAddToCart(product, $event)" 
+                  class="btn btn-primary btn-sm"
+                  aria-label="Add to basket"
+                >
+                  Add to Basket
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+<!-- Featured Master Artisans Spotlight (Elevated Cards: 2px border #D6D3D1, bg #FFFBF5) -->
+<section class="section-spacing artisan-showcase-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <span class="font-overline text-tertiary">Guardians of Traditional Disciplines</span>
+      <h2 class="font-headline section-title">Meet the Master Artisans</h2>
+      <p class="section-subtitle max-w-600">
+        Every artisan on MarketNest is an independent craftsperson practicing slow, generational methods without shortcuts.
+      </p>
+    </div>
+
+    <div class="artisan-cards-grid">
+      @for (artisan of marketplaceService.getAllArtisans().slice(0, 3); track artisan.id) {
+        <div class="card-elevated artisan-feature-card">
+          <div class="artisan-banner-image">
+            <img [src]="artisan.workshopImage" [alt]="artisan.studioName" />
+            <div class="artisan-portrait-badge">
+              <img [src]="artisan.avatar" [alt]="artisan.name" />
+            </div>
+          </div>
+
+          <div class="artisan-card-body">
+            <div class="artisan-titles">
+              <h3 class="artisan-name">{{ artisan.name }}</h3>
+              <span class="artisan-studio">{{ artisan.studioName }} • {{ artisan.location }}</span>
+            </div>
+
+            <p class="artisan-specialty-tag">
+              <span class="badge-material">{{ artisan.craftSpecialty }}</span>
+              <span class="experience-tag">{{ artisan.yearsCrafting }} years at the craft</span>
+            </p>
+
+            <p class="artisan-story-snippet">
+              {{ artisan.story }}
+            </p>
+
+            <div class="artisan-badges-list">
+              @for (badge of artisan.badges; track badge) {
+                <span class="artisan-pill">{{ badge }}</span>
+              }
+            </div>
+
+            <div class="artisan-card-actions">
+              <a [routerLink]="['/makers']" class="btn btn-secondary btn-sm">
+                View Studio Profile
+              </a>
+              <button 
+                type="button" 
+                (click)="inquiryService.openInquiry(artisan)" 
+                class="btn btn-ghost btn-sm"
+              >
+                Inquire With Maker
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Provenance & Design Manifesto Banner -->
+<section class="container section-spacing">
+  <div class="manifesto-banner">
+    <div class="manifesto-grid">
+      <div class="manifesto-text">
+        <span class="font-overline text-tertiary">Our Community Promise</span>
+        <h2 class="font-headline manifesto-heading">
+          Why MarketNest Rejects Mainstream E-commerce Gimmicks
+        </h2>
+        <p class="manifesto-body">
+          We don't use aggressive countdown timers or fake "Only 1 Left!" banners to panic you into buying. Artisan goods are meant to be chosen with reverence, knowing the exact workshop they originated from and how the raw earth was transformed.
+        </p>
+
+        <div class="manifesto-pillars">
+          <div class="pillar">
+            <h4 class="pillar-title">🌱 Natural Materials Only</h4>
+            <p class="pillar-desc">No plastics, polyester fills, or synthetic dyes. Only genuine clays, beeswax, and linen.</p>
+          </div>
+          <div class="pillar">
+            <h4 class="pillar-title">⚖️ 90% Direct Payout</h4>
+            <p class="pillar-desc">Artisans retain full economic independence with guaranteed transparent payments.</p>
+          </div>
+          <div class="pillar">
+            <h4 class="pillar-title">📦 Plastic-Free Transit</h4>
+            <p class="pillar-desc">Packed in biodegradable wood-wool and compostable plant-based kraft cartons.</p>
+          </div>
+        </div>
+
+        <div class="manifesto-cta-row">
+          <a routerLink="/philosophy" class="btn btn-primary btn-md">
+            Read Our Craft Manifesto
+          </a>
+          <a routerLink="/journal" class="btn btn-secondary btn-md">
+            Browse Craft Journal
+          </a>
+        </div>
+      </div>
+
+      <div class="manifesto-image-wrap">
+        <img 
+          src="https://images.unsplash.com/photo-1584589167171-541ce45f1eea?auto=format&fit=crop&w=800&q=80" 
+          alt="Hand carved wooden spoons in studio" 
+          class="manifesto-img"
+        />
+        <div class="manifesto-quote-pill">
+          "Craft is the antidote to the disposable."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

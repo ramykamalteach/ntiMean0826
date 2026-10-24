@@ -1,0 +1,70 @@
+@if (article(); as art) {
+  <article class="article-detail-page container section-spacing">
+    <nav class="breadcrumb-nav">
+      <a routerLink="/journal" class="breadcrumb-link">Craft Journal</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{{ art.title }}</span>
+    </nav>
+
+    <header class="article-detail-header max-w-800">
+      <span class="badge-material">{{ art.category }}</span>
+      <h1 class="font-display article-title">{{ art.title }}</h1>
+      <p class="font-body-large article-subtitle">{{ art.subtitle }}</p>
+
+      <div class="author-bar">
+        <div>
+          <span class="author-name">{{ art.author }}</span>
+          <span class="author-title">{{ art.authorRole }}</span>
+        </div>
+        <div class="read-info">
+          <span>{{ art.date }}</span>
+          <span>•</span>
+          <span>{{ art.readTime }}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="article-hero-media max-w-960">
+      <img [src]="art.coverImage" [alt]="art.title" class="article-cover" />
+    </div>
+
+    <div class="article-content-body max-w-800">
+      <blockquote class="editorial-pull-quote font-headline">
+        "{{ art.quote }}"
+        <footer class="quote-author">— {{ art.quoteAuthor }}</footer>
+      </blockquote>
+
+      @for (para of art.contentParagraphs; track para) {
+        <p class="article-paragraph font-body-large">
+          {{ para }}
+        </p>
+      }
+
+      <!-- Featured Product Callout Card -->
+      @if (featuredProduct(); as prod) {
+        <div class="story-product-card card-elevated">
+          <div class="story-prod-img-wrap">
+            <img [src]="prod.images[0]" [alt]="prod.title" />
+          </div>
+          <div class="story-prod-details">
+            <span class="font-overline text-tertiary">Piece Featured in this Essay</span>
+            <h3 class="font-headline story-prod-title">{{ prod.title }}</h3>
+            <p class="font-body-small story-prod-summary">{{ prod.processSummary }}</p>
+            <div class="story-prod-action">
+              <span class="font-headline story-prod-price">${{ prod.price }}</span>
+              <a [routerLink]="['/product', prod.id]" class="btn btn-primary btn-md">
+                View Handcrafted Piece
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="article-back-footer">
+        <a routerLink="/journal" class="btn btn-secondary btn-md">
+          ← Back to Craft Journal
+        </a>
+      </div>
+    </div>
+  </article>
+}

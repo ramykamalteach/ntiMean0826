@@ -1,0 +1,233 @@
+.philosophy-page {
+  padding-bottom: 96px;
+}
+
+.philosophy-header {
+  margin-bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.philosophy-title {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.philosophy-subtitle {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.max-w-700 {
+  max-width: 700px;
+}
+
+.max-w-600 {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Principles Grid */
+.principles-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+@media (min-width: 768px) {
+  .principles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.principle-card {
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.principle-number {
+  font-family: var(--font-headline);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.principle-title {
+  font-size: 22px;
+  color: var(--color-text-main);
+  line-height: 1.3;
+}
+
+.principle-desc {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* Calculator Section */
+.calculator-section {
+  padding: 48px 36px;
+  margin-bottom: 64px;
+}
+
+.calc-header {
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calc-title {
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+.calc-subtitle {
+  color: var(--color-text-muted);
+  max-width: 600px;
+}
+
+.calc-slider-wrap {
+  max-width: 640px;
+  margin: 0 auto 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calc-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.calc-amount-display {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.calc-slider {
+  width: 100%;
+  accent-color: var(--color-primary);
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--border-medium);
+  cursor: pointer;
+}
+
+.calc-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .calc-comparison-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.comparison-column {
+  padding: 32px 28px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.marketnest-col {
+  background-color: var(--color-background);
+  border: 2px solid var(--color-primary);
+}
+
+.retail-col {
+  background-color: #FAFAFA;
+  border: 1px solid var(--border-medium);
+}
+
+.model-name {
+  font-family: var(--font-headline);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.payout-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.payout-big {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--color-tertiary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.payout-percent {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.payout-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+}
+
+.breakdown-row strong {
+  color: var(--color-text-main);
+}
+
+.model-note {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+  line-height: 1.4;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  font-style: italic;
+}
+
+/* Philosophy CTA Card */
+.philosophy-cta-card {
+  padding: 56px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cta-btns-row {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.text-tertiary {
+  color: var(--color-tertiary);
+}

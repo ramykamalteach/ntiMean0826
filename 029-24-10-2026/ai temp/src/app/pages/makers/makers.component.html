@@ -1,0 +1,98 @@
+<div class="makers-page container section-spacing">
+  <!-- Header Banner -->
+  <div class="makers-header text-center">
+    <span class="font-overline text-tertiary">Guild Directory & Provenance</span>
+    <h1 class="font-display makers-title">Independent Makers & Studios</h1>
+    <p class="font-body-large makers-subtitle max-w-700">
+      Every product on MarketNest begins with human hands in an independent workshop. Meet the master potters, woodcarvers, weavers, and leatherworkers keeping generational traditions alive.
+    </p>
+
+    <!-- Country / Origin Filter Chips -->
+    <div class="region-chips-row">
+      @for (c of countries; track c) {
+        <button 
+          type="button" 
+          (click)="filterByCountry(c)"
+          class="chip-filter"
+          [class.active]="selectedCountry() === c"
+        >
+          {{ c === 'All' ? 'All Studios' : c }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Artisans Detailed Cards -->
+  <div class="makers-directory-list">
+    @for (artisan of filteredArtisans(); track artisan.id) {
+      <div class="maker-profile-card card-elevated">
+        <!-- Atelier Banner & Portrait -->
+        <div class="maker-card-header">
+          <div class="atelier-photo-wrap">
+            <img [src]="artisan.workshopImage" [alt]="artisan.studioName" class="atelier-photo" />
+            <div class="maker-badges-floating">
+              @for (b of artisan.badges; track b) {
+                <span class="badge-material">{{ b }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="maker-identity-banner">
+            <img [src]="artisan.avatar" [alt]="artisan.name" class="maker-portrait-circle" />
+            <div class="maker-headline-block">
+              <h2 class="font-headline maker-name">{{ artisan.name }}</h2>
+              <span class="maker-studio-text">{{ artisan.studioName }} • {{ artisan.location }}</span>
+              <span class="maker-tenure">{{ artisan.yearsCrafting }} years practicing {{ artisan.craftSpecialty }}</span>
+            </div>
+
+            <div class="maker-direct-contact">
+              <button type="button" (click)="openArtisanInquiry(artisan)" class="btn btn-secondary btn-md">
+                💬 Inquire with Studio
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maker Story Body -->
+        <div class="maker-card-body">
+          <div class="maker-narrative-column">
+            <h3 class="font-subhead section-h3">Craft Philosophy & Materials</h3>
+            <p class="maker-story-full font-body">
+              {{ artisan.story }}
+            </p>
+            <div class="provenance-seal">
+              <span class="seal-icon">🌿</span>
+              <span><strong>Guaranteed Provenance:</strong> Ships directly from {{ artisan.location }}. No factory intermediaries.</span>
+            </div>
+          </div>
+
+          <!-- Studio Creations Showcase -->
+          <div class="maker-creations-column">
+            <h3 class="font-subhead section-h3">Handcrafted Creations</h3>
+            <div class="maker-products-mini-grid">
+              @for (prod of getArtisanCreations(artisan.id); track prod.id) {
+                <div class="mini-prod-card card-default">
+                  <a [routerLink]="['/product', prod.id]" class="mini-prod-img-link">
+                    <img [src]="prod.images[0]" [alt]="prod.title" class="mini-prod-img" />
+                  </a>
+                  <div class="mini-prod-info">
+                    <span class="badge-material">{{ prod.materialTag }}</span>
+                    <h4 class="mini-prod-title">
+                      <a [routerLink]="['/product', prod.id]">{{ prod.title }}</a>
+                    </h4>
+                    <div class="mini-prod-footer">
+                      <span class="mini-prod-price">${{ prod.price }}</span>
+                      <a [routerLink]="['/product', prod.id]" class="btn btn-primary btn-sm">
+                        View Piece
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

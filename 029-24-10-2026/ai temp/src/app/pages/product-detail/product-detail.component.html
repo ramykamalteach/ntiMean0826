@@ -1,0 +1,378 @@
+@if (product(); as prod) {
+  <div class="product-page-container container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <a routerLink="/" class="breadcrumb-link">Marketplace</a>
+      <span class="breadcrumb-separator">/</span>
+      <a routerLink="/" [queryParams]="{category: prod.category}" class="breadcrumb-link">{{ prod.category }}</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{{ prod.title }}</span>
+    </nav>
+
+    <!-- Main Product Showcase Grid -->
+    <div class="product-showcase-grid">
+      <!-- Gallery Column (Natural Aspect Ratio) -->
+      <div class="gallery-column">
+        <div class="main-image-viewport">
+          <img 
+            [src]="prod.images[selectedImageIndex()]" 
+            [alt]="prod.title" 
+            class="main-image"
+          />
+          <div class="image-overlay-badges">
+            <span class="badge-material">{{ prod.materialTag }}</span>
+          </div>
+        </div>
+
+        @if (prod.images.length > 1) {
+          <div class="gallery-thumbnails-row">
+            @for (img of prod.images; track img; let idx = $index) {
+              <button 
+                type="button" 
+                (click)="selectImage(idx)"
+                class="thumbnail-btn"
+                [class.active]="selectedImageIndex() === idx"
+                [attr.aria-label]="'View image ' + (idx + 1)"
+              >
+                <img [src]="img" [alt]="prod.title + ' view ' + (idx + 1)" />
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Provenance Trust Card -->
+        <div class="provenance-trust-card">
+          <div class="trust-title-row">
+            <span class="font-overline text-tertiary">Verified Workshop Provenance</span>
+            <span class="trust-check">✓ 100% Traceable</span>
+          </div>
+          <div class="trust-details-list">
+            <div class="trust-item">
+              <span class="trust-item-label">Workshop Origin:</span>
+              <span class="trust-item-val">{{ prod.provenance.origin }} ({{ prod.provenance.workshop }})</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-item-label">Maker Lead Time:</span>
+              <span class="trust-item-val">{{ prod.provenance.leadTime }}</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-item-label">Shipping & Packaging:</span>
+              <span class="trust-item-val">{{ prod.provenance.shippingNotes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Column -->
+      <div class="details-column">
+        <!-- Title & Batch Status -->
+        <div class="product-header-block">
+          <div class="status-rating-row">
+            <span class="chip-status chip-status-success">{{ prod.batchInfo }}</span>
+            <a href="#reviews-section" class="rating-link">
+              ★ {{ prod.rating }} ({{ prod.reviewCount }} verified artisan reviews)
+            </a>
+          </div>
+
+          <h1 class="product-main-title font-display">{{ prod.title }}</h1>
+
+          <div class="price-maker-row">
+            <div class="detail-price-box">
+              <span class="detail-price">${{ prod.price }}</span>
+              <span class="price-subtext">USD • Includes 90% direct artisan studio contribution</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Maker Card (Mandatory Do's) -->
+        <div class="maker-profile-box">
+          <div class="maker-profile-header">
+            <img [src]="prod.artisan.avatar" [alt]="prod.artisan.name" class="maker-avatar-lg" />
+            <div class="maker-profile-info">
+              <span class="font-overline text-tertiary">Crafted by Independent Artisan</span>
+              <h3 class="maker-profile-name">{{ prod.artisan.name }}</h3>
+              <span class="maker-profile-studio">{{ prod.artisan.studioName }} • {{ prod.artisan.location }}</span>
+            </div>
+          </div>
+          <p class="maker-profile-story">
+            "{{ prod.artisan.story }}"
+          </p>
+          <div class="maker-profile-actions">
+            <button type="button" (click)="openInquiry()" class="btn btn-secondary btn-sm">
+              💬 Message {{ prod.artisan.name }}
+            </button>
+            <a routerLink="/makers" class="btn btn-ghost btn-sm">
+              View Studio Profile →
+            </a>
+          </div>
+        </div>
+
+        <!-- Narrative Craft Story -->
+        <div class="narrative-story-box">
+          <h3 class="story-box-title font-subhead">The Story of this Piece</h3>
+          <p class="story-box-text font-body-large">
+            {{ prod.narrativeStory }}
+          </p>
+        </div>
+
+        <!-- Variants Selector (if applicable) -->
+        @if (prod.variants) {
+          <div class="variant-selector-group">
+            <label class="form-label">{{ prod.variants.name }}: <strong>{{ selectedVariant() }}</strong></label>
+            <div class="variant-chips-wrap">
+              @for (opt of prod.variants.options; track opt) {
+                <button 
+                  type="button" 
+                  (click)="selectVariant(opt)"
+                  class="chip-filter"
+                  [class.active]="selectedVariant() === opt"
+                >
+                  {{ opt }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Add to Basket / Quantity Controls -->
+        <div class="purchase-actions-box">
+          <div class="quantity-selector-row">
+            <label class="form-label">Quantity</label>
+            <div class="qty-adjuster">
+              <button 
+                type="button" 
+                (click)="updateQuantity(-1)" 
+                class="qty-btn"
+                [disabled]="quantity() <= 1"
+              >−</button>
+              <span class="qty-display">{{ quantity() }}</span>
+              <button 
+                type="button" 
+                (click)="updateQuantity(1)" 
+                class="qty-btn"
+              >+</button>
+            </div>
+          </div>
+
+          <div class="cta-buttons-row">
+            <button 
+              type="button" 
+              (click)="addToBasket()" 
+              class="btn btn-primary btn-lg add-to-basket-btn"
+            >
+              Add to Basket (${{ prod.price * quantity() }})
+            </button>
+
+            <button 
+              type="button" 
+              (click)="toggleFavorite()" 
+              class="detail-fav-btn"
+              [class.is-favorite]="favoritesService.isFavorite(prod.id)"
+              title="Save to favorites"
+              aria-label="Save to favorites"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" [attr.fill]="favoritesService.isFavorite(prod.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Personal Note to Artisan -->
+          <div class="note-to-artisan-box">
+            <button type="button" (click)="toggleNote()" class="add-note-btn">
+              ✍️ {{ isNoteOpen() ? 'Hide note field' : '+ Add custom note or sizing request for ' + prod.artisan.name }}
+            </button>
+
+            @if (isNoteOpen()) {
+              <div class="note-field-wrap">
+                <textarea 
+                  [(ngModel)]="makerNote" 
+                  placeholder="e.g. Please select a piece with deeper terracotta mottling, or gift wrap in recycled washi paper..."
+                  class="form-textarea"
+                  rows="3"
+                ></textarea>
+                <span class="form-helper">This note will be transmitted directly onto the artisan’s studio dispatch sheet.</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Specifications & Care Breakdown -->
+        <div class="specs-accordion">
+          <div class="spec-section">
+            <h4 class="spec-heading font-subhead">Materials & Process</h4>
+            <div class="materials-tags-cloud">
+              @for (mat of prod.materialsList; track mat) {
+                <span class="badge-material">{{ mat }}</span>
+              }
+            </div>
+            <p class="spec-text font-body-small">{{ prod.processSummary }}</p>
+          </div>
+
+          @if (prod.dimensions) {
+            <div class="spec-section">
+              <h4 class="spec-heading font-subhead">Dimensions & Proportions</h4>
+              <p class="spec-text font-body-small">{{ prod.dimensions }}</p>
+            </div>
+          }
+
+          @if (prod.careInstructions) {
+            <div class="spec-section">
+              <h4 class="spec-heading font-subhead">Artisan Care Guidelines</h4>
+              <p class="spec-text font-body-small">{{ prod.careInstructions }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Verified Customer Reviews Section (Mandatory Do's: Real Customer Photos) -->
+    <section class="reviews-section section-spacing" id="reviews-section">
+      <div class="reviews-header">
+        <div>
+          <span class="font-overline text-tertiary">Authentic Community Feedback</span>
+          <h2 class="font-headline reviews-title">Customer Stories & Provenance Photos</h2>
+          <p class="reviews-subtitle">
+            Unfiltered experiences from collectors and buyers living with {{ prod.title }}.
+          </p>
+        </div>
+
+        <button 
+          type="button" 
+          (click)="showReviewForm = !showReviewForm" 
+          class="btn btn-secondary btn-md"
+        >
+          {{ showReviewForm ? 'Cancel Review' : 'Write a Review' }}
+        </button>
+      </div>
+
+      <!-- Add Review Form -->
+      @if (showReviewForm) {
+        <div class="add-review-card">
+          <h3 class="font-subhead">Share your experience with this handcrafted piece</h3>
+          <form (ngSubmit)="submitReview()" class="review-form">
+            <div class="form-row-two">
+              <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" [(ngModel)]="newReviewAuthor" name="author" class="form-input" placeholder="e.g. Samuel Green" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rating</label>
+                <select [(ngModel)]="newReviewRating" name="rating" class="form-select form-input">
+                  <option [value]="5">★★★★★ (5/5) Masterpiece Craftsmanship</option>
+                  <option [value]="4">★★★★☆ (4/5) Very Good Quality</option>
+                  <option [value]="3">★★★☆☆ (3/5) Average</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Your Review & Observations</label>
+              <textarea 
+                [(ngModel)]="newReviewComment" 
+                name="comment" 
+                class="form-textarea" 
+                rows="3" 
+                placeholder="How does the weight, texture, and aroma of the materials feel in your daily life?"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-md">Submit Review to Guild</button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- Reviews Grid -->
+      <div class="reviews-grid">
+        @if (prod.reviews && prod.reviews.length > 0) {
+          @for (rev of prod.reviews; track rev.id) {
+            <div class="review-card card-default">
+              <div class="review-header">
+                <div>
+                  <div class="review-author-row">
+                    <span class="review-author">{{ rev.author }}</span>
+                    @if (rev.verifiedPurchase) {
+                      <span class="verified-buyer-badge">✓ Verified Buyer</span>
+                    }
+                  </div>
+                  <span class="review-location">{{ rev.location }} • {{ rev.date }}</span>
+                </div>
+                <div class="review-stars">
+                  {{ '★'.repeat(rev.rating) }}
+                </div>
+              </div>
+
+              <p class="review-comment font-body">
+                "{{ rev.comment }}"
+              </p>
+
+              @if (rev.customerPhoto) {
+                <div class="review-photo-wrap">
+                  <img [src]="rev.customerPhoto" [alt]="'Photo from ' + rev.author" class="review-photo" />
+                  <span class="photo-caption font-caption">Collector photo in home setting</span>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="no-reviews-note">
+            <p>No community reviews yet for this limited batch. Be the first to share your thoughts!</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Related Handcrafted Pieces -->
+    <section class="related-pieces-section">
+      <div class="section-header">
+        <span class="font-overline text-tertiary">More from {{ prod.category }}</span>
+        <h2 class="font-headline">Related Artisan Creations</h2>
+      </div>
+
+      <div class="product-grid">
+        @for (rel of marketplaceService.getRelatedProducts(prod.id, prod.category); track rel.id) {
+          <article class="card-default product-card">
+            <div class="product-image-container">
+              <a [routerLink]="['/product', rel.id]" class="product-image-link">
+                <img [src]="rel.images[0]" [alt]="rel.title" class="product-image" />
+              </a>
+              <div class="product-badges-overlay">
+                <span class="badge-material">{{ rel.materialTag }}</span>
+              </div>
+            </div>
+
+            <div class="product-content">
+              <div class="card-maker-bar">
+                <img [src]="rel.artisan.avatar" [alt]="rel.artisan.name" class="card-maker-avatar" />
+                <div class="card-maker-text">
+                  <span class="card-maker-name">{{ rel.artisan.name }}</span>
+                  <span class="card-maker-origin">{{ rel.artisan.location }}</span>
+                </div>
+              </div>
+
+              <h3 class="product-title">
+                <a [routerLink]="['/product', rel.id]">{{ rel.title }}</a>
+              </h3>
+
+              <div class="card-footer-row">
+                <span class="price-amount">${{ rel.price }}</span>
+                <a [routerLink]="['/product', rel.id]" class="btn btn-secondary btn-sm">
+                  View Story
+                </a>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+} @else {
+  <div class="container not-found-container section-spacing">
+    <h2 class="font-headline">Piece Not Found</h2>
+    <p class="font-body">The artisan piece you are looking for has either finished its limited run or does not exist.</p>
+    <a routerLink="/" class="btn btn-primary btn-md">Return to Marketplace</a>
+  </div>
+}
