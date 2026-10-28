@@ -1,0 +1,26 @@
+sprint 01 :
+    - create backend and frontend application :
+    - backend with node-express mvc
+    - frontend with angular
+    - frontend with one language (english)
+    - appear in application :
+        - item categories
+        - items (name, description, price, quantity)
+    - application users : one manager user
+    - application interfaces :
+        - dashboard for manager
+        - pages for public users with :
+            - home page, item details page, favorites, cart, buy page
+    - buy and delivery done by phone calls
+
+
+
+----------------------------------------------------
+
+1- multi language interface in angular
+
+2- send email by node-express (queue task)
+
+3- developing test payment gate
+
+4- testing

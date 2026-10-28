@@ -1,0 +1,48 @@
+<div class="cookcraft-app-wrapper">
+  <!-- Sticky Header -->
+  <app-header (openAddModal)="openModal()" />
+
+  <!-- Main Routing Outlet Container -->
+  <main class="app-main-content">
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Playful Food Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="material-symbols-outlined">restaurant</span>
+          <span class="brand-title">CookCraft</span>
+        </div>
+        <p class="footer-sub">
+          Modern Culinary & Recipe SPA built with Angular standalone architecture.
+        </p>
+      </div>
+
+      <div class="footer-quick-links">
+        <span class="footer-head">Features</span>
+        <span class="footer-link">Chef Recipes</span>
+        <span class="footer-link">Weekly Planner</span>
+        <span class="footer-link">Smart Grocery Checklist</span>
+      </div>
+
+      <div class="footer-spec">
+        <span class="footer-head">Design Spec</span>
+        <span class="spec-chip">Primary: #FF6B00</span>
+        <span class="spec-chip">Cards: 16px radius</span>
+        <span class="spec-chip">Buttons: 12px radius</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Floating Container -->
+  <app-toast />
+
+  <!-- Modal for Creating Recipe -->
+  @if (showAddModal()) {
+    <app-add-recipe-modal (close)="closeModal()" />
+  }
+</div>
